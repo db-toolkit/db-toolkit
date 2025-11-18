@@ -52,12 +52,12 @@ export function TableDetails({ connectionId, schemaName, tableName }) {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {tableInfo.columns?.map((col) => (
-                <tr key={col.name} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{col.name}</td>
-                  <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">{col.type}</td>
-                  <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">{col.nullable ? 'Yes' : 'No'}</td>
+                <tr key={col.column_name} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">{col.column_name}</td>
+                  <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">{col.data_type}</td>
+                  <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">{col.is_nullable === 'YES' ? 'Yes' : 'No'}</td>
                   <td className="px-4 py-2 text-sm">
-                    {col.primary_key && <Key size={16} className="text-yellow-600 dark:text-yellow-400" />}
+                    {col.is_primary_key && <Key size={16} className="text-yellow-600 dark:text-yellow-400" />}
                   </td>
                 </tr>
               ))}
@@ -74,8 +74,8 @@ export function TableDetails({ connectionId, schemaName, tableName }) {
               <thead className="bg-gray-50 dark:bg-gray-900">
                 <tr>
                   {tableInfo.columns?.map((col) => (
-                    <th key={col.name} className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                      {col.name}
+                    <th key={col.column_name} className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                      {col.column_name}
                     </th>
                   ))}
                 </tr>
