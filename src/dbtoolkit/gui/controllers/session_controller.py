@@ -14,6 +14,7 @@ class SessionController(QObject):
     sessionsChanged = Signal()
     currentSessionChanged = Signal()
     sessionStateChanged = Signal(str, arguments=['sessionId'])
+    pendingChangesWarning = Signal(str, int, arguments=['sessionId', 'changeCount'])
     
     def __init__(self):
         """Initialize session controller."""
@@ -44,6 +45,23 @@ class SessionController(QObject):
     @Slot(str, result=bool)
     def close_session(self, session_id: str) -> bool:
         """Close a session."""
+        # Check for pending changes first
+        if self.has_pending_changes(session_id):
+            session = session_manager.get_session(session_id)
+            if session:
+                self.pendingChangesWarning.emit(session_id, session.pending_changes)
+            return False
+        
+        success = session_manager.close_session(session_id)
+        if success:
+            self.refresh_sessions()
+        return success
+    
+    @Slot(str, result=bool)
+    def force_close_session(self, session_id: str) -> bool:
+        """Force close session discarding changes."""
+        # Reset pending changes and close
+        session_manager.update_session_state(session_id, pending_changes=0)
         success = session_manager.close_session(session_id)
         if success:
             self.refresh_sessions()

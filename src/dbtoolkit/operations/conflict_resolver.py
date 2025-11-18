@@ -170,8 +170,8 @@ class ConflictResolver:
             return False  # Caller should queue the operation
         
         elif strategy == ResolutionStrategy.PROMPT_USER:
-            # In a real implementation, this would show a dialog
-            # For now, default to first wins
+            # Emit signal for UI to handle user prompt
+            # Return False to block operation until user decides
             return False
         
         return False

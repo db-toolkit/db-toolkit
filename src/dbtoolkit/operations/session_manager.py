@@ -48,9 +48,8 @@ class SessionManager:
         
         # Check for pending changes
         if session.pending_changes > 0:
-            # In a real implementation, this would prompt the user
-            # For now, just mark as inactive
-            session.is_active = False
+            # Cannot close session with pending changes - return False to indicate failure
+            return False
         else:
             self.workspace_state.remove_session(session_id)
         
