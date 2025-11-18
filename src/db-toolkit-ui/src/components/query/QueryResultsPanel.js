@@ -38,11 +38,20 @@ export function QueryResultsPanel({ connectionId, result, executionTime, onSelec
         {activeTab === 'results' && (
           <div className="h-full">
             {result ? (
-              <EditableTable
-                connectionId={connectionId}
-                result={result}
-                onRefresh={onRefresh}
-              />
+              result.success === false || result.error ? (
+                <div className="flex items-center justify-center h-full p-4">
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 max-w-2xl">
+                    <h4 className="text-red-800 dark:text-red-400 font-semibold mb-2">Query Error</h4>
+                    <p className="text-red-700 dark:text-red-300 text-sm whitespace-pre-wrap">{result.error}</p>
+                  </div>
+                </div>
+              ) : (
+                <EditableTable
+                  connectionId={connectionId}
+                  result={result}
+                  onRefresh={onRefresh}
+                />
+              )
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
                 <div className="text-center">
@@ -60,14 +69,20 @@ export function QueryResultsPanel({ connectionId, result, executionTime, onSelec
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                   <Clock size={16} />
-                  <span>Execution time: {executionTime || 0}ms</span>
+                  <span>Execution time: {result.execution_time || executionTime || 0}ms</span>
                 </div>
                 <div className="text-sm text-gray-700 dark:text-gray-300">
-                  Rows returned: {result.rows?.length || 0}
+                  Rows returned: {result.total_rows || result.rows?.length || 0}
                 </div>
-                <div className="text-sm text-green-600 dark:text-green-400">
-                  Query executed successfully
-                </div>
+                {result.success === false || result.error ? (
+                  <div className="text-sm text-red-600 dark:text-red-400">
+                    Query failed: {result.error}
+                  </div>
+                ) : (
+                  <div className="text-sm text-green-600 dark:text-green-400">
+                    Query executed successfully
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-sm text-gray-500 dark:text-gray-400">
