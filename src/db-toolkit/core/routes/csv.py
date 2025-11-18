@@ -27,7 +27,7 @@ async def export_csv(request: ExportCSVRequest):
         csv_content = await CSVHandler.export_to_csv(
             connector=connector,
             table=request.table,
-            schema=request.schema,
+            schema=request.schema_name,
             query=request.query,
         )
 
@@ -80,7 +80,7 @@ async def import_csv(request: ImportCSVRequest):
             connector=connector,
             table=request.table,
             rows=rows,
-            schema=request.schema,
+            schema=request.schema_name,
             batch_size=request.batch_size,
         )
 

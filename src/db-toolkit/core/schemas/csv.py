@@ -10,7 +10,7 @@ class ExportCSVRequest(BaseModel):
 
     connection_id: str
     table: str
-    schema: Optional[str] = None
+    schema_name: Optional[str] = Field(default=None, alias="schema")
     query: Optional[str] = None
 
 
@@ -43,7 +43,7 @@ class ImportCSVRequest(BaseModel):
 
     connection_id: str
     table: str
-    schema: Optional[str] = None
+    schema_name: Optional[str] = Field(default=None, alias="schema")
     csv_content: str
     column_mapping: Dict[str, str]
     batch_size: int = Field(default=100, ge=1, le=1000)
