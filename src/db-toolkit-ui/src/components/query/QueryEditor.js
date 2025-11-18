@@ -141,6 +141,7 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema }) {
         'CHECK', 'UNIQUE', 'CASCADE', 'SET', 'VALUES', 'RETURNING'
       ],
       operators: ['=', '>', '<', '!', '~', '?', ':', '==', '<=', '>=', '!=', '&&', '||', '++', '--', '+', '-', '*', '/', '&', '|', '^', '%', '<<', '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=', '^=', '%=', '<<=', '>>=', '>>>='],
+      symbols: /[=><!~?:&|+\-*\/\^%]+/,
       tokenizer: {
         root: [
           [/[a-z_$][\w$]*/, {
