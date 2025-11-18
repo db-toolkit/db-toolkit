@@ -2,9 +2,9 @@
  * Data Explorer page for browsing table data
  */
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
-import { useSchema } from '../hooks';
+import { ChevronLeft, ChevronRight, RefreshCw, Database } from 'lucide-react';
+import { useConnections, useSchema } from '../hooks';
+import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
 import { LoadingState } from '../components/common/LoadingState';
 import { DataGrid } from '../components/data-explorer/DataGrid';
@@ -12,7 +12,9 @@ import { TableSelector } from '../components/data-explorer/TableSelector';
 import api from '../services/api';
 
 function DataExplorerPage() {
-  const { connectionId } = useParams();
+  const { connections, connectToDatabase } = useConnections();
+  const toast = useToast();
+  const [connectionId, setConnectionId] = useState(null);
   const { schema, fetchSchemaTree } = useSchema(connectionId);
   const [selectedTable, setSelectedTable] = useState(null);
   const [data, setData] = useState([]);
@@ -23,6 +25,16 @@ function DataExplorerPage() {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState('ASC');
   const [totalCount, setTotalCount] = useState(0);
+
+  const handleConnect = async (id) => {
+    try {
+      await connectToDatabase(id);
+      setConnectionId(id);
+      toast.success('Connected successfully');
+    } catch (err) {
+      toast.error('Failed to connect');
+    }
+  };
 
   useEffect(() => {
     if (connectionId) {
@@ -99,10 +111,57 @@ function DataExplorerPage() {
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
+  if (!connectionId) {
+    return (
+      <div className="p-8">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Data Explorer</h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">Select a connection to explore data</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {connections.map((conn) => (
+            <div
+              key={conn.id}
+              className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200"
+            >
+              <div className="flex items-start gap-3 mb-4">
+                <Database className="text-blue-600 dark:text-blue-400 mt-1" size={24} />
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{conn.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{conn.db_type}</p>
+                  {conn.host && (
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                      {conn.host}:{conn.port}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <Button
+                variant="success"
+                size="sm"
+                onClick={() => handleConnect(conn.id)}
+                className="w-full !text-white"
+              >
+                Connect & Explore
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen flex flex-col">
       <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Data Explorer</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Data Explorer</h2>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setConnectionId(null)}
+          >
+            Change Connection
+          </Button>
+        </div>
         <div className="flex items-center gap-4">
           {selectedTable && (
             <>

@@ -15,7 +15,7 @@ function App() {
           <Route path="/" element={<ConnectionsPage />} />
           <Route path="/schema/:connectionId" element={<SchemaPage />} />
           <Route path="/query/:connectionId" element={<QueryPage />} />
-          <Route path="/data-explorer/:connectionId" element={<DataExplorerPage />} />
+          <Route path="/data-explorer" element={<DataExplorerPage />} />
         </Routes>
       </Layout>
     </Router>
