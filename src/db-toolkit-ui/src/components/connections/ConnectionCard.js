@@ -3,14 +3,14 @@ import { Button } from '../common/Button';
 
 export function ConnectionCard({ connection, onConnect, onDelete }) {
   return (
-    <div className="border rounded-lg p-4 hover:shadow-lg transition">
+    <div className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-lg transition">
       <div className="flex items-start gap-3 mb-4">
-        <Database className="text-blue-600 mt-1" size={24} />
+        <Database className="text-blue-600 dark:text-blue-400 mt-1" size={24} />
         <div className="flex-1">
-          <h3 className="text-lg font-semibold">{connection.name}</h3>
-          <p className="text-sm text-gray-600">{connection.db_type}</p>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{connection.name}</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{connection.db_type}</p>
           {connection.host && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
               {connection.host}:{connection.port}
             </p>
           )}
