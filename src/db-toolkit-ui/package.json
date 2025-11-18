@@ -4,10 +4,11 @@
   "private": true,
   "main": "electron/main.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "electron": "electron .",
-    "electron-dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && electron .\"",
     "package": "electron-builder"
   },
   "dependencies": {
@@ -17,7 +18,8 @@
     "axios": "^1.6.2"
   },
   "devDependencies": {
-    "react-scripts": "5.0.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8",
     "electron": "^28.0.0",
     "electron-builder": "^24.9.1",
     "concurrently": "^8.2.2",
