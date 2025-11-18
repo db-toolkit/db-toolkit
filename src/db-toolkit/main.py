@@ -1,7 +1,20 @@
 """FastAPI application."""
 
+import asyncio
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from operations.background_tasks import cleanup_old_history_task
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage application lifespan."""
+    # Start background tasks
+    task = asyncio.create_task(cleanup_old_history_task())
+    yield
+    # Cleanup
+    task.cancel()
 from core.routes.connections import router as connections_router
 from core.routes.health import router as health_router
 from core.routes.schema import router as schema_router
@@ -16,6 +29,7 @@ app = FastAPI(
     description="Database management toolkit API",
     version="0.1.0",
     swagger_ui_parameters={"defaultModelsExpandDepth": -1},
+    lifespan=lifespan,
 )
 
 # CORS middleware for Electron frontend

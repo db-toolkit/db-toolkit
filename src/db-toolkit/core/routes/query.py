@@ -85,6 +85,13 @@ async def search_query_history(connection_id: str, q: str):
     return {"success": True, "results": results, "count": len(results)}
 
 
+@router.post("/query/history/cleanup")
+async def cleanup_query_history(retention_days: int = 30):
+    """Cleanup old query history based on retention days."""
+    removed = history.cleanup_old_history(retention_days)
+    return {"success": True, "removed_count": removed, "message": f"Removed {removed} old queries"}
+
+
 @router.post("/connections/{connection_id}/query/explain")
 async def explain_query(connection_id: str, request: QueryRequest):
     """Get query execution plan with AI analysis."""

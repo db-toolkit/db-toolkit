@@ -70,6 +70,23 @@ class QueryHistory:
             if search_term in entry["query"].lower()
         ]
     
+    def cleanup_old_history(self, retention_days: int = 30) -> int:
+        """Remove history older than retention_days."""
+        history = self._load_history()
+        cutoff_time = time.time() - (retention_days * 24 * 60 * 60)
+        removed_count = 0
+        
+        for connection_id in history:
+            original_count = len(history[connection_id])
+            history[connection_id] = [
+                entry for entry in history[connection_id]
+                if entry.get("timestamp", 0) > cutoff_time
+            ]
+            removed_count += original_count - len(history[connection_id])
+        
+        self._save_history(history)
+        return removed_count
+    
     def _load_history(self) -> Dict[str, List[Dict[str, Any]]]:
         """Load history from storage."""
         if not self.storage_path.exists():
