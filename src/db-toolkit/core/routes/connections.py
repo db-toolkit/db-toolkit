@@ -76,32 +76,3 @@ async def disconnect_from_database(connection_id: str):
     return {"success": success, "message": "Disconnected" if success else "Not connected"}
 
 
-@router.get("/connections/{connection_id}/schema")
-async def get_connection_schema(connection_id: str):
-    """Get database schema for connection."""
-    from ...connectors.factory import ConnectorFactory
-    
-    connection = storage.get_connection(connection_id)
-    if not connection:
-        raise HTTPException(status_code=404, detail="Connection not found")
-    
-    try:
-        connector = ConnectorFactory.create_connector(connection.db_type)
-        await connector.connect(connection)
-        
-        schemas = await connector.get_schemas()
-        schema_data = {}
-        
-        for schema in schemas:
-            tables = await connector.get_tables(schema)
-            schema_data[schema] = {}
-            
-            for table in tables:
-                columns = await connector.get_columns(table, schema)
-                schema_data[schema][table] = columns
-        
-        await connector.disconnect()
-        return {"success": True, "schema": schema_data}
-        
-    except Exception as e:
-        return {"success": False, "error": str(e)}
