@@ -14,6 +14,8 @@ ApplicationWindow {
     Material.theme: Material.Light
     Material.primary: Material.Blue
     
+    property string selectedConnectionId: ""
+    
     ConnectionController {
         id: connectionController
     }
@@ -86,6 +88,7 @@ ApplicationWindow {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
+                                selectedConnectionId = modelData.id
                                 connectionController.test_connection(modelData.id)
                             }
                         }
@@ -95,28 +98,43 @@ ApplicationWindow {
         }
         
         // Main content area
-        Rectangle {
+        RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "white"
-            radius: 8
+            spacing: 10
             
-            ColumnLayout {
-                anchors.centerIn: parent
-                spacing: 20
+            // Schema Explorer
+            SchemaExplorer {
+                id: schemaExplorer
+                Layout.preferredWidth: 350
+                Layout.fillHeight: true
+                connectionId: selectedConnectionId
+            }
+            
+            // Query/Data area
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: "white"
+                radius: 8
                 
-                Text {
-                    text: "DB Toolkit"
-                    font.pixelSize: 32
-                    font.bold: true
-                    Layout.alignment: Qt.AlignHCenter
-                }
-                
-                Text {
-                    text: "Select a connection to get started"
-                    font.pixelSize: 16
-                    color: Material.color(Material.Grey)
-                    Layout.alignment: Qt.AlignHCenter
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    spacing: 20
+                    
+                    Text {
+                        text: "Query Editor"
+                        font.pixelSize: 24
+                        font.bold: true
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+                    
+                    Text {
+                        text: selectedConnectionId ? "Ready to execute queries" : "Select a connection to get started"
+                        font.pixelSize: 16
+                        color: Material.color(Material.Grey)
+                        Layout.alignment: Qt.AlignHCenter
+                    }
                 }
             }
         }

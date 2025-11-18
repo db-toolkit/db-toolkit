@@ -8,6 +8,8 @@ from PySide6.QtQuickControls2 import QQuickStyle
 from PySide6.QtCore import QUrl
 from PySide6.QtQml import QQmlApplicationEngine
 from .controllers.connection_controller import ConnectionController
+from .controllers.schema_controller import SchemaController
+from .models.schema_model import SchemaModel
 
 
 def main():
@@ -24,6 +26,8 @@ def main():
     
     # Register QML types
     qmlRegisterType(ConnectionController, "DBToolkit", 1, 0, "ConnectionController")
+    qmlRegisterType(SchemaController, "DBToolkit", 1, 0, "SchemaController")
+    qmlRegisterType(SchemaModel, "DBToolkit", 1, 0, "SchemaModel")
     
     # Create QML engine
     engine = QQmlApplicationEngine()
