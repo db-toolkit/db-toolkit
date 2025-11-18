@@ -18,7 +18,11 @@ function SchemaPage() {
   const [showImport, setShowImport] = useState(false);
 
   useEffect(() => {
-    fetchSchemaTree();
+    fetchSchemaTree().catch((err) => {
+      if (err.response?.data?.error) {
+        console.error('Schema fetch error:', err.response.data.error);
+      }
+    });
   }, [fetchSchemaTree]);
 
   const handleTableClick = (schemaName, tableName) => {
@@ -29,7 +33,14 @@ function SchemaPage() {
   
   if (error) return (
     <div className="p-8">
-      <ErrorMessage message={error} />
+      <ErrorMessage message="Failed to load schema. Please ensure you are connected to the database." />
+      <Button
+        variant="secondary"
+        className="mt-4"
+        onClick={() => navigate('/')}
+      >
+        Back to Connections
+      </Button>
     </div>
   );
 
@@ -66,13 +77,18 @@ function SchemaPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
-          {schema ? (
+          {schema && !schema.error ? (
             <SchemaTree schema={schema} onTableClick={handleTableClick} />
           ) : (
             <EmptyState
               icon={FolderTree}
               title="No schema data"
-              description="Unable to load database schema"
+              description={schema?.error || "Unable to load database schema. Please connect to the database first."}
+              action={
+                <Button onClick={() => navigate('/')}>
+                  Back to Connections
+                </Button>
+              }
             />
           )}
         </div>
