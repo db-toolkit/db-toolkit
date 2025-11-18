@@ -77,7 +77,8 @@ class QueryController(QObject):
     
     def __init__(self):
         """Initialize query controller."""
-        super().__init__()\n        self._executing = False
+        super().__init__()
+        self._executing = False
         self._current_connection_id = ""
         self._worker: Optional[QueryWorker] = None
     
