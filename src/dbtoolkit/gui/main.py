@@ -7,6 +7,7 @@ from PySide6.QtQml import qmlRegisterType
 from PySide6.QtQuickControls2 import QQuickStyle
 from PySide6.QtCore import QUrl
 from PySide6.QtQml import QQmlApplicationEngine
+from .controllers.connection_controller import ConnectionController
 
 
 def main():
@@ -20,6 +21,9 @@ def main():
     
     # Set Material style for modern UI
     QQuickStyle.setStyle("Material")
+    
+    # Register QML types
+    qmlRegisterType(ConnectionController, "DBToolkit", 1, 0, "ConnectionController")
     
     # Create QML engine
     engine = QQmlApplicationEngine()
