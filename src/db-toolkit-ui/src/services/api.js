@@ -28,6 +28,7 @@ export const schemaAPI = {
 
 export const queryAPI = {
   execute: (connectionId, data) => api.post(`/connections/${connectionId}/query`, data),
+  explain: (connectionId, data) => api.post(`/connections/${connectionId}/query/explain`, data),
   getHistory: (connectionId) => api.get(`/connections/${connectionId}/query/history`),
   clearHistory: (connectionId) => api.delete(`/connections/${connectionId}/query/history`),
 };

@@ -2,4 +2,5 @@ export { useConnections } from './useConnections';
 export { useSchema } from './useSchema';
 export { useQuery } from './useQuery';
 export { useData } from './useData';
+export { useExplain } from './useExplain';
 export { useSession } from './useSession';

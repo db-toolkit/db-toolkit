@@ -3,10 +3,12 @@ import { useParams } from 'react-router-dom';
 import { Download } from 'lucide-react';
 import Split from 'react-split';
 import { useQuery, useSchema } from '../hooks';
+import { useExplain } from '../hooks/useExplain';
 import { Button } from '../components/common/Button';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 import { QueryEditor } from '../components/query/QueryEditor';
 import { QueryResultsPanel } from '../components/query/QueryResultsPanel';
+import { ExplainPlanModal } from '../components/query/ExplainPlanModal';
 import { CsvExportModal } from '../components/csv';
 
 function QueryPage() {
@@ -25,6 +27,18 @@ function QueryPage() {
   }, [connectionId, fetchSchemaTree]);
 
   const [queryError, setQueryError] = useState(null);
+  const [showExplainModal, setShowExplainModal] = useState(false);
+  const { explainResult, loading: explainLoading, explainQuery } = useExplain(connectionId);
+
+  const handleExplain = async () => {
+    if (!query.trim()) return;
+    setShowExplainModal(true);
+    try {
+      await explainQuery(query);
+    } catch (err) {
+      console.error('Explain failed:', err);
+    }
+  };
 
   const handleExecute = async () => {
     if (!query.trim()) return;
@@ -79,6 +93,7 @@ function QueryPage() {
               query={query}
               onChange={setQuery}
               onExecute={handleExecute}
+              onExplain={handleExplain}
               loading={loading}
               schema={schema}
               error={queryError}
@@ -102,6 +117,13 @@ function QueryPage() {
         onClose={() => setShowExport(false)}
         connectionId={connectionId}
         query={query}
+      />
+
+      <ExplainPlanModal
+        isOpen={showExplainModal}
+        onClose={() => setShowExplainModal(false)}
+        explainResult={explainResult}
+        loading={explainLoading}
       />
     </div>
   );
