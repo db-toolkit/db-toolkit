@@ -4,6 +4,7 @@ import Editor from '@monaco-editor/react';
 import { format } from 'sql-formatter';
 import { Button } from '../common/Button';
 import { useTheme } from '../../contexts/ThemeContext';
+import { registerSqlSnippets } from './sqlSnippets';
 import './QueryEditor.css';
 
 export function QueryEditor({ query, onChange, onExecute, loading, schema, error }) {
@@ -156,6 +157,9 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
   }, [error, query]);
 
   const handleEditorWillMount = (monaco) => {
+    // Register SQL snippets
+    registerSqlSnippets(monaco);
+
     // Define custom themes (Monaco has built-in SQL syntax highlighting)
     monaco.editor.defineTheme('sql-light', {
       base: 'vs',
