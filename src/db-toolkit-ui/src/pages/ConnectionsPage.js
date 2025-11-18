@@ -1,10 +1,12 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, Database } from 'lucide-react';
 import { useConnections } from '../hooks';
 import { Button } from '../components/common/Button';
-import { Spinner } from '../components/common/Spinner';
+import { LoadingState } from '../components/common/LoadingState';
+import { EmptyState } from '../components/common/EmptyState';
+import { ErrorMessage } from '../components/common/ErrorMessage';
 import { ConnectionCard } from '../components/connections/ConnectionCard';
 import { ConnectionModal } from '../components/connections/ConnectionModal';
 
@@ -41,13 +43,13 @@ function ConnectionsPage() {
     }
   };
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-screen">
-      <Spinner size={32} />
+  if (loading) return <LoadingState fullScreen message="Loading connections..." />;
+  
+  if (error) return (
+    <div className="p-8">
+      <ErrorMessage message={error} />
     </div>
   );
-  
-  if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
 
   return (
     <div className="p-8">
@@ -59,9 +61,16 @@ function ConnectionsPage() {
       </div>
       
       {connections.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
-          <p>No connections yet. Create your first connection.</p>
-        </div>
+        <EmptyState
+          icon={Database}
+          title="No connections yet"
+          description="Create your first database connection to get started"
+          action={
+            <Button icon={<Plus size={20} />} onClick={() => setShowModal(true)}>
+              Create Connection
+            </Button>
+          }
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {connections.map((conn) => (

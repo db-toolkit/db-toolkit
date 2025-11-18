@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { RefreshCw, Code } from 'lucide-react';
+import { RefreshCw, Code, FolderTree } from 'lucide-react';
 import { useSchema } from '../hooks';
 import { Button } from '../components/common/Button';
-import { Spinner } from '../components/common/Spinner';
+import { LoadingState } from '../components/common/LoadingState';
+import { EmptyState } from '../components/common/EmptyState';
+import { ErrorMessage } from '../components/common/ErrorMessage';
 import { SchemaTree } from '../components/schema/SchemaTree';
 
 function SchemaPage() {
@@ -20,13 +22,13 @@ function SchemaPage() {
     setSelectedTable({ schema: schemaName, table: tableName });
   };
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-screen">
-      <Spinner size={32} />
+  if (loading) return <LoadingState fullScreen message="Loading schema..." />;
+  
+  if (error) return (
+    <div className="p-8">
+      <ErrorMessage message={error} />
     </div>
   );
-  
-  if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
 
   return (
     <div className="p-8">
@@ -54,9 +56,11 @@ function SchemaPage() {
           {schema ? (
             <SchemaTree schema={schema} onTableClick={handleTableClick} />
           ) : (
-            <div className="text-center py-12 text-gray-500">
-              <p>No schema data available</p>
-            </div>
+            <EmptyState
+              icon={FolderTree}
+              title="No schema data"
+              description="Unable to load database schema"
+            />
           )}
         </div>
 
