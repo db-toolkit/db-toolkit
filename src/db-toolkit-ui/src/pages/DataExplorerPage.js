@@ -358,7 +358,6 @@ function DataExplorerPage() {
         data={cellModal.data}
         column={cellModal.column}
       />
-      </div>
     </div>
   );
 }
