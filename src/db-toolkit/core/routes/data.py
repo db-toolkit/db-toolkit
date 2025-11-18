@@ -15,7 +15,7 @@ async def update_row(connection_id: str, request: UpdateRowRequest):
     """Update a table row."""
     from operations.operation_lock import operation_lock
 
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
 
@@ -45,7 +45,7 @@ async def insert_row(connection_id: str, request: InsertRowRequest):
     """Insert a new table row."""
     from operations.operation_lock import operation_lock
 
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
 
@@ -74,7 +74,7 @@ async def delete_row(connection_id: str, request: DeleteRowRequest):
     """Delete a table row."""
     from operations.operation_lock import operation_lock
 
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
 

@@ -19,7 +19,7 @@ router = APIRouter(prefix="/csv", tags=["CSV"])
 @router.post("/export", response_model=ExportCSVResponse)
 async def export_csv(request: ExportCSVRequest):
     """Export table or query results to CSV."""
-    connector = connection_manager.get_connection(request.connection_id)
+    connector = await connection_manager.get_connector(request.connection_id)
     if not connector:
         raise HTTPException(status_code=404, detail="Connection not found")
 
@@ -58,7 +58,7 @@ async def validate_csv(request: ValidateCSVRequest):
 @router.post("/import", response_model=ImportCSVResponse)
 async def import_csv(request: ImportCSVRequest):
     """Import CSV data into database table."""
-    connector = connection_manager.get_connection(request.connection_id)
+    connector = await connection_manager.get_connector(request.connection_id)
     if not connector:
         raise HTTPException(status_code=404, detail="Connection not found")
 

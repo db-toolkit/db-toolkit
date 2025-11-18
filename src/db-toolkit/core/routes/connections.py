@@ -12,24 +12,24 @@ storage = ConnectionStorage()
 
 
 @router.get("/connections", response_model=List[DatabaseConnection])
-def get_connections():
+async def get_connections():
     """Get all connections."""
-    return storage.get_all_connections()
+    return await storage.get_all_connections()
 
 
 @router.post("/connections", response_model=DatabaseConnection)
-def create_connection(request: ConnectionRequest):
+async def create_connection(request: ConnectionRequest):
     """Create new connection."""
     try:
-        return storage.add_connection(**request.model_dump())
+        return await storage.add_connection(**request.model_dump())
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.delete("/connections/{connection_id}")
-def delete_connection(connection_id: str):
+async def delete_connection(connection_id: str):
     """Delete connection."""
-    if storage.remove_connection(connection_id):
+    if await storage.remove_connection(connection_id):
         return {"success": True}
     raise HTTPException(status_code=404, detail="Connection not found")
 
@@ -39,7 +39,7 @@ async def test_connection(connection_id: str):
     """Test database connection."""
     from utils.validation import validate_connection
     
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
     
@@ -52,7 +52,7 @@ async def connect_to_database(connection_id: str):
     """Connect to database."""
     from operations.connection_manager import ConnectionManager
     
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
     

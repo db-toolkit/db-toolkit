@@ -17,7 +17,7 @@ class SessionManager:
         self.session_file.parent.mkdir(parents=True, exist_ok=True)
         self.storage = ConnectionStorage()
 
-    def save_session(
+    async def save_session(
         self, active_connection_ids: list[str], last_active: Optional[str] = None
     ) -> bool:
         """Save current session state."""
@@ -35,7 +35,7 @@ class SessionManager:
         except Exception:
             return False
 
-    def load_session(self) -> Dict:
+    async def load_session(self) -> Dict:
         """Load saved session state."""
         try:
             if self.session_file.exists():
@@ -46,7 +46,7 @@ class SessionManager:
 
         return {"active_connection_ids": [], "last_active_connection": None, "settings": {}}
 
-    def clear_session(self) -> bool:
+    async def clear_session(self) -> bool:
         """Clear session state."""
         try:
             if self.session_file.exists():
@@ -55,9 +55,9 @@ class SessionManager:
         except Exception:
             return False
 
-    def get_restorable_connections(self) -> list[DatabaseConnection]:
+    async def get_restorable_connections(self) -> list[DatabaseConnection]:
         """Get connections that can be restored from session."""
-        session = self.load_session()
+        session = await self.load_session()
         connections = []
 
         for conn_id in session.get("active_connection_ids", []):

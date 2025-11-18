@@ -12,7 +12,7 @@ explorer = SchemaExplorer()
 @router.get("/connections/{connection_id}/schema")
 async def get_schema_tree(connection_id: str, use_cache: bool = True):
     """Get complete schema tree for connection."""
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
     
@@ -23,7 +23,7 @@ async def get_schema_tree(connection_id: str, use_cache: bool = True):
 @router.get("/connections/{connection_id}/schema/{schema_name}/tables/{table_name}")
 async def get_table_info(connection_id: str, schema_name: str, table_name: str):
     """Get detailed table information with sample data."""
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
     
@@ -34,7 +34,7 @@ async def get_table_info(connection_id: str, schema_name: str, table_name: str):
 @router.post("/connections/{connection_id}/schema/refresh")
 async def refresh_schema(connection_id: str):
     """Refresh cached schema for connection."""
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
     
@@ -43,7 +43,7 @@ async def refresh_schema(connection_id: str):
 
 
 @router.get("/cache/schemas")
-def get_cached_schemas():
+async def get_cached_schemas():
     """Get list of cached schema keys."""
     keys = explorer.get_cached_schemas()
     return {"cached_schemas": keys}

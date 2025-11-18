@@ -17,7 +17,7 @@ async def execute_query(connection_id: str, request: QueryRequest):
     """Execute query on connection."""
     from operations.operation_lock import operation_lock
 
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
 
@@ -52,7 +52,7 @@ async def execute_query(connection_id: str, request: QueryRequest):
 @router.get("/connections/{connection_id}/query/history")
 async def get_query_history(connection_id: str, limit: int = 50):
     """Get query history for connection."""
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
     
@@ -63,7 +63,7 @@ async def get_query_history(connection_id: str, limit: int = 50):
 @router.delete("/connections/{connection_id}/query/history")
 async def clear_query_history(connection_id: str):
     """Clear query history for connection."""
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
     
@@ -74,7 +74,7 @@ async def clear_query_history(connection_id: str):
 @router.get("/connections/{connection_id}/query/history/search")
 async def search_query_history(connection_id: str, q: str):
     """Search query history."""
-    connection = storage.get_connection(connection_id)
+    connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
     

@@ -5,12 +5,13 @@ from typing import Dict, List, Optional
 from connectors.base import BaseConnector
 from connectors.factory import ConnectorFactory
 from core.models import DatabaseConnection
+from operations.operation_lock import operation_lock
 
 
 class ConnectionManager:
     """Manages active database connections."""
 
-    def __init__(self):
+    async def __init__(self):
         """Initialize connection manager."""
         self._active_connections: Dict[str, BaseConnector] = {}
         self._connection_metadata: Dict[str, DatabaseConnection] = {}
@@ -32,7 +33,6 @@ class ConnectionManager:
 
     async def disconnect(self, connection_id: str) -> bool:
         """Disconnect from database."""
-        from operations.operation_lock import operation_lock
 
         connector = self._active_connections.get(connection_id)
         if connector:
@@ -45,24 +45,24 @@ class ConnectionManager:
             return success
         return False
 
-    def get_connector(self, connection_id: str) -> Optional[BaseConnector]:
+    async def get_connector(self, connection_id: str) -> Optional[BaseConnector]:
         """Get active connector by connection ID."""
         return self._active_connections.get(connection_id)
 
-    def get_connection(self, connection_id: str) -> Optional[DatabaseConnection]:
+    async def get_connection(self, connection_id: str) -> Optional[DatabaseConnection]:
         """Get connection metadata by ID."""
         return self._connection_metadata.get(connection_id)
 
-    def is_connected(self, connection_id: str) -> bool:
+    async def is_connected(self, connection_id: str) -> bool:
         """Check if connection is active."""
         connector = self._active_connections.get(connection_id)
         return connector is not None and connector.is_connected
 
-    def get_all_active_connections(self) -> List[str]:
+    async def get_all_active_connections(self) -> List[str]:
         """Get list of all active connection IDs."""
         return list(self._active_connections.keys())
 
-    def get_connection_count(self) -> int:
+    async def get_connection_count(self) -> int:
         """Get count of active connections."""
         return len(self._active_connections)
 
@@ -71,9 +71,8 @@ class ConnectionManager:
         for connection_id in list(self._active_connections.keys()):
             await self.disconnect(connection_id)
 
-    def get_connection_status(self, connection_id: str) -> Dict:
+    async def get_connection_status(self, connection_id: str) -> Dict:
         """Get detailed connection status."""
-        from operations.operation_lock import operation_lock
 
         connector = self._active_connections.get(connection_id)
         metadata = self._connection_metadata.get(connection_id)
@@ -87,6 +86,5 @@ class ConnectionManager:
             "db_type": metadata.db_type.value,
             "name": metadata.name,
         }
-
 
 connection_manager = ConnectionManager()

@@ -14,16 +14,16 @@ router = APIRouter(prefix="/session", tags=["Session"])
 @router.get("/state", response_model=SessionState)
 async def get_session_state():
     """Get current session state with all active connections."""
-    active_ids = connection_manager.get_all_active_connections()
+    active_ids = await connection_manager.get_all_active_connections()
     connections = []
 
     for conn_id in active_ids:
-        conn = connection_manager.get_connection(conn_id)
+        conn = await connection_manager.get_connection(conn_id)
         if conn:
             connections.append(
                 ConnectionState(
                     connection_id=conn.id,
-                    is_connected=connection_manager.is_connected(conn.id),
+                    is_connected=await connection_manager.is_connected(conn.id),
                     db_type=conn.db_type.value,
                     name=conn.name,
                     host=conn.host,
@@ -39,15 +39,15 @@ async def get_session_state():
 @router.get("/connection/{connection_id}/status")
 async def get_connection_status(connection_id: str):
     """Get detailed status of a specific connection."""
-    status = connection_manager.get_connection_status(connection_id)
+    status = await connection_manager.get_connection_status(connection_id)
     return status
 
 
 @router.post("/save")
 async def save_session(last_active: Optional[str] = None):
     """Save current session state."""
-    active_ids = connection_manager.get_all_active_connections()
-    success = session_manager.save_session(active_ids, last_active)
+    active_ids = await connection_manager.get_all_active_connections()
+    success = await session_manager.save_session(active_ids, last_active)
 
     return {"success": success, "saved_connections": len(active_ids)}
 
@@ -55,7 +55,7 @@ async def save_session(last_active: Optional[str] = None):
 @router.post("/restore")
 async def restore_session():
     """Restore previous session state."""
-    connections = session_manager.get_restorable_connections()
+    connections = await session_manager.get_restorable_connections()
     restored = 0
 
     for conn in connections:
@@ -69,14 +69,14 @@ async def restore_session():
 @router.delete("/clear")
 async def clear_session():
     """Clear saved session state."""
-    success = session_manager.clear_session()
+    success = await session_manager.clear_session()
     return {"success": success}
 
 
 @router.get("/settings", response_model=SessionSettings)
 async def get_session_settings():
     """Get saved session settings."""
-    session_data = session_manager.load_session()
+    session_data = await session_manager.load_session()
 
     return SessionSettings(
         active_connection_ids=session_data.get("active_connection_ids", []),
