@@ -32,6 +32,8 @@ class ConnectionManager:
 
     async def disconnect(self, connection_id: str) -> bool:
         """Disconnect from database."""
+        from operations.operation_lock import operation_lock
+
         connector = self._active_connections.get(connection_id)
         if connector:
             success = await connector.disconnect()
@@ -39,6 +41,7 @@ class ConnectionManager:
                 del self._active_connections[connection_id]
                 if connection_id in self._connection_metadata:
                     del self._connection_metadata[connection_id]
+                operation_lock.cleanup(connection_id)
             return success
         return False
 
@@ -67,6 +70,23 @@ class ConnectionManager:
         """Disconnect all active connections."""
         for connection_id in list(self._active_connections.keys()):
             await self.disconnect(connection_id)
+
+    def get_connection_status(self, connection_id: str) -> Dict:
+        """Get detailed connection status."""
+        from operations.operation_lock import operation_lock
+
+        connector = self._active_connections.get(connection_id)
+        metadata = self._connection_metadata.get(connection_id)
+
+        if not connector or not metadata:
+            return {"connected": False, "locked": False}
+
+        return {
+            "connected": connector.is_connected,
+            "locked": operation_lock.is_locked(connection_id),
+            "db_type": metadata.db_type.value,
+            "name": metadata.name,
+        }
 
 
 connection_manager = ConnectionManager()

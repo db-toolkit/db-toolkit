@@ -36,6 +36,13 @@ async def get_session_state():
     )
 
 
+@router.get("/connection/{connection_id}/status")
+async def get_connection_status(connection_id: str):
+    """Get detailed status of a specific connection."""
+    status = connection_manager.get_connection_status(connection_id)
+    return status
+
+
 @router.post("/save")
 async def save_session(last_active: Optional[str] = None):
     """Save current session state."""

@@ -15,29 +15,38 @@ history = QueryHistory()
 @router.post("/connections/{connection_id}/query", response_model=QueryResponse)
 async def execute_query(connection_id: str, request: QueryRequest):
     """Execute query on connection."""
+    from operations.operation_lock import operation_lock
+
     connection = storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
+
+    if operation_lock.is_locked(connection_id):
+        raise HTTPException(
+            status_code=409, detail="Connection is busy with another operation"
+        )
+
+    lock = operation_lock.get_lock(connection_id)
+    async with lock:
+        result = await executor.execute_query(
+            connection=connection,
+            query=request.query,
+            limit=request.limit,
+            offset=request.offset,
+            timeout=request.timeout,
+        )
     
-    result = await executor.execute_query(
-        connection=connection,
-        query=request.query,
-        limit=request.limit,
-        offset=request.offset,
-        timeout=request.timeout
-    )
-    
-    # Save to history
-    history.add_query(
-        connection_id=connection_id,
-        query=request.query,
-        success=result["success"],
-        execution_time=result["execution_time"],
-        row_count=result["total_rows"],
-        error=result.get("error")
-    )
-    
-    return QueryResponse(**result)
+        # Save to history
+        history.add_query(
+            connection_id=connection_id,
+            query=request.query,
+            success=result["success"],
+            execution_time=result["execution_time"],
+            row_count=result["total_rows"],
+            error=result.get("error"),
+        )
+
+        return QueryResponse(**result)
 
 
 @router.get("/connections/{connection_id}/query/history")
