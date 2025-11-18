@@ -16,6 +16,8 @@ function ConnectionsPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const [showModal, setShowModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [modalError, setModalError] = useState('');
   const [activeConnections, setActiveConnections] = useState(new Set());
   const { connections, loading, error, createConnection, deleteConnection, connectToDatabase } = useConnections();
   const { sessionState, restoreSession } = useSession();
@@ -30,15 +32,17 @@ function ConnectionsPage() {
     try {
       const response = await connectToDatabase(id);
       if (response.success === false) {
-        toast.error('Database connection failed. Please ensure you entered the correct details.');
+        setShowErrorModal(true);
+        setModalError('Failed to connect. Please check your credentials and database server.');
         return;
       }
       setActiveConnections(prev => new Set([...prev, id]));
       toast.success('Connected successfully');
       navigate(`/schema/${id}`);
     } catch (err) {
-      const errorMsg = err.response?.data?.detail || err.message || 'Database connection failed. Please ensure you entered the correct details.';
-      toast.error(errorMsg);
+      const errorMsg = err.response?.data?.detail || 'Failed to connect. Please check your credentials and database server.';
+      setShowErrorModal(true);
+      setModalError(errorMsg);
     }
   };
 
@@ -110,6 +114,18 @@ function ConnectionsPage() {
         onClose={() => setShowModal(false)}
         onSave={handleCreate}
       />
+
+      {showErrorModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-4">Connection Failed</h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">{modalError}</p>
+            <Button onClick={() => setShowErrorModal(false)} className="w-full">
+              Back
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
