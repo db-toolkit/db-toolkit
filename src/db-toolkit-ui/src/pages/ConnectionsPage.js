@@ -20,7 +20,7 @@ function ConnectionsPage() {
   const [modalError, setModalError] = useState('');
   const [editingConnection, setEditingConnection] = useState(null);
   const [activeConnections, setActiveConnections] = useState(new Set());
-  const { connections, loading, error, createConnection, deleteConnection, connectToDatabase } = useConnections();
+  const { connections, loading, error, createConnection, updateConnection, deleteConnection, connectToDatabase } = useConnections();
   const { sessionState, restoreSession } = useSession();
 
   useEffect(() => {
@@ -60,7 +60,8 @@ function ConnectionsPage() {
   const handleSave = async (data) => {
     try {
       if (data.id) {
-        await updateConnection(data.id, data);
+        const { id, ...updateData } = data;
+        await updateConnection(id, updateData);
         toast.success('Connection updated');
       } else {
         await createConnection(data);

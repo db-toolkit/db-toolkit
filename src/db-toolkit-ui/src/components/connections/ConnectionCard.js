@@ -43,10 +43,10 @@ export function ConnectionCard({ connection, onConnect, onDelete, onEdit, isActi
         <Button
           variant="danger"
           size="sm"
-          icon={<Trash2 size={16} />}
           onClick={() => onDelete(connection.id)}
+          className="!px-2"
         >
-          Delete
+          <Trash2 size={16} />
         </Button>
       </div>
     </div>
