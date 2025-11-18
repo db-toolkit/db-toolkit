@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { History, Download } from 'lucide-react';
 import { useQuery } from '../hooks';
+import { useSchema } from '../hooks';
 import { Button } from '../components/common/Button';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 import { QueryEditor } from '../components/query/QueryEditor';
@@ -15,6 +16,7 @@ function QueryPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const { result, loading, error, executeQuery } = useQuery(connectionId);
+  const { schema } = useSchema(connectionId);
 
   const handleExecute = async () => {
     if (!query.trim()) return;
@@ -57,6 +59,7 @@ function QueryPage() {
             onChange={setQuery}
             onExecute={handleExecute}
             loading={loading}
+            schema={schema}
           />
 
           {error && <ErrorMessage message={error} />}

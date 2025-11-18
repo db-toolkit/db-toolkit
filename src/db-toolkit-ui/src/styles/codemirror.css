@@ -1,0 +1,92 @@
+.cm-editor {
+  height: 100%;
+}
+
+.cm-scroller {
+  font-family: 'Courier New', monospace;
+}
+
+.cm-content {
+  padding: 8px;
+}
+
+.cm-line {
+  padding: 0 4px;
+}
+
+/* Dark mode support */
+.dark .cm-editor {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+.dark .cm-gutters {
+  background-color: #111827;
+  color: #9ca3af;
+  border-right: 1px solid #374151;
+}
+
+.dark .cm-activeLineGutter {
+  background-color: #374151;
+}
+
+.dark .cm-activeLine {
+  background-color: #374151;
+}
+
+/* SQL syntax highlighting */
+.cm-keyword {
+  color: #c678dd;
+  font-weight: bold;
+}
+
+.cm-string {
+  color: #98c379;
+}
+
+.cm-number {
+  color: #d19a66;
+}
+
+.cm-comment {
+  color: #5c6370;
+  font-style: italic;
+}
+
+.cm-operator {
+  color: #56b6c2;
+}
+
+.cm-variableName {
+  color: #e06c75;
+}
+
+/* Autocomplete */
+.cm-tooltip-autocomplete {
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dark .cm-tooltip-autocomplete {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.cm-completionLabel {
+  color: #111827;
+}
+
+.dark .cm-completionLabel {
+  color: #f9fafb;
+}
+
+.cm-completionMatchedText {
+  color: #2563eb;
+  font-weight: bold;
+}
+
+.dark .cm-completionMatchedText {
+  color: #60a5fa;
+}
