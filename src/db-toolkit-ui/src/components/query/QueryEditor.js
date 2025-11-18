@@ -129,74 +129,7 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema }) {
   }, [schema]);
 
   const handleEditorWillMount = (monaco) => {
-    monaco.languages.register({ id: 'sql' });
-    
-    monaco.languages.setMonarchTokensProvider('sql', {
-      keywords: [
-        'SELECT', 'FROM', 'WHERE', 'INSERT', 'INTO', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP',
-        'TABLE', 'INDEX', 'VIEW', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'OUTER', 'ON', 'AND', 'OR',
-        'NOT', 'NULL', 'IS', 'IN', 'LIKE', 'BETWEEN', 'ORDER', 'BY', 'GROUP', 'HAVING', 'LIMIT',
-        'OFFSET', 'AS', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'UNION', 'ALL', 'EXISTS',
-        'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES', 'DEFAULT',
-        'CHECK', 'UNIQUE', 'CASCADE', 'SET', 'VALUES', 'RETURNING'
-      ],
-      operators: ['=', '>', '<', '!', '~', '?', ':', '==', '<=', '>=', '!=', '&&', '||', '++', '--', '+', '-', '*', '/', '&', '|', '^', '%', '<<', '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=', '^=', '%=', '<<=', '>>=', '>>>='],
-      symbols: /[=><!~?:&|+\-*\/\^%]+/,
-      tokenizer: {
-        root: [
-          [/[a-z_$][\w$]*/, {
-            cases: {
-              '@keywords': 'keyword',
-              '@default': 'identifier'
-            }
-          }],
-          [/[A-Z][\w$]*/, {
-            cases: {
-              '@keywords': 'keyword',
-              '@default': 'type.identifier'
-            }
-          }],
-          { include: '@whitespace' },
-          [/[{}()\[\]]/, '@brackets'],
-          [/[<>](?!@symbols)/, '@brackets'],
-          [/@symbols/, {
-            cases: {
-              '@operators': 'operator',
-              '@default': ''
-            }
-          }],
-          [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
-          [/0[xX][0-9a-fA-F]+/, 'number.hex'],
-          [/\d+/, 'number'],
-          [/[;,.]/, 'delimiter'],
-          [/'([^'\\]|\\.)*$/, 'string.invalid'],
-          [/'/, 'string', '@string'],
-          [/"([^"\\]|\\.)*$/, 'string.invalid'],
-          [/"/, 'string', '@stringDouble'],
-        ],
-        string: [
-          [/[^\\']+/, 'string'],
-          [/\\./, 'string.escape.invalid'],
-          [/'/, 'string', '@pop']
-        ],
-        stringDouble: [
-          [/[^\\"]+/, 'string'],
-          [/\\./, 'string.escape.invalid'],
-          [/"/, 'string', '@pop']
-        ],
-        whitespace: [
-          [/[ \t\r\n]+/, 'white'],
-          [/--.*$/, 'comment'],
-          [/\/\*/, 'comment', '@comment'],
-        ],
-        comment: [
-          [/[^\/*]+/, 'comment'],
-          [/\*\//, 'comment', '@pop'],
-          [/[\/*]/, 'comment']
-        ],
-      },
-    });
-
+    // Define custom themes (Monaco has built-in SQL syntax highlighting)
     monaco.editor.defineTheme('sql-light', {
       base: 'vs',
       inherit: true,
