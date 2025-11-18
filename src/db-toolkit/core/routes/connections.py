@@ -50,28 +50,26 @@ async def test_connection(connection_id: str):
 @router.post("/connections/{connection_id}/connect")
 async def connect_to_database(connection_id: str):
     """Connect to database."""
-    from operations.connection_manager import ConnectionManager
+    from operations.connection_manager import connection_manager
     
     connection = await storage.get_connection(connection_id)
     if not connection:
         raise HTTPException(status_code=404, detail="Connection not found")
     
-    manager = ConnectionManager()
-    success = await manager.connect(connection)
+    success = await connection_manager.connect(connection)
     
     if success:
         return {"success": True, "message": "Connected successfully"}
     else:
-        return {"success": False, "message": "Connection failed"}
+        raise HTTPException(status_code=400, detail="Failed to connect. Please check your credentials and database server.")
 
 
 @router.post("/connections/{connection_id}/disconnect")
 async def disconnect_from_database(connection_id: str):
     """Disconnect from database."""
-    from operations.connection_manager import ConnectionManager
+    from operations.connection_manager import connection_manager
     
-    manager = ConnectionManager()
-    success = await manager.disconnect(connection_id)
+    success = await connection_manager.disconnect(connection_id)
     
     return {"success": success, "message": "Disconnected" if success else "Not connected"}
 
