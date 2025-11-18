@@ -1,68 +1,66 @@
 # DB Toolkit
 
-A modern desktop database management application built with **Electron + React** frontend and **Python FastAPI** backend, providing a seamless, cross-platform experience for database exploration, query execution, and data management.
+A modern, cross-platform desktop database management application built with **Electron + React** frontend and **Python FastAPI** backend.
 
-## Architecture
-
-```
-Electron (React Frontend) ←→ FastAPI (Python Backend) ←→ Database Connectors
-```
+![DB Toolkit](https://img.shields.io/badge/version-1.0.0-blue) ![Python](https://img.shields.io/badge/python-3.11+-green) ![Node](https://img.shields.io/badge/node-18+-green)
 
 ## Features
 
-- **Multi-Database Support**: PostgreSQL, MySQL, SQLite, and MongoDB
-- **Modern Web UI**: Responsive React interface with dynamic theming
-- **Database Explorer**: Browse schemas, tables, views, columns, and collections
-- **Query Editor**: SQL editor with syntax highlighting and auto-completion
-- **Data Management**: Inline row editing and CSV import/export
-- **Connection Manager**: Manage multiple local and remote database connections
-- **Real-time Updates**: WebSocket connections for live data updates
+- **Multi-Database Support** - PostgreSQL, MySQL, SQLite, MongoDB
+- **Schema Explorer** - Visual browser for databases, schemas, tables, and columns
+- **SQL Editor** - Syntax highlighting, auto-complete, and query history with CodeMirror
+- **Data Management** - Inline editing, insert/delete rows, CSV import/export
+- **Dark Mode** - Automatic OS theme detection with manual toggle
+- **Session Persistence** - Auto-restore previous connections on startup
 
 ## Tech Stack
 
-### Backend (Python)
-- **FastAPI** - High-performance async web framework
-- **SQLAlchemy** - Database ORM and connection management
-- **Pydantic** - Data validation and serialization
-- **AsyncPG/AIOMySQL** - Async database drivers
+**Backend:** FastAPI, SQLAlchemy, AsyncPG, AIOMySQL, Motor, UV
+**Frontend:** Electron, React 18, Tailwind CSS, CodeMirror 6, Vite
 
-### Frontend (Electron + React)
-- **Electron** - Cross-platform desktop framework
-- **React** - Modern UI library with hooks
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS** - Utility-first CSS framework
+## Project Structure
 
-## Requirements
-
-- Python 3.11+
-- Node.js 18+
-
-## Installation
-
-```bash
-# Install Python dependencies
-uv install
-
-# Install frontend dependencies
-cd frontend && npm install
+```
+db-toolkit/
+├── src/
+│   ├── db_toolkit/              # Python backend
+│   │   ├── connectors/          # Database connectors
+│   │   ├── core/                # Models, routes, schemas
+│   │   ├── operations/          # Business logic
+│   │   └── main.py              # FastAPI entry point
+│   └── db-toolkit-ui/           # Electron + React frontend
+│       ├── electron/main.js     # Electron main process
+│       └── src/                 # React components, hooks, pages
+├── pyproject.toml
+└── README.md
 ```
 
-## Development
+## Usage
 
-```bash
-# Start Python backend
-uv run python -m backend.main
+1. **Create Connection** - Click "New Connection", enter details, save
+2. **Connect** - Click "Connect" on connection card (green dot = active)
+3. **Browse Schema** - Expand schemas/tables, view columns and indexes
+4. **Execute Queries** - Use SQL editor with Ctrl+Enter, export results to CSV
+5. **Edit Data** - Double-click cells to edit, insert/delete rows
 
-# Start Electron frontend (in another terminal)
-cd frontend && npm run dev
-```
+## Keyboard Shortcuts
 
-## Production Build
+- `Ctrl/Cmd + Enter` - Execute query
+- `Ctrl/Cmd + K` - Toggle dark mode
+- `Escape` - Close modals
 
-```bash
-# Build frontend
-cd frontend && npm run build
+## Troubleshooting
 
-# Package Electron app
-npm run package
-```
+**Backend won't start:** Check Python 3.11+, port 8000 availability, UV dependencies
+**Frontend won't connect:** Ensure backend running on port 8000
+**Database connection fails:** Verify credentials, network, database server status
+
+## License
+
+MIT License
+
+
+
+---
+
+**Built with ❤️ using Python, React, and Electron**
