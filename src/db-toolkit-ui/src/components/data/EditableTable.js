@@ -4,7 +4,7 @@ import { Button } from '../common/Button';
 import { useData } from '../../hooks';
 import { useToast } from '../../contexts/ToastContext';
 
-export function EditableTable({ connectionId, result, onRefresh }) {
+export function EditableTable({ connectionId, result, onRefresh, tableName = 'table_name', schemaName = 'public' }) {
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState('');
   const { updateRow, deleteRow } = useData(connectionId);
@@ -29,12 +29,12 @@ export function EditableTable({ connectionId, result, onRefresh }) {
     const changes = { [column]: editValue || null };
 
     try {
-      await updateRow('table_name', 'public', primaryKey, changes);
+      await updateRow(tableName, schemaName, primaryKey, changes);
       toast.success('Row updated successfully');
       cancelEdit();
       onRefresh?.();
     } catch (err) {
-      toast.error('Failed to update row');
+      toast.error(err.response?.data?.detail || 'Failed to update row');
     }
   };
 
@@ -45,15 +45,17 @@ export function EditableTable({ connectionId, result, onRefresh }) {
     const primaryKey = { [result.columns[0]]: row[0] };
 
     try {
-      await deleteRow('table_name', 'public', primaryKey);
+      await deleteRow(tableName, schemaName, primaryKey);
       toast.success('Row deleted successfully');
       onRefresh?.();
     } catch (err) {
-      toast.error('Failed to delete row');
+      toast.error(err.response?.data?.detail || 'Failed to delete row');
     }
   };
 
   if (!result || !result.rows) return null;
+
+  const canEdit = tableName && tableName !== 'table_name' && schemaName;
 
   return (
     <div className="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
