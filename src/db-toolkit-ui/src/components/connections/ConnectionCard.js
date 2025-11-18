@@ -28,7 +28,7 @@ export function ConnectionCard({ connection, onConnect, onDelete, isActive }) {
           size="sm"
           icon={<Play size={16} />}
           onClick={() => onConnect(connection.id)}
-          className="flex-1"
+          className="flex-1 !text-white"
         >
           Connect
         </Button>
