@@ -168,8 +168,17 @@ class DataEditor:
         changes: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Update MongoDB document."""
-        # MongoDB update logic would go here
-        return {"success": False, "error": "MongoDB update not yet implemented"}
+        try:
+            db = connector.connection.get_default_database()
+            coll = db[collection]
+            result = await coll.update_one(filter_doc, {"$set": changes})
+            
+            if result.modified_count > 0:
+                return {"success": True, "message": "Document updated successfully"}
+            else:
+                return {"success": False, "error": "No document matched the filter"}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
     
     async def _insert_mongodb(
         self,
@@ -178,8 +187,14 @@ class DataEditor:
         data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Insert MongoDB document."""
-        # MongoDB insert logic would go here
-        return {"success": False, "error": "MongoDB insert not yet implemented"}
+        try:
+            db = connector.connection.get_default_database()
+            coll = db[collection]
+            result = await coll.insert_one(data)
+            
+            return {"success": True, "message": "Document inserted successfully", "id": str(result.inserted_id)}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
     
     async def _delete_mongodb(
         self,
@@ -188,5 +203,14 @@ class DataEditor:
         filter_doc: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Delete MongoDB document."""
-        # MongoDB delete logic would go here
-        return {"success": False, "error": "MongoDB delete not yet implemented"}
+        try:
+            db = connector.connection.get_default_database()
+            coll = db[collection]
+            result = await coll.delete_one(filter_doc)
+            
+            if result.deleted_count > 0:
+                return {"success": True, "message": "Document deleted successfully"}
+            else:
+                return {"success": False, "error": "No document matched the filter"}
+        except Exception as e:
+            return {"success": False, "error": str(e)}

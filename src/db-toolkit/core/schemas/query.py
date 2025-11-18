@@ -1,20 +1,7 @@
-"""API request/response schemas."""
+"""Query schemas."""
 
 from typing import Optional
 from pydantic import BaseModel, Field
-from core.models import DatabaseType
-
-
-class ConnectionRequest(BaseModel):
-    """Connection creation request."""
-    name: str
-    db_type: DatabaseType
-    host: str = None
-    port: int = None
-    username: str = None
-    password: str = None
-    database: str = None
-    file_path: str = None
 
 
 class QueryRequest(BaseModel):

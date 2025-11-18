@@ -1,36 +1,13 @@
 """Data editing routes."""
 
-from typing import Dict, Any
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 from core.storage import ConnectionStorage
+from core.schemas import UpdateRowRequest, InsertRowRequest, DeleteRowRequest
 from operations.data_editor import DataEditor
 
 router = APIRouter()
 storage = ConnectionStorage()
 editor = DataEditor()
-
-
-class UpdateRowRequest(BaseModel):
-    """Update row request."""
-    table: str
-    schema: str = "public"
-    primary_key: Dict[str, Any]
-    changes: Dict[str, Any]
-
-
-class InsertRowRequest(BaseModel):
-    """Insert row request."""
-    table: str
-    schema: str = "public"
-    data: Dict[str, Any]
-
-
-class DeleteRowRequest(BaseModel):
-    """Delete row request."""
-    table: str
-    schema: str = "public"
-    primary_key: Dict[str, Any]
 
 
 @router.put("/connections/{connection_id}/data/row")
