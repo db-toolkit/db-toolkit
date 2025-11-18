@@ -21,8 +21,8 @@ app.add_middleware(
 )
 
 # Include API routes
-app.include_router(connections_router, prefix="/api/v1", tags=["connections"])
-app.include_router(health_router, prefix="/api/v1", tags=["health"])
+app.include_router(connections_router, prefix="/api/v1", tags=["Connections"])
+app.include_router(health_router, prefix="/api/v1", tags=["Health"])
 
 
 if __name__ == "__main__":
