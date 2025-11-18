@@ -77,117 +77,46 @@ Rectangle {
             }
         }
         
-        // Schema tree view
+        // Schema list view (simplified for now)
         ScrollView {
             Layout.fillWidth: true
             Layout.fillHeight: true
             
-            TreeView {
-                id: treeView
+            ListView {
+                id: schemaListView
                 anchors.fill: parent
-                model: schemaController.schemaModel
+                model: ListModel {
+                    id: schemaListModel
+                }
                 
                 delegate: Rectangle {
-                    id: treeDelegate
+                    width: schemaListView.width
+                    height: 40
+                    color: mouseArea.containsMouse ? Material.color(Material.Grey, Material.Shade100) : "transparent"
                     
-                    required property TreeView treeView
-                    required property bool isTreeNode
-                    required property bool expanded
-                    required property int hasChildren
-                    required property int depth
-                    
-                    implicitWidth: treeView.width > 0 ? treeView.width : 250
-                    implicitHeight: 35
-                    
-                    color: "transparent"
-                    
-                    Rectangle {
+                    RowLayout {
                         anchors.fill: parent
-                        anchors.margins: 1
-                        color: mouseArea.containsMouse ? Material.color(Material.Grey, Material.Shade200) : "transparent"
-                        radius: 4
+                        anchors.margins: 10
+                        spacing: 10
                         
-                        RowLayout {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 10 + (treeDelegate.depth * 20)
-                            anchors.rightMargin: 10
-                            spacing: 8
-                            
-                            // Expand/collapse indicator
-                            Text {
-                                text: treeDelegate.hasChildren > 0 ? (treeDelegate.expanded ? "▼" : "▶") : "  "
-                                font.pixelSize: 12
-                                color: Material.color(Material.Grey)
-                                Layout.preferredWidth: 15
-                            }
-                            
-                            // Icon based on type
-                            Text {
-                                text: getIcon()
-                                font.pixelSize: 14
-                                color: getIconColor()
-                                
-                                function getIcon() {
-                                    if (model && model.type) {
-                                        switch(model.type) {
-                                            case "schema": return "🗂️"
-                                            case "table": return "📋"
-                                            case "column": return "📄"
-                                            default: return "📁"
-                                        }
-                                    }
-                                    return "📁"
-                                }
-                                
-                                function getIconColor() {
-                                    if (model && model.type) {
-                                        switch(model.type) {
-                                            case "schema": return Material.color(Material.Blue)
-                                            case "table": return Material.color(Material.Green)
-                                            case "column": return Material.color(Material.Orange)
-                                            default: return Material.color(Material.Grey)
-                                        }
-                                    }
-                                    return Material.color(Material.Grey)
-                                }
-                            }
-                            
-                            // Name
-                            Text {
-                                text: model ? (model.name || "") : ""
-                                font.pixelSize: 13
-                                Layout.fillWidth: true
-                                elide: Text.ElideRight
-                            }
-                            
-                            // Data type for columns
-                            Text {
-                                text: model && model.data_type ? model.data_type : ""
-                                font.pixelSize: 11
-                                color: Material.color(Material.Grey)
-                                visible: model && model.type === "column"
-                            }
+                        Text {
+                            text: "📊"
+                            font.pixelSize: 16
                         }
                         
-                        MouseArea {
-                            id: mouseArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            
-                            onClicked: {
-                                if (treeDelegate.hasChildren > 0) {
-                                    treeView.toggleExpanded(row)
-                                }
-                            }
-                            
-                            onDoubleClicked: {
-                                if (model && model.type === "table") {
-                                    console.log("Double-clicked table:", model.name)
-                                    // TODO: Load table data
-                                }
-                            }
+                        Text {
+                            text: model.name || "Schema Item"
+                            font.pixelSize: 14
+                            Layout.fillWidth: true
+                        }
+                    }
+                    
+                    MouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            console.log("Clicked:", model.name)
                         }
                     }
                 }
@@ -224,6 +153,9 @@ Rectangle {
     onConnectionIdChanged: {
         if (connectionId !== "") {
             schemaController.load_schema(connectionId)
+            // For now, add some dummy data
+            schemaListModel.clear()
+            schemaListModel.append({"name": "Loading schema..."})
         }
     }
 }

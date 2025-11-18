@@ -2,13 +2,31 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
+import Qt5Compat.GraphicalEffects
 
 Dialog {
     id: dialog
-    title: "Add Database Connection"
+    title: "🔗 Add Database Connection"
     modal: true
-    width: 500
-    height: 600
+    width: 520
+    height: 650
+    
+    Material.theme: Material.Light
+    Material.primary: Material.Indigo
+    
+    background: Rectangle {
+        color: "white"
+        radius: 16
+        
+        layer.enabled: true
+        layer.effect: DropShadow {
+            horizontalOffset: 0
+            verticalOffset: 8
+            radius: 24
+            samples: 32
+            color: "#40000000"
+        }
+    }
     
     property alias connectionName: nameField.text
     property alias databaseType: typeCombo.currentText
@@ -27,17 +45,50 @@ Dialog {
         anchors.margins: 20
         spacing: 15
         
-        TextField {
-            id: nameField
-            placeholderText: "Connection Name"
+        // Connection name with icon
+        RowLayout {
             Layout.fillWidth: true
+            spacing: 10
+            
+            Text {
+                text: "🏷️"
+                font.pixelSize: 16
+            }
+            
+            TextField {
+                id: nameField
+                placeholderText: "Connection Name (e.g., Production DB)"
+                Layout.fillWidth: true
+                Material.accent: Material.Indigo
+                selectByMouse: true
+            }
         }
         
-        ComboBox {
-            id: typeCombo
+        // Database type with icon
+        RowLayout {
             Layout.fillWidth: true
-            model: ["postgresql", "mysql", "sqlite", "mongodb"]
-            currentIndex: 0
+            spacing: 10
+            
+            Text {
+                text: "📊"
+                font.pixelSize: 16
+            }
+            
+            ComboBox {
+                id: typeCombo
+                Layout.fillWidth: true
+                model: [
+                    "🐘 PostgreSQL",
+                    "🐬 MySQL", 
+                    "🗄 SQLite",
+                    "🍃 MongoDB"
+                ]
+                currentIndex: 0
+                Material.accent: Material.Indigo
+                
+                property var dbTypes: ["postgresql", "mysql", "sqlite", "mongodb"]
+                property string selectedType: dbTypes[currentIndex]
+            }
         }
         
         TextField {
@@ -57,7 +108,7 @@ Dialog {
             validator: IntValidator { bottom: 1; top: 65535 }
             
             function getDefaultPort() {
-                switch(typeCombo.currentText) {
+                switch(typeCombo.selectedType) {
                     case "postgresql": return "5432"
                     case "mysql": return "3306"
                     case "mongodb": return "27017"
@@ -105,7 +156,7 @@ Dialog {
     onAccepted: {
         connectionAdded(
             nameField.text,
-            typeCombo.currentText,
+            typeCombo.selectedType,
             hostField.text,
             usernameField.text,
             parseInt(portField.text) || 0,
