@@ -9,7 +9,6 @@ description = "GUI Database Management Application"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pyside6>=6.6.0,<6.10.0",
     "sqlalchemy>=2.0.0",
     "asyncpg>=0.29.0",
     "aiomysql>=0.2.0",
@@ -19,6 +18,8 @@ dependencies = [
     "motor>=3.3.0",
     "pandas>=2.0.0",
     "aiosqlite>=0.19.0",
+    "fastapi>=0.121.2",
+    "uvicorn>=0.38.0",
 ]
 
 [project.optional-dependencies]
