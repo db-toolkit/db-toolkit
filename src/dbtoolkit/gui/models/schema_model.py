@@ -3,9 +3,7 @@
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt, QObject
 from PySide6.QtQml import QmlElement
 from typing import List, Dict, Any, Optional
-
-QML_IMPORT_NAME = "DBToolkit"
-QML_IMPORT_MAJOR_VERSION = 1
+from ...utils.constants import QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION
 
 
 class SchemaItem:

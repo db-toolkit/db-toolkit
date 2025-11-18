@@ -7,10 +7,8 @@ from typing import Optional, List, Dict, Any
 from ...core.storage import connection_storage
 from ...connectors.factory import ConnectorFactory
 from ...utils.cache import metadata_cache
+from ...utils.constants import QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, DEFAULT_CACHE_TTL
 from ..models.schema_model import SchemaModel
-
-QML_IMPORT_NAME = "DBToolkit"
-QML_IMPORT_MAJOR_VERSION = 1
 
 
 class SchemaWorker(QThread):
@@ -51,7 +49,7 @@ class SchemaWorker(QThread):
                 schema_data = loop.run_until_complete(self._fetch_schema_data(connector))
                 
                 # Cache the results
-                metadata_cache.set(cache_key, schema_data, ttl=300)
+                metadata_cache.set(cache_key, schema_data, ttl=DEFAULT_CACHE_TTL)
                 
                 self.schemaLoaded.emit(schema_data)
                 

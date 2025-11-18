@@ -6,9 +6,7 @@ from typing import List
 from ...core.storage import connection_storage
 from ...core.models import DatabaseConnection, DatabaseType
 from ...connectors.factory import ConnectorFactory
-
-QML_IMPORT_NAME = "DBToolkit"
-QML_IMPORT_MAJOR_VERSION = 1
+from ...utils.constants import QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION
 
 
 @QmlElement

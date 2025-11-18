@@ -10,6 +10,7 @@ from PySide6.QtQml import QQmlApplicationEngine
 from .controllers.connection_controller import ConnectionController
 from .controllers.schema_controller import SchemaController
 from .models.schema_model import SchemaModel
+from ..utils.constants import QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION
 
 
 def main():
@@ -25,9 +26,9 @@ def main():
     QQuickStyle.setStyle("Material")
     
     # Register QML types
-    qmlRegisterType(ConnectionController, "DBToolkit", 1, 0, "ConnectionController")
-    qmlRegisterType(SchemaController, "DBToolkit", 1, 0, "SchemaController")
-    qmlRegisterType(SchemaModel, "DBToolkit", 1, 0, "SchemaModel")
+    qmlRegisterType(ConnectionController, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, 0, "ConnectionController")
+    qmlRegisterType(SchemaController, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, 0, "SchemaController")
+    qmlRegisterType(SchemaModel, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, 0, "SchemaModel")
     
     # Create QML engine
     engine = QQmlApplicationEngine()

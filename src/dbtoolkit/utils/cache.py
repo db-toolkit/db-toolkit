@@ -3,6 +3,7 @@
 import time
 from typing import Dict, Any, Optional
 from dataclasses import dataclass
+from .constants import DEFAULT_CACHE_TTL
 
 
 @dataclass
@@ -10,7 +11,7 @@ class CacheEntry:
     """Cache entry with timestamp."""
     data: Any
     timestamp: float
-    ttl: float = 300.0  # 5 minutes default
+    ttl: float = DEFAULT_CACHE_TTL
     
     @property
     def is_expired(self) -> bool:
@@ -35,7 +36,7 @@ class MetadataCache:
             del self._cache[key]
         return None
     
-    def set(self, key: str, value: Any, ttl: float = 300.0) -> None:
+    def set(self, key: str, value: Any, ttl: float = DEFAULT_CACHE_TTL) -> None:
         """Set cache value with TTL."""
         self._cache[key] = CacheEntry(
             data=value,

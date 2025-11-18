@@ -27,7 +27,7 @@ class DatabaseConnection:
     database: Optional[str] = None
     file_path: Optional[str] = None  # For SQLite
     ssl_enabled: bool = False
-    connection_timeout: int = 30
+    connection_timeout: int = 30  # Will use DEFAULT_CONNECTION_TIMEOUT from constants
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
