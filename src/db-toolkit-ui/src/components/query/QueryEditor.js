@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Play } from 'lucide-react';
 import { EditorView, keymap, lineNumbers, highlightActiveLineGutter, highlightActiveLine, drawSelection } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
@@ -8,11 +8,13 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { syntaxHighlighting, defaultHighlightStyle, bracketMatching } from '@codemirror/language';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { Button } from '../common/Button';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export function QueryEditor({ query, onChange, onExecute, loading, schema }) {
   const editorRef = useRef(null);
   const viewRef = useRef(null);
-  const isDark = document.documentElement.classList.contains('dark');
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     if (!editorRef.current) return;

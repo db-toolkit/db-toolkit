@@ -51,7 +51,7 @@
 }
 
 .dark .cm-activeLine {
-  background-color: #1e3a5f;
+  background-color: rgba(59, 130, 246, 0.1);
 }
 
 .cm-activeLineGutter {
@@ -59,7 +59,7 @@
 }
 
 .dark .cm-activeLineGutter {
-  background-color: #1e3a5f;
+  background-color: rgba(59, 130, 246, 0.15);
 }
 
 /* Selection */
