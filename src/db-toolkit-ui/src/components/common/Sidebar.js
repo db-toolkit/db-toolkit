@@ -16,8 +16,11 @@ function Sidebar() {
   ];
 
   const isActive = (path) => {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
+    const currentPath = location.pathname;
+    if (path === '/') {
+      return currentPath === '/' || currentPath === '';
+    }
+    return currentPath.startsWith(path);
   };
 
   return (
