@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   create-release:
     runs-on: ubuntu-latest
@@ -14,14 +17,13 @@ jobs:
     steps:
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
+          generate_release_notes: true
 
   build-and-upload:
     needs: create-release
@@ -38,7 +40,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -64,46 +66,11 @@ jobs:
         working-directory: src/db-toolkit-ui
         run: npm run package:linux
       
-      - name: Upload macOS Release Asset
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: src/db-toolkit-ui/release/DB Toolkit-mac.dmg
-          asset_name: DB-Toolkit-mac.dmg
-          asset_content_type: application/octet-stream
-      
-      - name: Upload Windows Release Asset
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: src/db-toolkit-ui/release/DB Toolkit-win.exe
-          asset_name: DB-Toolkit-win.exe
-          asset_content_type: application/octet-stream
-      
-      - name: Upload Linux AppImage Release Asset
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: src/db-toolkit-ui/release/DB Toolkit-linux.AppImage
-          asset_name: DB-Toolkit-linux.AppImage
-          asset_content_type: application/octet-stream
-      
-      - name: Upload Linux DEB Release Asset
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: src/db-toolkit-ui/release/DB Toolkit-linux.deb
-          asset_name: DB-Toolkit-linux.deb
-          asset_content_type: application/octet-stream
+          files: |
+            src/db-toolkit-ui/release/*.dmg
+            src/db-toolkit-ui/release/*.exe
+            src/db-toolkit-ui/release/*.AppImage
+            src/db-toolkit-ui/release/*.deb
