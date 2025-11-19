@@ -244,10 +244,9 @@ class BackupManager:
                                     else:
                                         values.append(str(val))
                                 
-                                f.write(
-                                    f'INSERT INTO "{table}" ({', '.join(f'"{c}"' for c in columns)}) '
-                                    f'VALUES ({', '.join(values)});\n'
-                                )
+                                cols = ', '.join(f'"{c}"' for c in columns)
+                                vals = ', '.join(values)
+                                f.write(f'INSERT INTO "{table}" ({cols}) VALUES ({vals});\n')
                             f.write('\n')
         finally:
             await conn.close()
@@ -365,10 +364,9 @@ class BackupManager:
                                         else:
                                             values.append(str(val))
                                     
-                                    f.write(
-                                        f'INSERT INTO `{table}` ({', '.join(f'`{c}`' for c in columns)}) '
-                                        f'VALUES ({', '.join(values)});\n'
-                                    )
+                                    cols = ', '.join(f'`{c}`' for c in columns)
+                                    vals = ', '.join(values)
+                                    f.write(f'INSERT INTO `{table}` ({cols}) VALUES ({vals});\n')
                                 f.write('\n')
         finally:
             conn.close()
