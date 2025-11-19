@@ -61,7 +61,7 @@ class MigratorExecutor:
             }
 
     @classmethod
-    async def execute_command_stream(cls, command: str, websocket):
+    async def execute_command_stream(cls, command: str, websocket, cwd: Optional[str] = None):
         """Execute migrator command and stream output via WebSocket."""
         try:
             migrator_path = cls.get_migrator_path()
@@ -70,7 +70,8 @@ class MigratorExecutor:
             process = await asyncio.create_subprocess_exec(
                 *migrator_cmd,
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
+                cwd=cwd
             )
             
             async def read_stream(stream, stream_type):

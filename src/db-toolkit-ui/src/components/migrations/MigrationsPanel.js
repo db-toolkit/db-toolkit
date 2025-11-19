@@ -2,7 +2,7 @@
  * Migrations panel for running migrator commands.
  */
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Minimize2, Maximize2, Play, RotateCcw, History, Plus, FileText } from 'lucide-react';
+import { X, Minimize2, Maximize2, Play, RotateCcw, History, Plus, FileText, Folder } from 'lucide-react';
 import { useConnections } from '../../hooks';
 import { useMigratorStream } from '../../hooks/useMigratorStream';
 import { useToast } from '../../contexts/ToastContext';
@@ -11,7 +11,8 @@ import { Button } from '../common/Button';
 function MigrationsPanel({ isOpen, onClose }) {
   const { connections } = useConnections();
   const toast = useToast();
-  const [selectedConnection, setSelectedConnection] = useState('');
+  const [selectedProject, setSelectedProject] = useState('');
+  const [savedProjects, setSavedProjects] = useState([]);
   const [isMaximized, setIsMaximized] = useState(false);
   const [output, setOutput] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -54,20 +55,33 @@ function MigrationsPanel({ isOpen, onClose }) {
   const { executeCommand, isRunning } = useMigratorStream(addOutput);
 
   useEffect(() => {
+    const projects = JSON.parse(localStorage.getItem('migration-projects') || '[]');
+    setSavedProjects(projects);
+  }, []);
+
+  const handleSelectFolder = async () => {
+    const path = await window.electron.ipcRenderer.invoke('select-folder');
+    if (path) {
+      setSelectedProject(path);
+      addOutput(`Selected project: ${path}`, 'info');
+    }
+  };
+
+  useEffect(() => {
     if (outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight;
     }
   }, [output]);
 
   const runCommand = (command, args = []) => {
-    if (!selectedConnection) {
-      toast.error('Please select a connection');
+    if (!selectedProject) {
+      toast.error('Please select a project folder');
       return;
     }
 
     const fullCommand = `${command} ${args.join(' ')}`;
     addOutput(`$ migrator ${fullCommand}`, 'command');
-    executeCommand(fullCommand);
+    executeCommand(fullCommand, selectedProject);
   };
 
   const handleInit = () => runCommand('init');
@@ -102,16 +116,23 @@ function MigrationsPanel({ isOpen, onClose }) {
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-900 dark:text-white font-medium">Migrations</span>
             <select
-              value={selectedConnection}
-              onChange={(e) => setSelectedConnection(e.target.value)}
+              value={selectedProject}
+              onChange={(e) => setSelectedProject(e.target.value)}
               className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               disabled={isRunning}
             >
-              <option value="">Select connection...</option>
-              {connections.map(conn => (
-                <option key={conn.id} value={conn.id}>{conn.name}</option>
+              <option value="">Select project...</option>
+              {savedProjects.map((proj, idx) => (
+                <option key={idx} value={proj.path}>{proj.name}</option>
               ))}
             </select>
+            <button
+              onClick={handleSelectFolder}
+              disabled={isRunning}
+              className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1"
+            >
+              <Folder size={14} /> Browse
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -132,19 +153,19 @@ function MigrationsPanel({ isOpen, onClose }) {
         </div>
 
         <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-          <Button size="sm" onClick={handleInit} disabled={isRunning || !selectedConnection}>
+          <Button size="sm" onClick={handleInit} disabled={isRunning || !selectedProject}>
             <FileText size={14} className="mr-1" /> Init
           </Button>
-          <Button size="sm" onClick={() => setShowCreateModal(true)} disabled={isRunning || !selectedConnection}>
+          <Button size="sm" onClick={() => setShowCreateModal(true)} disabled={isRunning || !selectedProject}>
             <Plus size={14} className="mr-1" /> Create
           </Button>
-          <Button size="sm" onClick={handleApply} disabled={isRunning || !selectedConnection}>
+          <Button size="sm" onClick={handleApply} disabled={isRunning || !selectedProject}>
             <Play size={14} className="mr-1" /> Apply
           </Button>
-          <Button size="sm" variant="secondary" onClick={handleRollback} disabled={isRunning || !selectedConnection}>
+          <Button size="sm" variant="secondary" onClick={handleRollback} disabled={isRunning || !selectedProject}>
             <RotateCcw size={14} className="mr-1" /> Rollback
           </Button>
-          <Button size="sm" variant="secondary" onClick={handleHistory} disabled={isRunning || !selectedConnection}>
+          <Button size="sm" variant="secondary" onClick={handleHistory} disabled={isRunning || !selectedProject}>
             <History size={14} className="mr-1" /> History
           </Button>
         </div>

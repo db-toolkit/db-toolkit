@@ -114,6 +114,13 @@ function createWindow() {
   }
 }
 
+ipcMain.handle('select-folder', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory']
+  });
+  return result.canceled ? null : result.filePaths[0];
+});
+
 ipcMain.handle('get-system-metrics', async () => {
   const loadAvg = os.loadavg()[0];
   
