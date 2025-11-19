@@ -35,15 +35,25 @@ function MigrationsPanel({ isOpen, onClose }) {
     }
 
     setIsRunning(true);
-    addOutput(`$ migrator ${command} ${args.join(' ')}`, 'command');
+    const fullCommand = `${command} ${args.join(' ')}`;
+    addOutput(`$ migrator ${fullCommand}`, 'command');
 
     try {
-      const connection = connections.find(c => c.id === selectedConnection);
-      const dbUrl = `${connection.db_type}://${connection.username}:${connection.password}@${connection.host}:${connection.port}/${connection.database}`;
-      
-      // TODO: Call backend API to run migrator command
-      addOutput('Command execution not yet implemented', 'error');
-      toast.info('Migration command queued');
+      const response = await fetch('http://localhost:8000/api/v1/api/migrator/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: fullCommand })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        if (result.output) addOutput(result.output, 'success');
+        toast.info('Command completed successfully');
+      } else {
+        if (result.error) addOutput(result.error, 'error');
+        toast.error('Command failed');
+      }
     } catch (err) {
       addOutput(`Error: ${err.message}`, 'error');
       toast.error('Command failed');
