@@ -165,15 +165,14 @@ function DocumentationPage() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
           {selectedTopic ? (
-          <div className="p-8 max-w-4xl">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-              {selectedTopic.title}
-            </h1>
-            <div className="text-gray-700 dark:text-gray-300">
-              {renderContent(selectedTopic.content)}
+            <div className="p-8 max-w-4xl">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+                {selectedTopic.title}
+              </h1>
+              <div className="text-gray-700 dark:text-gray-300">
+                {renderContent(selectedTopic.content)}
+              </div>
             </div>
-            </div>
-          </div>
           ) : (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
