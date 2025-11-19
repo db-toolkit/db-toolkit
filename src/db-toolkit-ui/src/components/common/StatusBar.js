@@ -99,7 +99,7 @@ function StatusBar({ onTerminalClick }) {
     : 0;
 
   return (
-    <div className="relative h-6 bg-gray-100 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 text-xs text-gray-600 dark:text-gray-400">
+    <div className="relative h-8 bg-gray-100 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 text-xs text-gray-600 dark:text-gray-400">
       <div className="flex items-center">
       <div className="relative"
         onMouseEnter={() => setHoveredMetric('connections')}
