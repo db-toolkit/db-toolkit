@@ -1,16 +1,29 @@
 """Migrator CLI command executor."""
 import asyncio
-from typing import Dict, Any
+import shutil
+from typing import Dict, Any, Optional
 
 
 class MigratorExecutor:
     """Execute migrator CLI commands."""
+    
+    _migrator_path: Optional[str] = None
+    
+    @classmethod
+    def get_migrator_path(cls) -> str:
+        """Get cached migrator binary path."""
+        if cls._migrator_path is None:
+            cls._migrator_path = shutil.which("migrator")
+            if cls._migrator_path is None:
+                raise FileNotFoundError("migrator binary not found in PATH")
+        return cls._migrator_path
 
-    @staticmethod
-    async def execute_command(command: str, timeout: int = 10) -> Dict[str, Any]:
+    @classmethod
+    async def execute_command(cls, command: str, timeout: int = 10) -> Dict[str, Any]:
         """Execute migrator command and return result."""
         try:
-            migrator_cmd = ["migrator"] + command.split()
+            migrator_path = cls.get_migrator_path()
+            migrator_cmd = [migrator_path] + command.split()
             
             process = await asyncio.create_subprocess_exec(
                 *migrator_cmd,
@@ -47,11 +60,12 @@ class MigratorExecutor:
                 "exit_code": -1
             }
 
-    @staticmethod
-    async def execute_command_stream(command: str, websocket):
+    @classmethod
+    async def execute_command_stream(cls, command: str, websocket):
         """Execute migrator command and stream output via WebSocket."""
         try:
-            migrator_cmd = ["migrator"] + command.split()
+            migrator_path = cls.get_migrator_path()
+            migrator_cmd = [migrator_path] + command.split()
             
             process = await asyncio.create_subprocess_exec(
                 *migrator_cmd,
@@ -87,12 +101,13 @@ class MigratorExecutor:
                 "data": str(e)
             })
 
-    @staticmethod
-    async def get_version() -> Dict[str, Any]:
+    @classmethod
+    async def get_version(cls) -> Dict[str, Any]:
         """Get migrator CLI version."""
         try:
+            migrator_path = cls.get_migrator_path()
             process = await asyncio.create_subprocess_exec(
-                "migrator", "--version",
+                migrator_path, "--version",
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE
             )
