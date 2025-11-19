@@ -114,21 +114,40 @@ function createWindow() {
 }
 
 ipcMain.handle('get-system-metrics', async () => {
-  const cpus = os.cpus();
   const loadAvg = os.loadavg()[0];
   
   return new Promise((resolve) => {
     if (process.platform === 'darwin' || process.platform === 'linux') {
       exec('df -k /', (error, stdout) => {
         let disk = { used: 0, free: 0, total: 0 };
-        if (!error) {
+        if (!error && stdout) {
           const lines = stdout.trim().split('\n');
           if (lines.length > 1) {
-            const parts = lines[1].split(/\s+/);
+            const parts = lines[1].trim().split(/\s+/);
+            const usedKB = parseInt(parts[2]) || 0;
+            const availKB = parseInt(parts[3]) || 0;
             disk = {
-              used: parseInt(parts[2]) / 1024 / 1024,
-              free: parseInt(parts[3]) / 1024 / 1024,
-              total: (parseInt(parts[2]) + parseInt(parts[3])) / 1024 / 1024
+              used: usedKB / 1024 / 1024,
+              free: availKB / 1024 / 1024,
+              total: (usedKB + availKB) / 1024 / 1024
+            };
+          }
+        }
+        resolve({ loadAvg, disk });
+      });
+    } else if (process.platform === 'win32') {
+      exec('wmic logicaldisk get size,freespace,caption', (error, stdout) => {
+        let disk = { used: 0, free: 0, total: 0 };
+        if (!error && stdout) {
+          const lines = stdout.trim().split('\n');
+          if (lines.length > 1) {
+            const parts = lines[1].trim().split(/\s+/);
+            const freeBytes = parseInt(parts[1]) || 0;
+            const totalBytes = parseInt(parts[2]) || 0;
+            disk = {
+              free: freeBytes / 1024 / 1024 / 1024,
+              total: totalBytes / 1024 / 1024 / 1024,
+              used: (totalBytes - freeBytes) / 1024 / 1024 / 1024
             };
           }
         }
