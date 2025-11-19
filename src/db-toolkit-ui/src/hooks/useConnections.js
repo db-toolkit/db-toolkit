@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { connectionsAPI } from '../services/api';
+import { useNotifications } from '../contexts/NotificationContext';
 
 export function useConnections() {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [connectedIds, setConnectedIds] = useState(new Set());
+  const { addNotification } = useNotifications();
 
   const fetchConnections = useCallback(async () => {
     setLoading(true);
@@ -66,13 +68,27 @@ export function useConnections() {
     try {
       const response = await connectionsAPI.connect(id);
       setConnectedIds(prev => new Set(prev).add(id));
+      const conn = connections.find(c => c.id === id);
+      addNotification({
+        type: 'success',
+        title: 'Connected',
+        message: `Successfully connected to ${conn?.name || 'database'}`,
+        action: { label: 'View Schema', path: `/schema/${id}` }
+      });
       return response.data;
     } catch (err) {
+      const conn = connections.find(c => c.id === id);
+      addNotification({
+        type: 'error',
+        title: 'Connection Failed',
+        message: err.response?.data?.detail || 'Failed to connect to database',
+        action: { label: 'View', path: '/connections' }
+      });
       const error = new Error(err.response?.data?.detail || 'Failed to connect. Please check your credentials and database server.');
       error.response = err.response;
       throw error;
     }
-  }, []);
+  }, [connections, addNotification]);
 
   const disconnectFromDatabase = useCallback(async (id) => {
     try {

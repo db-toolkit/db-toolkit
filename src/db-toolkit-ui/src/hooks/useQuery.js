@@ -1,11 +1,13 @@
 import { useState, useCallback } from 'react';
 import { queryAPI } from '../services/api';
+import { useNotifications } from '../contexts/NotificationContext';
 
 export function useQuery(connectionId) {
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { addNotification } = useNotifications();
 
   const executeQuery = useCallback(async (query, limit = 1000, offset = 0, timeout = 30) => {
     if (!connectionId) return;
@@ -23,11 +25,17 @@ export function useQuery(connectionId) {
       return response.data;
     } catch (err) {
       setError(err.message);
+      addNotification({
+        type: 'error',
+        title: 'Query Failed',
+        message: err.response?.data?.detail || err.message || 'Failed to execute query',
+        action: { label: 'View', path: `/query/${connectionId}` }
+      });
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [connectionId]);
+  }, [connectionId, addNotification]);
 
   const fetchHistory = useCallback(async () => {
     if (!connectionId) return;

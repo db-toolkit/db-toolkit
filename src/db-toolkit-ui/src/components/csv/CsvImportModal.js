@@ -5,6 +5,7 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { csvAPI } from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
+import { useNotifications } from '../../contexts/NotificationContext';
 
 export function CsvImportModal({ isOpen, onClose, connectionId, schema, table, onSuccess }) {
   const [file, setFile] = useState(null);
@@ -12,6 +13,7 @@ export function CsvImportModal({ isOpen, onClose, connectionId, schema, table, o
   const [hasHeaders, setHasHeaders] = useState(true);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const { addNotification } = useNotifications();
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -44,12 +46,24 @@ export function CsvImportModal({ isOpen, onClose, connectionId, schema, table, o
         });
 
         toast.success(`Imported ${response.data.rows_imported} rows`);
+        addNotification({
+          type: 'success',
+          title: 'CSV Import Complete',
+          message: `Successfully imported ${response.data.rows_imported} rows into ${table}`,
+          action: { label: 'View', path: '/data-explorer' }
+        });
         onSuccess?.();
         onClose();
       };
       reader.readAsText(file);
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Import failed');
+      addNotification({
+        type: 'error',
+        title: 'CSV Import Failed',
+        message: error.response?.data?.detail || 'Failed to import CSV file',
+        action: { label: 'Retry', path: '/data-explorer' }
+      });
     } finally {
       setLoading(false);
     }
