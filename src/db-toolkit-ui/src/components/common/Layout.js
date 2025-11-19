@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Settings } from 'lucide-react';
 import Sidebar from './Sidebar';
+import StatusBar from './StatusBar';
 import { SettingsModal } from '../settings/SettingsModal';
 import { Tooltip } from './Tooltip';
 
@@ -25,6 +26,7 @@ function Layout({ children }) {
         <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-800 pt-16 md:pt-0">
           {children}
         </main>
+        <StatusBar />
       </div>
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </div>
