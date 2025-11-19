@@ -212,7 +212,7 @@ function StatusBar({ onTerminalClick }) {
       </div>
       
       <Terminal 
-        size={14} 
+        size={18} 
         className="cursor-pointer hover:text-gray-900 dark:hover:text-gray-200" 
         title="Terminal" 
         onClick={onTerminalClick}
