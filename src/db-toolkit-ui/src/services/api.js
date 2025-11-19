@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { localStorageService } from '../utils/localStorage';
+import { CACHE_TTL, CACHE_KEYS } from '../utils/constants';
 
 const API_BASE_URL = 'http://localhost:8001/api/v1';
 
@@ -10,20 +12,102 @@ const api = axios.create({
 });
 
 export const connectionsAPI = {
-  getAll: () => api.get('/connections'),
-  create: (data) => api.post('/connections', data),
-  update: (id, data) => api.put(`/connections/${id}`, data),
-  delete: (id) => api.delete(`/connections/${id}`),
+  getAll: async () => {
+    // Check cache first
+    const cached = localStorageService.get(CACHE_KEYS.CONNECTIONS);
+    if (cached) {
+      return { data: cached };
+    }
+    
+    // Fetch from API
+    const response = await api.get('/connections');
+    
+    // Cache the result
+    localStorageService.set(CACHE_KEYS.CONNECTIONS, response.data, CACHE_TTL.CONNECTIONS);
+    
+    return response;
+  },
+  create: async (data) => {
+    const response = await api.post('/connections', data);
+    // Clear connections cache
+    localStorageService.remove(CACHE_KEYS.CONNECTIONS);
+    return response;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/connections/${id}`, data);
+    // Clear connections cache
+    localStorageService.remove(CACHE_KEYS.CONNECTIONS);
+    return response;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/connections/${id}`);
+    // Clear connections cache and connection-specific cache
+    localStorageService.remove(CACHE_KEYS.CONNECTIONS);
+    localStorageService.clearConnection(id);
+    return response;
+  },
   test: (id) => api.post(`/connections/${id}/test`),
   connect: (id) => api.post(`/connections/${id}/connect`),
-  disconnect: (id) => api.post(`/connections/${id}/disconnect`),
+  disconnect: async (id) => {
+    const response = await api.post(`/connections/${id}/disconnect`);
+    // Clear connection-specific cache
+    localStorageService.clearConnection(id);
+    return response;
+  },
 };
 
 export const schemaAPI = {
-  getTree: (connectionId) => api.get(`/connections/${connectionId}/schema`),
-  getTableInfo: (connectionId, schema, table) =>
-    api.get(`/connections/${connectionId}/schema/${schema}/tables/${table}`),
-  refresh: (connectionId) => api.post(`/connections/${connectionId}/schema/refresh`),
+  getTree: async (connectionId, useCache = true) => {
+    // Check cache first
+    if (useCache) {
+      const cached = localStorageService.getForConnection(connectionId, CACHE_KEYS.SCHEMA);
+      if (cached) {
+        return { data: cached };
+      }
+    }
+    
+    // Fetch from API
+    const response = await api.get(`/connections/${connectionId}/schema`);
+    
+    // Cache the result
+    localStorageService.setForConnection(
+      connectionId,
+      CACHE_KEYS.SCHEMA,
+      response.data,
+      CACHE_TTL.SCHEMA
+    );
+    
+    return response;
+  },
+  
+  getTableInfo: async (connectionId, schema, table) => {
+    const cacheKey = `${CACHE_KEYS.TABLE_INFO}_${schema}_${table}`;
+    
+    // Check cache first
+    const cached = localStorageService.getForConnection(connectionId, cacheKey);
+    if (cached) {
+      return { data: cached };
+    }
+    
+    // Fetch from API
+    const response = await api.get(`/connections/${connectionId}/schema/${schema}/tables/${table}`);
+    
+    // Cache the result
+    localStorageService.setForConnection(
+      connectionId,
+      cacheKey,
+      response.data,
+      CACHE_TTL.TABLE_INFO
+    );
+    
+    return response;
+  },
+  
+  refresh: async (connectionId) => {
+    // Clear cache for this connection
+    localStorageService.clearConnection(connectionId);
+    return api.post(`/connections/${connectionId}/schema/refresh`);
+  },
 };
 
 export const queryAPI = {
