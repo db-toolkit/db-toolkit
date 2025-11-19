@@ -1,14 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Settings } from 'lucide-react';
 import Sidebar from './Sidebar';
 import StatusBar from './StatusBar';
 import MigrationsPanel from '../migrations/MigrationsPanel';
+import CommandPalette from './CommandPalette';
 import { SettingsModal } from '../settings/SettingsModal';
 import { Tooltip } from './Tooltip';
 
 function Layout({ children }) {
   const [showSettings, setShowSettings] = useState(false);
   const [showMigrations, setShowMigrations] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [connections, setConnections] = useState([]);
+  const [queries, setQueries] = useState([]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowCommandPalette(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const savedConnections = JSON.parse(localStorage.getItem('db-connections') || '[]');
+    const savedQueries = JSON.parse(localStorage.getItem('query-tabs') || '[]');
+    setConnections(savedConnections);
+    setQueries(savedQueries);
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
@@ -32,6 +55,12 @@ function Layout({ children }) {
       </div>
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <MigrationsPanel isOpen={showMigrations} onClose={() => setShowMigrations(false)} />
+      <CommandPalette 
+        isOpen={showCommandPalette} 
+        onClose={() => setShowCommandPalette(false)}
+        connections={connections}
+        queries={queries}
+      />
     </div>
   );
 }
