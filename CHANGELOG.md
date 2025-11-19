@@ -27,13 +27,6 @@ All notable changes to DB Toolkit will be documented in this file.
 - **Dark Mode** - Fixed label colors in connection modal
 - **Performance** - Reduced re-renders with React.memo and caching
 
-### Technical
-- Replaced polling with WebSocket connections for real-time updates
-- Implemented connection-specific cache namespaces
-- Added Framer Motion animation variants
-- Created reusable UI components (Tooltip, ProgressBar, Breadcrumbs)
-- Implemented debounce utility and useDebounce hook
-
 ## [0.1.0] - 2025-01-19
 
 ### Initial Release
