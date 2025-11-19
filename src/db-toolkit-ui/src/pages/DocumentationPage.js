@@ -96,30 +96,36 @@ function DocumentationPage() {
   };
 
   return (
-    <motion.div className="h-screen flex" {...pageTransition}>
-      {/* Sidebar */}
-      <div className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Documentation</h2>
-          
-          <div className="flex gap-1 mb-4 bg-gray-100 dark:bg-gray-900 p-1 rounded-lg">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveTab(tab.id);
-                  setSelectedTopic(null);
-                }}
-                className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition ${
-                  activeTab === tab.id
-                    ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+    <motion.div className="h-screen flex flex-col" {...pageTransition}>
+      {/* Top Tabs */}
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-6 pt-4">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Documentation</h1>
+        </div>
+        <div className="flex border-b border-gray-200 dark:border-gray-700">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setSelectedTopic(null);
+              }}
+              className={`px-6 py-3 font-medium text-sm border-b-2 transition ${
+                activeTab === tab.id
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex-1 flex overflow-hidden">
+        {/* Sidebar */}
+        <div className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -132,33 +138,33 @@ function DocumentationPage() {
           </div>
         </div>
 
-        <nav className="p-2">
-          {filteredDocs.map(category => (
-            <div key={category.id} className="mb-4">
-              <h3 className="px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                {category.title}
-              </h3>
-              {category.topics.map(topic => (
-                <button
-                  key={topic.id}
-                  onClick={() => setSelectedTopic(topic)}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition ${
-                    selectedTopic?.id === topic.id
-                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  {topic.title}
-                </button>
-              ))}
-            </div>
-          ))}
-        </nav>
-      </div>
+          <nav className="p-2">
+            {filteredDocs.map(category => (
+              <div key={category.id} className="mb-4">
+                <h3 className="px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {category.title}
+                </h3>
+                {category.topics.map(topic => (
+                  <button
+                    key={topic.id}
+                    onClick={() => setSelectedTopic(topic)}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition ${
+                      selectedTopic?.id === topic.id
+                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    {topic.title}
+                  </button>
+                ))}
+              </div>
+            ))}
+          </nav>
+        </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto">
-        {selectedTopic ? (
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto">
+          {selectedTopic ? (
           <div className="p-8 max-w-4xl">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
               {selectedTopic.title}
@@ -166,20 +172,22 @@ function DocumentationPage() {
             <div className="text-gray-700 dark:text-gray-300">
               {renderContent(selectedTopic.content)}
             </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <BookOpen size={64} className="mx-auto mb-4 text-gray-400" />
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Documentation
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Select a topic from the sidebar to get started
-              </p>
             </div>
           </div>
-        )}
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <BookOpen size={64} className="mx-auto mb-4 text-gray-400" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Documentation
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Select a topic from the sidebar to get started
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </motion.div>
   );
