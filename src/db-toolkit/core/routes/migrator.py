@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from operations.migrator_executor import MigratorExecutor
 
-router = APIRouter(prefix="/api/migrator", tags=["migrator"])
+router = APIRouter()
 
 
 class MigratorCommand(BaseModel):
