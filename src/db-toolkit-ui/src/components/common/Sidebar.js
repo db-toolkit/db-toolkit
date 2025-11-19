@@ -8,11 +8,17 @@ function Sidebar() {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Connections' },
+    { path: '/', icon: Home, label: 'Dashboard' },
+    { path: '/connections', icon: Database, label: 'Connections' },
     { path: '/data-explorer', icon: Table, label: 'Data Explorer' },
     { path: '/backups', icon: HardDrive, label: 'Backups' },
     { path: '/docs', icon: BookOpen, label: 'Documentation' },
   ];
+
+  const isActive = (path) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <>
@@ -59,7 +65,7 @@ function Sidebar() {
               onClick={() => setIsOpen(false)}
               className={`
                 flex items-center gap-3 px-4 py-3 rounded-lg transition
-                ${location.pathname === path
+                ${isActive(path)
                   ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
                   : 'hover:bg-gray-200 dark:hover:bg-gray-900'
                 }
