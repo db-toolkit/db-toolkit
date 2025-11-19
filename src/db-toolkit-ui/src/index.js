@@ -5,15 +5,18 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { SettingsProvider } from './contexts/SettingsContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <ErrorBoundary>
     <SettingsProvider>
       <ThemeProvider>
-        <ToastProvider>
-          <App />
-        </ToastProvider>
+        <NotificationProvider>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </NotificationProvider>
       </ThemeProvider>
     </SettingsProvider>
   </ErrorBoundary>

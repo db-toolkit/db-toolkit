@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import StatusBar from './StatusBar';
 import MigrationsPanel from '../migrations/MigrationsPanel';
 import CommandPalette from './CommandPalette';
+import { NotificationCenter } from './NotificationCenter';
 import { SettingsModal } from '../settings/SettingsModal';
 import { Tooltip } from './Tooltip';
 
@@ -37,7 +38,8 @@ function Layout({ children }) {
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-end">
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-end items-center gap-2">
+          <NotificationCenter />
           <Tooltip text="Application settings">
             <button
               onClick={() => setShowSettings(true)}
