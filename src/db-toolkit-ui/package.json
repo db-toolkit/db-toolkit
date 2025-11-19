@@ -2,6 +2,12 @@
   "name": "db-toolkit",
   "productName": "DB Toolkit",
   "version": "0.3.0",
+  "description": "Modern cross-platform database management application",
+  "author": {
+    "name": "Peter Adelodun",
+    "email": "adelodunpeter24@gmail.com"
+  },
+  "homepage": "https://github.com/Adelodunpeter25/db-toolkit",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
