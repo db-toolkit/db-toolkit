@@ -68,7 +68,7 @@ export function TableDetails({ connectionId, schemaName, tableName }) {
 
       {tableInfo.sample_data && (
         <div>
-          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Sample Data</h4>
+          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Data</h4>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
               <thead className="bg-gray-50 dark:bg-gray-900">
