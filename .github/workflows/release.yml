@@ -1,0 +1,109 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+  build-and-upload:
+    needs: create-release
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install frontend dependencies
+        working-directory: src/db-toolkit-ui
+        run: npm ci
+      
+      - name: Build for macOS
+        if: matrix.os == 'macos-latest'
+        working-directory: src/db-toolkit-ui
+        run: npm run package:mac
+      
+      - name: Build for Windows
+        if: matrix.os == 'windows-latest'
+        working-directory: src/db-toolkit-ui
+        run: npm run package:win
+      
+      - name: Build for Linux
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: src/db-toolkit-ui
+        run: npm run package:linux
+      
+      - name: Upload macOS Release Asset
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: src/db-toolkit-ui/release/DB Toolkit-mac.dmg
+          asset_name: DB-Toolkit-mac.dmg
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Windows Release Asset
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: src/db-toolkit-ui/release/DB Toolkit-win.exe
+          asset_name: DB-Toolkit-win.exe
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Linux AppImage Release Asset
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: src/db-toolkit-ui/release/DB Toolkit-linux.AppImage
+          asset_name: DB-Toolkit-linux.AppImage
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Linux DEB Release Asset
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: src/db-toolkit-ui/release/DB Toolkit-linux.deb
+          asset_name: DB-Toolkit-linux.deb
+          asset_content_type: application/octet-stream
