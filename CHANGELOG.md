@@ -2,6 +2,26 @@
 
 All notable changes to DB Toolkit will be documented in this file.
 
+## [0.3.0] - 2025-01-19
+
+### Added
+- **Command Palette** - Quick navigation with Ctrl+K (search connections, queries, docs, actions)
+- **Database Migrations** - Integrated migrator-cli with project-based migrations
+- **Migration Panel** - Execute migration commands with real-time WebSocket output
+- **Migration Settings** - Manage migration projects with folder selection and connection linking
+- **Welcome Dashboard** - Landing page with stats cards, quick actions, recent activity, and getting started guide
+- **Notification Center** - Bell icon with unread badge, notifications for backups, queries, connections, and CSV operations
+- **Onboarding Tour** - Step-by-step guide for first-time users
+- **Splash Screen** - Loading screen with spinning icon on app startup
+- **Documentation Expansion** - Added Features and Troubleshooting sections with full-width tabs
+
+### Improved
+- **WebSocket Service** - Centralized WebSocket endpoints for backups, terminal, and migrator
+- **Migration Execution** - Asyncio subprocess with non-blocking execution and 10s timeout
+- **Terminal UX** - Fixed scroll-to-bottom, added drag-to-resize for terminal height
+- **Dashboard Navigation** - Changed "Dashboard" to "Overview" in sidebar
+- **Notification Integration** - Added notifications for backup success/failure, query errors, connection status, CSV import/export
+
 ## [0.2.0] - 2025-01-19
 
 ### Added
