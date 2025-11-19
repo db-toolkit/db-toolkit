@@ -91,7 +91,7 @@ function StatusBar() {
     return m > 0 ? `${m}m` : `${seconds}s`;
   };
 
-  const formatBytes = (bytes) => (bytes / 1024).toFixed(1);
+  const formatBytes = (bytes) => bytes.toFixed(1);
 
   const diskUsagePercent = metrics.disk.total > 0 
     ? ((metrics.disk.used / metrics.disk.total) * 100).toFixed(1)
