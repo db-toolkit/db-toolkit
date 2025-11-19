@@ -17,7 +17,7 @@ wheels/
 
 # Docs
 .amazonq/
-implementation.md
+IMPLEMENTATION_PLAN.md
 
 # Frontend (Node.js)
 node_modules/
