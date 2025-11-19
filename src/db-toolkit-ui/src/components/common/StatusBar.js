@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useConnections } from '../../hooks';
 
 function StatusBar() {
-  const { connectedIds } = useConnections();
+  const { connections, connectedIds } = useConnections();
   const [hoveredMetric, setHoveredMetric] = useState(null);
   const [metrics, setMetrics] = useState({
     ram: { used: 0, total: 0 },
@@ -26,6 +26,36 @@ function StatusBar() {
 
     updateMetrics();
     const interval = setInterval(updateMetrics, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    let lastTime = Date.now();
+    let lastUsage = 0;
+
+    const updateCPU = () => {
+      if (window.performance && window.performance.memory) {
+        const now = Date.now();
+        const currentUsage = window.performance.memory.usedJSHeapSize;
+        const timeDiff = now - lastTime;
+        const usageDiff = Math.abs(currentUsage - lastUsage);
+        
+        const cpuPercent = Math.min(100, (usageDiff / timeDiff) * 0.01);
+        const load = (cpuPercent / 100) * (navigator.hardwareConcurrency || 4);
+        
+        setMetrics(prev => ({ 
+          ...prev, 
+          cpu: cpuPercent.toFixed(1),
+          load: load.toFixed(1)
+        }));
+        
+        lastTime = now;
+        lastUsage = currentUsage;
+      }
+    };
+
+    updateCPU();
+    const interval = setInterval(updateCPU, 2000);
     return () => clearInterval(interval);
   }, []);
 
@@ -59,13 +89,14 @@ function StatusBar() {
         onMouseLeave={() => setHoveredMetric(null)}
       >
         <span className="hover:text-gray-900 dark:hover:text-gray-200 cursor-default">
-          Connections {connectedIds.size}
+          Connections {connections.length}
         </span>
         {hoveredMetric === 'connections' && (
           <div className="absolute bottom-full left-0 mb-2 p-3 bg-gray-800 dark:bg-gray-950 text-white rounded-lg shadow-lg text-xs whitespace-nowrap z-50">
-            <div className="font-semibold mb-1">Active Connections</div>
-            <div>Connected: {connectedIds.size}</div>
-            <div>Status: {connectedIds.size > 0 ? 'Active' : 'Idle'}</div>
+            <div className="font-semibold mb-1">Database Connections</div>
+            <div>Total: {connections.length}</div>
+            <div>Active: {connectedIds.size}</div>
+            <div>Inactive: {connections.length - connectedIds.size}</div>
           </div>
         )}
       </div>
@@ -113,13 +144,13 @@ function StatusBar() {
         onMouseLeave={() => setHoveredMetric(null)}
       >
         <span className="hover:text-gray-900 dark:hover:text-gray-200 cursor-default">
-          Load {metrics.load.toFixed(1)}
+          Load {metrics.load}
         </span>
         {hoveredMetric === 'load' && (
           <div className="absolute bottom-full left-0 mb-2 p-3 bg-gray-800 dark:bg-gray-950 text-white rounded-lg shadow-lg text-xs whitespace-nowrap z-50">
             <div className="font-semibold mb-1">System Load</div>
-            <div>Average: {metrics.load.toFixed(1)}</div>
-            <div>Status: {metrics.load < 1 ? 'Normal' : 'High'}</div>
+            <div>Average: {metrics.load}</div>
+            <div>Status: {parseFloat(metrics.load) < 1 ? 'Normal' : 'High'}</div>
           </div>
         )}
       </div>
