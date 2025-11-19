@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
     "axios": "^1.6.2",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.554.0",

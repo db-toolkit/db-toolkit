@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Settings } from 'lucide-react';
 import Sidebar from './Sidebar';
 import StatusBar from './StatusBar';
+import TerminalPanel from '../terminal/TerminalPanel';
 import { SettingsModal } from '../settings/SettingsModal';
 import { Tooltip } from './Tooltip';
 
 function Layout({ children }) {
   const [showSettings, setShowSettings] = useState(false);
+  const [showTerminal, setShowTerminal] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
@@ -26,9 +28,10 @@ function Layout({ children }) {
         <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-800 pt-16 md:pt-0">
           {children}
         </main>
-        <StatusBar />
+        <StatusBar onTerminalClick={() => setShowTerminal(!showTerminal)} />
       </div>
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <TerminalPanel isOpen={showTerminal} onClose={() => setShowTerminal(false)} />
     </div>
   );
 }

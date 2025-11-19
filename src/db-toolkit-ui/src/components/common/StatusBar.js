@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Terminal } from 'lucide-react';
 import { useConnections } from '../../hooks';
 
-function StatusBar() {
+function StatusBar({ onTerminalClick }) {
   const { connections, connectedIds } = useConnections();
   const [hoveredMetric, setHoveredMetric] = useState(null);
   const [metrics, setMetrics] = useState({
@@ -211,7 +211,12 @@ function StatusBar() {
       </div>
       </div>
       
-      <Terminal size={14} className="cursor-pointer hover:text-gray-900 dark:hover:text-gray-200" title="Terminal" />
+      <Terminal 
+        size={14} 
+        className="cursor-pointer hover:text-gray-900 dark:hover:text-gray-200" 
+        title="Terminal" 
+        onClick={onTerminalClick}
+      />
     </div>
   );
 }
