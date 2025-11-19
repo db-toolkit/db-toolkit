@@ -64,15 +64,18 @@
     "mac": {
       "icon": "build/icons/icon.icns",
       "category": "public.app-category.developer-tools",
-      "target": ["dmg", "zip"]
+      "target": ["dmg", "zip"],
+      "artifactName": "${productName}-mac.${ext}"
     },
     "win": {
       "icon": "build/icons/icon.ico",
-      "target": ["nsis", "portable"]
+      "target": ["nsis", "portable"],
+      "artifactName": "${productName}-win.${ext}"
     },
     "linux": {
       "icon": "build/icons/icon.png",
-      "target": ["AppImage", "deb"]
+      "target": ["AppImage", "deb"],
+      "artifactName": "${productName}-linux.${ext}"
     }
   }
 }
