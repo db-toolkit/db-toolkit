@@ -8,7 +8,7 @@ function Sidebar() {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Dashboard' },
+    { path: '/', icon: Home, label: 'Overview' },
     { path: '/connections', icon: Database, label: 'Connections' },
     { path: '/data-explorer', icon: Table, label: 'Data Explorer' },
     { path: '/backups', icon: HardDrive, label: 'Backups' },

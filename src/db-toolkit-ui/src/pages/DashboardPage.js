@@ -48,7 +48,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all cursor-pointer">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
               <Database className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -60,7 +60,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-green-300 dark:hover:border-green-700 transition-all cursor-pointer">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
               <FileText className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -72,7 +72,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-700 transition-all cursor-pointer">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
               <HardDrive className="w-6 h-6 text-purple-600 dark:text-purple-400" />
@@ -88,7 +88,7 @@ export default function DashboardPage() {
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
-          <Button onClick={() => navigate('/')}>
+          <Button onClick={() => navigate('/connections')}>
             <Plus size={16} className="mr-1" /> New Connection
           </Button>
           <Button variant="secondary" onClick={() => navigate('/query/new')}>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
               <span>Run queries and manage your data</span>
             </li>
           </ol>
-          <Button onClick={() => navigate('/')}>
+          <Button onClick={() => navigate('/connections')}>
             Get Started <ArrowRight size={16} className="ml-1" />
           </Button>
         </div>
