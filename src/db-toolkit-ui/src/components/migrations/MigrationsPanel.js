@@ -9,7 +9,7 @@ import { Button } from '../common/Button';
 
 function MigrationsPanel({ isOpen, onClose }) {
   const { connections } = useConnections();
-  const { showToast } = useToast();
+  const toast = useToast();
   const [selectedConnection, setSelectedConnection] = useState('');
   const [isMaximized, setIsMaximized] = useState(false);
   const [output, setOutput] = useState([]);
@@ -30,7 +30,7 @@ function MigrationsPanel({ isOpen, onClose }) {
 
   const runCommand = async (command, args = []) => {
     if (!selectedConnection) {
-      showToast('Please select a connection', 'error');
+      toast.error('Please select a connection');
       return;
     }
 
@@ -43,10 +43,10 @@ function MigrationsPanel({ isOpen, onClose }) {
       
       // TODO: Call backend API to run migrator command
       addOutput('Command execution not yet implemented', 'error');
-      showToast('Migration command queued', 'info');
+      toast.info('Migration command queued');
     } catch (err) {
       addOutput(`Error: ${err.message}`, 'error');
-      showToast('Command failed', 'error');
+      toast.error('Command failed');
     } finally {
       setIsRunning(false);
     }
@@ -56,7 +56,7 @@ function MigrationsPanel({ isOpen, onClose }) {
   
   const handleCreate = () => {
     if (!migrationName.trim()) {
-      showToast('Please enter migration name', 'error');
+      toast.error('Please enter migration name');
       return;
     }
     runCommand('makemigrations', [`"${migrationName}"`]);
