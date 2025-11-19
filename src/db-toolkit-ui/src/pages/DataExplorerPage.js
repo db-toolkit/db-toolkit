@@ -13,6 +13,7 @@ import { TableSelector } from '../components/data-explorer/TableSelector';
 import { CellViewModal } from '../components/data-explorer/CellViewModal';
 import { ColumnFilter } from '../components/data-explorer/ColumnFilter';
 import { Breadcrumbs } from '../components/common/Breadcrumbs';
+import { Tooltip } from '../components/common/Tooltip';
 import { pageTransition } from '../utils/animations';
 import api from '../services/api';
 
@@ -271,58 +272,72 @@ function DataExplorerPage() {
         <div className="flex items-center gap-4">
           {selectedTable && (
             <>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {totalCount} rows | Page {page + 1} of {totalPages}
-              </span>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="font-medium">Showing {page * pageSize + 1}-{Math.min((page + 1) * pageSize, totalCount)} of {totalCount} rows</span>
+                <span className="mx-2">|</span>
+                <span>Page {page + 1} of {totalPages}</span>
+              </div>
               <div className="flex gap-2">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setShowFilters(!showFilters)}
-                  icon={<Filter size={16} />}
-                >
-                  {showFilters ? 'Hide' : 'Show'} Filters
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={exportToCSV}
-                  icon={<Download size={16} />}
-                >
-                  CSV
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={exportToJSON}
-                  icon={<Download size={16} />}
-                >
-                  JSON
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={handlePrevPage}
-                  disabled={page === 0}
-                >
-                  <ChevronLeft size={16} />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleNextPage}
-                  disabled={page >= totalPages - 1}
-                >
-                  <ChevronRight size={16} />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  icon={<RefreshCw size={16} />}
-                  onClick={handleRefresh}
-                >
-                  Refresh
-                </Button>
+                <Tooltip text={showFilters ? 'Hide filters' : 'Show filters'}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowFilters(!showFilters)}
+                    icon={<Filter size={16} />}
+                  >
+                    {showFilters ? 'Hide' : 'Show'} Filters
+                  </Button>
+                </Tooltip>
+                <Tooltip text="Export to CSV">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={exportToCSV}
+                    icon={<Download size={16} />}
+                  >
+                    CSV
+                  </Button>
+                </Tooltip>
+                <Tooltip text="Export to JSON">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={exportToJSON}
+                    icon={<Download size={16} />}
+                  >
+                    JSON
+                  </Button>
+                </Tooltip>
+                <Tooltip text="Previous page">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handlePrevPage}
+                    disabled={page === 0}
+                  >
+                    <ChevronLeft size={16} />
+                  </Button>
+                </Tooltip>
+                <Tooltip text="Next page">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={page >= totalPages - 1}
+                  >
+                    <ChevronRight size={16} />
+                  </Button>
+                </Tooltip>
+                <Tooltip text="Refresh data">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={<RefreshCw size={16} />}
+                    onClick={handleRefresh}
+                  >
+                    Refresh
+                  </Button>
+                </Tooltip>
               </div>
             </>
           )}

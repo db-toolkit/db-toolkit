@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, Database } from 'lucide-react';
+import { Plus, Database, Search } from 'lucide-react';
 import { useConnections } from '../hooks';
 import { useSession } from '../hooks/useSession';
 import { useToast } from '../contexts/ToastContext';
@@ -20,6 +20,7 @@ function ConnectionsPage() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [modalError, setModalError] = useState('');
   const [editingConnection, setEditingConnection] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const { connections, loading, error, connectedIds, createConnection, updateConnection, deleteConnection, connectToDatabase } = useConnections();
   const { sessionState, restoreSession } = useSession();
 
@@ -88,6 +89,12 @@ function ConnectionsPage() {
     </div>
   );
 
+  const filteredConnections = connections.filter(conn => 
+    conn.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    conn.db_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (conn.host && conn.host.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   return (
     <motion.div className="p-8" {...pageTransition}>
       <div className="flex justify-between items-center mb-6">
@@ -97,7 +104,26 @@ function ConnectionsPage() {
         </Button>
       </div>
       
-      {connections.length === 0 ? (
+      {connections.length > 0 && (
+        <div className="mb-6">
+          <div className="relative max-w-md">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search connections..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+      )}
+      
+      {filteredConnections.length === 0 && searchQuery ? (
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          <p>No connections found matching "{searchQuery}"</p>
+        </div>
+      ) : connections.length === 0 ? (
         <EmptyState
           icon={Database}
           title="No connections yet"
@@ -110,7 +136,7 @@ function ConnectionsPage() {
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {connections.map((conn) => (
+          {filteredConnections.map((conn) => (
             <ConnectionCard
               key={conn.id}
               connection={conn}

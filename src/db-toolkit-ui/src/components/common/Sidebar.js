@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Database, Home, Table, HardDrive, Menu, X } from 'lucide-react';
+import { Tooltip } from './Tooltip';
 
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,12 +16,14 @@ function Sidebar() {
   return (
     <>
       {/* Mobile hamburger button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
-      >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+      <Tooltip text={isOpen ? 'Close menu' : 'Open menu'} position="right">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </Tooltip>
 
       {/* Overlay for mobile */}
       {isOpen && (

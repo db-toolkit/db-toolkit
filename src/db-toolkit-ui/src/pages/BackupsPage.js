@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Database, Clock } from 'lucide-react';
+import { Plus, Database, Clock, Search } from 'lucide-react';
 import { useBackups } from '../hooks/useBackups';
 import { useConnections } from '../hooks';
 import { useToast } from '../contexts/ToastContext';
@@ -21,6 +21,7 @@ function BackupsPage() {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [schedules, setSchedules] = useState([]);
   const [activeTab, setActiveTab] = useState('backups');
+  const [searchQuery, setSearchQuery] = useState('');
   const { connections } = useConnections();
   const { backups, loading, createBackup, restoreBackup, downloadBackup, deleteBackup, fetchBackups } = useBackups();
 
@@ -153,6 +154,15 @@ function BackupsPage() {
     }
   };
 
+  const filteredBackups = backups.filter(backup => 
+    backup.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    backup.backup_type.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredSchedules = schedules.filter(schedule => 
+    schedule.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) return <LoadingState fullScreen message="Loading backups..." />;
 
   return (
@@ -169,6 +179,21 @@ function BackupsPage() {
         </div>
       </div>
 
+      {(backups.length > 0 || schedules.length > 0) && (
+        <div className="mb-6">
+          <div className="relative max-w-md">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder={`Search ${activeTab}...`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-4 mb-6 border-b border-gray-200 dark:border-gray-700">
         <button
           onClick={() => setActiveTab('backups')}
@@ -178,7 +203,7 @@ function BackupsPage() {
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
           }`}
         >
-          Backups ({backups.length})
+          Backups ({filteredBackups.length})
         </button>
         <button
           onClick={() => setActiveTab('schedules')}
@@ -188,11 +213,15 @@ function BackupsPage() {
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
           }`}
         >
-          Schedules ({schedules.length})
+          Schedules ({filteredSchedules.length})
         </button>
       </div>
 
-      {activeTab === 'backups' && backups.length === 0 ? (
+      {activeTab === 'backups' && filteredBackups.length === 0 && searchQuery ? (
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          <p>No backups found matching "{searchQuery}"</p>
+        </div>
+      ) : activeTab === 'backups' && backups.length === 0 ? (
         <EmptyState
           icon={Database}
           title="No backups yet"
@@ -205,7 +234,7 @@ function BackupsPage() {
         />
       ) : activeTab === 'backups' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {backups.map((backup) => (
+          {filteredBackups.map((backup) => (
             <BackupCard
               key={backup.id}
               backup={backup}
@@ -214,6 +243,10 @@ function BackupsPage() {
               onDelete={handleDelete}
             />
           ))}
+        </div>
+      ) : filteredSchedules.length === 0 && searchQuery ? (
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          <p>No schedules found matching "{searchQuery}"</p>
         </div>
       ) : schedules.length === 0 ? (
         <EmptyState
@@ -228,7 +261,7 @@ function BackupsPage() {
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {schedules.map((schedule) => (
+          {filteredSchedules.map((schedule) => (
             <ScheduleCard
               key={schedule.id}
               schedule={schedule}
