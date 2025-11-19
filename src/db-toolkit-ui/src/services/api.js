@@ -142,4 +142,9 @@ export const settingsAPI = {
   reset: () => api.post('/settings/reset'),
 };
 
+export const migratorAPI = {
+  execute: (command) => api.post('/migrator/execute', { command }),
+  getVersion: () => api.get('/migrator/version'),
+};
+
 export default api;

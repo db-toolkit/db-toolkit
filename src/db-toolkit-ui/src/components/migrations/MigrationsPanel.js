@@ -4,16 +4,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Minimize2, Maximize2, Play, RotateCcw, History, Plus, FileText } from 'lucide-react';
 import { useConnections } from '../../hooks';
+import { useMigrator } from '../../hooks/useMigrator';
 import { useToast } from '../../contexts/ToastContext';
 import { Button } from '../common/Button';
 
 function MigrationsPanel({ isOpen, onClose }) {
   const { connections } = useConnections();
+  const { executeCommand, isRunning } = useMigrator();
   const toast = useToast();
   const [selectedConnection, setSelectedConnection] = useState('');
   const [isMaximized, setIsMaximized] = useState(false);
   const [output, setOutput] = useState([]);
-  const [isRunning, setIsRunning] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [migrationName, setMigrationName] = useState('');
   const outputRef = useRef(null);
@@ -34,18 +35,11 @@ function MigrationsPanel({ isOpen, onClose }) {
       return;
     }
 
-    setIsRunning(true);
     const fullCommand = `${command} ${args.join(' ')}`;
     addOutput(`$ migrator ${fullCommand}`, 'command');
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/migrator/execute', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command: fullCommand })
-      });
-
-      const result = await response.json();
+      const result = await executeCommand(fullCommand);
 
       if (result.success) {
         if (result.output) addOutput(result.output, 'success');
@@ -57,8 +51,6 @@ function MigrationsPanel({ isOpen, onClose }) {
     } catch (err) {
       addOutput(`Error: ${err.message}`, 'error');
       toast.error('Command failed');
-    } finally {
-      setIsRunning(false);
     }
   };
 
