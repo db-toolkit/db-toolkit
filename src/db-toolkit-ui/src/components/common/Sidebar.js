@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { Database, Home, Table } from 'lucide-react';
+import { Database, Home, Table, HardDrive } from 'lucide-react';
 
 function Sidebar() {
   return (
@@ -25,6 +25,13 @@ function Sidebar() {
         >
           <Table size={20} />
           <span>Data Explorer</span>
+        </Link>
+        <Link
+          to="/backups"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-900 transition"
+        >
+          <HardDrive size={20} />
+          <span>Backups</span>
         </Link>
       </nav>
     </aside>

@@ -4,3 +4,4 @@ export { useQuery } from './useQuery';
 export { useData } from './useData';
 export { useExplain } from './useExplain';
 export { useSession } from './useSession';
+export { useBackups } from './useBackups';
