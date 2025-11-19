@@ -22,6 +22,7 @@ dependencies = [
     "google-generativeai>=0.8.5",
     "python-dotenv>=1.2.1",
     "websockets==11.0.3",
+    "migrator-cli>=0.4.0",
 ]
 
 [project.optional-dependencies]
