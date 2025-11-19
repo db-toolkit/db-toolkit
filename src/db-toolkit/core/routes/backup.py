@@ -3,10 +3,13 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from typing import Optional
+from datetime import datetime
 from core.storage import ConnectionStorage
 from core.backup_storage import BackupStorage
 from core.schemas.backup import BackupCreateRequest, BackupRestoreRequest
 from operations.backup_manager import BackupManager
+from core.models import BackupSchedule
+    
 
 router = APIRouter()
 storage = ConnectionStorage()
@@ -98,3 +101,58 @@ async def delete_backup(backup_id: str):
     if not success:
         raise HTTPException(status_code=404, detail="Backup not found")
     return {"success": True, "message": "Backup deleted"}
+
+
+@router.post("/backups/{backup_id}/verify")
+async def verify_backup(backup_id: str):
+    """Verify backup integrity."""
+    success = await backup_manager.verify_backup(backup_id)
+    return {"success": success, "message": "Backup verified" if success else "Verification failed"}
+
+
+@router.get("/backup-schedules")
+async def get_schedules():
+    """Get all backup schedules."""
+    schedules = await backup_storage.get_all_schedules()
+    return {"success": True, "schedules": [s.model_dump() for s in schedules]}
+
+
+@router.post("/backup-schedules")
+async def create_schedule(schedule_data: dict):
+    """Create backup schedule."""
+    schedule_id = f"schedule_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    next_run = backup_manager.parse_schedule(schedule_data.get('schedule', 'daily'))
+    
+    schedule = BackupSchedule(
+        id=schedule_id,
+        connection_id=schedule_data['connection_id'],
+        name=schedule_data['name'],
+        backup_type=schedule_data['backup_type'],
+        schedule=schedule_data.get('schedule', 'daily'),
+        tables=schedule_data.get('tables'),
+        compressed=schedule_data.get('compressed', True),
+        retention_count=schedule_data.get('retention_count', 5),
+        enabled=schedule_data.get('enabled', True),
+        next_run=next_run.isoformat() if next_run else None,
+    )
+    
+    await backup_storage.add_schedule(schedule)
+    return {"success": True, "schedule": schedule.model_dump()}
+
+
+@router.put("/backup-schedules/{schedule_id}")
+async def update_schedule(schedule_id: str, updates: dict):
+    """Update backup schedule."""
+    schedule = await backup_storage.update_schedule(schedule_id, **updates)
+    if not schedule:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+    return {"success": True, "schedule": schedule.model_dump()}
+
+
+@router.delete("/backup-schedules/{schedule_id}")
+async def delete_schedule(schedule_id: str):
+    """Delete backup schedule."""
+    success = await backup_storage.delete_schedule(schedule_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+    return {"success": True, "message": "Schedule deleted"}

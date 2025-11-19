@@ -41,6 +41,21 @@ class BackupStatus(str, Enum):
     FAILED = "failed"
 
 
+class BackupSchedule(BaseModel):
+    """Backup schedule model."""
+    id: str
+    connection_id: str
+    name: str
+    backup_type: BackupType
+    schedule: str  # cron expression or 'daily', 'weekly', 'monthly'
+    tables: Optional[list[str]] = None
+    compressed: bool = True
+    retention_count: int = 5  # Keep last N backups
+    enabled: bool = True
+    last_run: Optional[str] = None
+    next_run: Optional[str] = None
+
+
 class Backup(BaseModel):
     """Backup model."""
     id: str
@@ -55,6 +70,8 @@ class Backup(BaseModel):
     created_at: str
     completed_at: Optional[str] = None
     error_message: Optional[str] = None
+    schedule_id: Optional[str] = None
+    verified: bool = False
 
 
 class AppSettings(BaseModel):

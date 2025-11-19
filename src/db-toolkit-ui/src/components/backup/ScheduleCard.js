@@ -1,0 +1,61 @@
+import { Trash2, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Button } from '../common/Button';
+
+export function ScheduleCard({ schedule, onToggle, onDelete }) {
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'Not scheduled';
+    return new Date(dateStr).toLocaleString();
+  };
+
+  return (
+    <div className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-4">
+      <div className="flex items-start gap-3 mb-3">
+        <Clock className="text-blue-600 dark:text-blue-400 mt-1" size={24} />
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{schedule.name}</h3>
+            {schedule.enabled ? (
+              <CheckCircle className="text-green-500" size={16} />
+            ) : (
+              <XCircle className="text-gray-400" size={16} />
+            )}
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">
+            {schedule.backup_type.replace('_', ' ')} • {schedule.schedule}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+            Keep last {schedule.retention_count} backups
+          </p>
+          {schedule.last_run && (
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              Last run: {formatDate(schedule.last_run)}
+            </p>
+          )}
+          {schedule.next_run && (
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              Next run: {formatDate(schedule.next_run)}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        <Button
+          variant={schedule.enabled ? 'secondary' : 'success'}
+          size="sm"
+          onClick={() => onToggle(schedule.id, !schedule.enabled)}
+        >
+          {schedule.enabled ? 'Disable' : 'Enable'}
+        </Button>
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={() => onDelete(schedule.id)}
+          className="!px-2"
+        >
+          <Trash2 size={16} />
+        </Button>
+      </div>
+    </div>
+  );
+}

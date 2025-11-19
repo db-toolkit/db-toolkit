@@ -4,9 +4,9 @@ import asyncio
 import gzip
 import shutil
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, List
-from core.models import DatabaseConnection, BackupType, BackupStatus, Backup
+from core.models import DatabaseConnection, BackupType, BackupStatus, Backup, BackupSchedule
 from core.backup_storage import BackupStorage
 
 
@@ -42,6 +42,34 @@ class BackupManager:
             tables=tables,
             compressed=compress,
         )
+        
+        return backup
+
+    async def create_scheduled_backup(
+        self,
+        connection: DatabaseConnection,
+        schedule: BackupSchedule,
+    ) -> Backup:
+        """Create backup from schedule."""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        name = f"{schedule.name}_{timestamp}"
+        
+        backup = await self.create_backup(
+            connection=connection,
+            name=name,
+            backup_type=schedule.backup_type,
+            tables=schedule.tables,
+            compress=schedule.compressed,
+        )
+        
+        await self.storage.update_backup(backup.id, schedule_id=schedule.id)
+        await self.storage.update_schedule(
+            schedule.id,
+            last_run=datetime.now().isoformat(),
+            next_run=self.parse_schedule(schedule.schedule).isoformat() if self.parse_schedule(schedule.schedule) else None,
+        )
+        
+        await self.apply_retention_policy(connection.id, schedule.id, schedule.retention_count)
         
         asyncio.create_task(self._execute_backup(backup, connection, tables, compress))
         return backup
@@ -274,3 +302,44 @@ class BackupManager:
             Path(backup.file_path).unlink()
         
         return await self.storage.delete_backup(backup_id)
+
+    async def verify_backup(self, backup_id: str) -> bool:
+        """Verify backup file integrity."""
+        backup = await self.storage.get_backup(backup_id)
+        if not backup or not Path(backup.file_path).exists():
+            return False
+        
+        try:
+            file_path = backup.file_path
+            if backup.compressed:
+                with gzip.open(file_path, 'rb') as f:
+                    f.read(1024)
+            else:
+                with open(file_path, 'rb') as f:
+                    f.read(1024)
+            
+            await self.storage.update_backup(backup_id, verified=True)
+            return True
+        except Exception:
+            return False
+
+    def parse_schedule(self, schedule: str) -> Optional[datetime]:
+        """Parse schedule string to next run time."""
+        now = datetime.now()
+        if schedule == 'daily':
+            return now + timedelta(days=1)
+        elif schedule == 'weekly':
+            return now + timedelta(weeks=1)
+        elif schedule == 'monthly':
+            return now + timedelta(days=30)
+        return None
+
+    async def apply_retention_policy(self, connection_id: str, schedule_id: str, retention_count: int):
+        """Apply retention policy to backups."""
+        backups = await self.storage.get_all_backups(connection_id)
+        schedule_backups = [b for b in backups if b.schedule_id == schedule_id and b.status == BackupStatus.COMPLETED]
+        schedule_backups.sort(key=lambda x: x.created_at, reverse=True)
+        
+        if len(schedule_backups) > retention_count:
+            for backup in schedule_backups[retention_count:]:
+                await self.delete_backup(backup.id)

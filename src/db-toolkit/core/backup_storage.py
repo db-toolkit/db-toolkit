@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import List, Optional
 from datetime import datetime
-from core.models import Backup, BackupStatus, BackupType
+from core.models import Backup, BackupStatus, BackupType, BackupSchedule
 
 
 class BackupStorage:
@@ -19,7 +19,7 @@ class BackupStorage:
     def _ensure_file(self):
         """Ensure metadata file exists."""
         if not self.metadata_file.exists():
-            self.metadata_file.write_text(json.dumps({"backups": []}))
+            self.metadata_file.write_text(json.dumps({"backups": [], "schedules": []}))
 
     def _read(self) -> dict:
         """Read metadata file."""
@@ -91,6 +91,53 @@ class BackupStorage:
         original_len = len(data["backups"])
         data["backups"] = [b for b in data["backups"] if b["id"] != backup_id]
         if len(data["backups"]) < original_len:
+            self._write(data)
+            return True
+        return False
+
+    async def add_schedule(self, schedule: BackupSchedule) -> BackupSchedule:
+        """Add backup schedule."""
+        data = self._read()
+        if "schedules" not in data:
+            data["schedules"] = []
+        data["schedules"].append(schedule.model_dump())
+        self._write(data)
+        return schedule
+
+    async def get_schedule(self, schedule_id: str) -> Optional[BackupSchedule]:
+        """Get schedule by ID."""
+        data = self._read()
+        for sched in data.get("schedules", []):
+            if sched["id"] == schedule_id:
+                return BackupSchedule(**sched)
+        return None
+
+    async def get_all_schedules(self) -> List[BackupSchedule]:
+        """Get all schedules."""
+        data = self._read()
+        return [BackupSchedule(**s) for s in data.get("schedules", [])]
+
+    async def update_schedule(self, schedule_id: str, **updates) -> Optional[BackupSchedule]:
+        """Update schedule."""
+        data = self._read()
+        if "schedules" not in data:
+            return None
+        for i, sched in enumerate(data["schedules"]):
+            if sched["id"] == schedule_id:
+                sched.update(updates)
+                data["schedules"][i] = sched
+                self._write(data)
+                return BackupSchedule(**sched)
+        return None
+
+    async def delete_schedule(self, schedule_id: str) -> bool:
+        """Delete schedule."""
+        data = self._read()
+        if "schedules" not in data:
+            return False
+        original_len = len(data["schedules"])
+        data["schedules"] = [s for s in data["schedules"] if s["id"] != schedule_id]
+        if len(data["schedules"]) < original_len:
             self._write(data)
             return True
         return False
