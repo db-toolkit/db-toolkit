@@ -115,5 +115,61 @@ export function useAnalytics(connectionId) {
     }
   };
 
-  return { analytics, loading, history, killQuery, getQueryPlan, fetchHistoricalData };
+  const getSlowQueries = async (hours = 24) => {
+    try {
+      const response = await api.get(`/analytics/connections/${connectionId}/slow-queries?hours=${hours}`);
+      return response.data.slow_queries || [];
+    } catch (err) {
+      return [];
+    }
+  };
+
+  const getTableStats = async () => {
+    try {
+      const response = await api.get(`/analytics/connections/${connectionId}/table-stats`);
+      return response.data.table_stats || [];
+    } catch (err) {
+      return [];
+    }
+  };
+
+  const getPoolStats = async () => {
+    try {
+      const response = await api.get(`/analytics/connections/${connectionId}/pool-stats`);
+      return response.data.pool_stats || null;
+    } catch (err) {
+      return null;
+    }
+  };
+
+  const exportPDF = async () => {
+    try {
+      const response = await api.get(`/analytics/connections/${connectionId}/export-pdf`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `analytics_${Date.now()}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success('PDF exported successfully');
+    } catch (err) {
+      toast.error('Failed to export PDF');
+    }
+  };
+
+  return { 
+    analytics, 
+    loading, 
+    history, 
+    killQuery, 
+    getQueryPlan, 
+    fetchHistoricalData,
+    getSlowQueries,
+    getTableStats,
+    getPoolStats,
+    exportPDF
+  };
 }

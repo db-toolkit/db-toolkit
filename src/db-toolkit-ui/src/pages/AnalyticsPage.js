@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Database } from 'lucide-react';
+import { Database, Download } from 'lucide-react';
 import { useConnections, useAnalytics } from '../hooks';
 import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
@@ -16,6 +16,9 @@ import { CurrentQueries } from '../components/analytics/CurrentQueries';
 import { LongRunningQueries } from '../components/analytics/LongRunningQueries';
 import { BlockedQueries } from '../components/analytics/BlockedQueries';
 import { QueryPlanModal } from '../components/analytics/QueryPlanModal';
+import { SlowQueryLog } from '../components/analytics/SlowQueryLog';
+import { TableStats } from '../components/analytics/TableStats';
+import { ConnectionPoolStats } from '../components/analytics/ConnectionPoolStats';
 import { pageTransition } from '../utils/animations';
 
 function AnalyticsPage() {
@@ -27,13 +30,28 @@ function AnalyticsPage() {
   const [connecting, setConnecting] = useState(null);
   const [timeRange, setTimeRange] = useState(1);
   const [planModal, setPlanModal] = useState({ isOpen: false, query: '', plan: null });
-  const { analytics, loading, history, killQuery, getQueryPlan, fetchHistoricalData } = useAnalytics(connectionId);
+  const [slowQueries, setSlowQueries] = useState([]);
+  const [tableStats, setTableStats] = useState([]);
+  const [poolStats, setPoolStats] = useState(null);
+  const { analytics, loading, history, killQuery, getQueryPlan, fetchHistoricalData, getSlowQueries, getTableStats, getPoolStats, exportPDF } = useAnalytics(connectionId);
 
   useEffect(() => {
     if (connectionId) {
       fetchHistoricalData(timeRange);
+      loadAdditionalData();
     }
   }, [connectionId, timeRange]);
+
+  const loadAdditionalData = async () => {
+    const [slow, tables, pool] = await Promise.all([
+      getSlowQueries(24),
+      getTableStats(),
+      getPoolStats()
+    ]);
+    setSlowQueries(slow);
+    setTableStats(tables);
+    setPoolStats(pool);
+  };
 
   const handleViewPlan = async (query) => {
     const result = await getQueryPlan(query);
@@ -139,6 +157,14 @@ function AnalyticsPage() {
             <Button
               variant="secondary"
               size="sm"
+              icon={<Download size={16} />}
+              onClick={exportPDF}
+            >
+              Export PDF
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() => setConnectionId(null)}
             >
               Change Connection
@@ -155,10 +181,13 @@ function AnalyticsPage() {
             <div className="space-y-6">
               <AnalyticsStats analytics={analytics} />
               <AnalyticsCharts history={history} timeRange={timeRange} />
+              {poolStats && <ConnectionPoolStats stats={poolStats} />}
               {analytics.query_stats && <QueryStats stats={analytics.query_stats} />}
               <CurrentQueries queries={analytics.current_queries} onKill={killQuery} onViewPlan={handleViewPlan} />
               <LongRunningQueries queries={analytics.long_running_queries} onKill={killQuery} />
               <BlockedQueries queries={analytics.blocked_queries} />
+              <SlowQueryLog queries={slowQueries} />
+              <TableStats stats={tableStats} />
             </div>
             <QueryPlanModal 
               isOpen={planModal.isOpen}
