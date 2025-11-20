@@ -43,6 +43,7 @@ sed -i '' "s/Version: $CURRENT_VERSION/Version: $NEW_VERSION/" src/db-toolkit-ui
 echo "Updating docs..."
 sed -i '' "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$NEW_VERSION\"/" src/docs/package.json
 sed -i '' "s/v$CURRENT_VERSION/v$NEW_VERSION/" src/docs/src/pages/ChangelogPage.tsx
+sed -i '' "s/v$CURRENT_VERSION/v$NEW_VERSION/" src/docs/src/components/Sidebar.tsx
 
 # Update Website
 echo "Updating web..."
