@@ -54,34 +54,3 @@ async def get_cached_schemas():
     return {"cached_schemas": keys}
 
 
-@router.get("/connections/{connection_id}/schemas")
-async def get_schemas(connection_id: str):
-    """Get schemas list with caching."""
-    connection = await storage.get_connection(connection_id)
-    if not connection:
-        raise HTTPException(status_code=404, detail="Connection not found")
-    
-    schemas = await explorer.get_schemas_cached(connection)
-    return {"success": True, "schemas": schemas}
-
-
-@router.get("/connections/{connection_id}/schemas/{schema_name}/tables")
-async def get_tables(connection_id: str, schema_name: str):
-    """Get tables list with caching."""
-    connection = await storage.get_connection(connection_id)
-    if not connection:
-        raise HTTPException(status_code=404, detail="Connection not found")
-    
-    tables = await explorer.get_tables_cached(connection, schema_name)
-    return {"success": True, "tables": tables}
-
-
-@router.get("/connections/{connection_id}/schemas/{schema_name}/tables/{table_name}/columns")
-async def get_columns(connection_id: str, schema_name: str, table_name: str):
-    """Get columns list with caching."""
-    connection = await storage.get_connection(connection_id)
-    if not connection:
-        raise HTTPException(status_code=404, detail="Connection not found")
-    
-    columns = await explorer.get_columns_cached(connection, table_name, schema_name)
-    return {"success": True, "columns": columns}
