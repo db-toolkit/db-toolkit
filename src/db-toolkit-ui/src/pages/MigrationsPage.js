@@ -21,6 +21,8 @@ function MigrationsPage() {
   const [projectName, setProjectName] = useState('');
   const [projectPath, setProjectPath] = useState('');
   const [projectConnection, setProjectConnection] = useState('');
+  const [sidebarWidth, setSidebarWidth] = useState(320);
+  const [isResizing, setIsResizing] = useState(false);
   const outputRef = useRef(null);
 
   const addOutput = useCallback((text, type = 'info') => {
@@ -123,6 +125,28 @@ function MigrationsPage() {
   const handleApply = () => runCommand('migrate');
   const handleRollback = () => runCommand('downgrade');
   const handleHistory = () => runCommand('history');
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing) return;
+      const newWidth = window.innerWidth - e.clientX;
+      setSidebarWidth(Math.max(250, Math.min(newWidth, 600)));
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
 
   return (
     <div className="h-full flex bg-gray-50 dark:bg-gray-900">
@@ -229,7 +253,14 @@ function MigrationsPage() {
       </div>
 
       {/* File Browser Sidebar */}
-      <div className="w-80 border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div 
+        className="relative border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+        style={{ width: `${sidebarWidth}px` }}
+      >
+        <div
+          onMouseDown={() => setIsResizing(true)}
+          className="absolute left-0 top-0 bottom-0 w-1 cursor-ew-resize hover:bg-blue-500 transition-colors z-10"
+        />
         <MigrationFileBrowser 
           projectPath={selectedProject?.path} 
           onRefresh={() => addOutput('Files refreshed', 'info')}
