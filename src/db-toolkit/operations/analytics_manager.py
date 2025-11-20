@@ -2,8 +2,12 @@
 
 import psutil
 from typing import Dict, List, Any
-from datetime import datetime
+from datetime import datetime, timedelta
+from collections import defaultdict
 from core.models import DatabaseConnection
+
+# Store historical metrics (in-memory, last 3 hours)
+historical_metrics = defaultdict(list)
 
 
 class AnalyticsManager:
@@ -13,34 +17,85 @@ class AnalyticsManager:
         """Initialize analytics manager."""
         self.connection = connection
 
-    async def get_analytics(self, config: DatabaseConnection) -> Dict[str, Any]:
+    async def get_analytics(self, config: DatabaseConnection, connection_id: int) -> Dict[str, Any]:
         """Get comprehensive database analytics."""
         db_type = config.db_type.value if hasattr(config.db_type, 'value') else config.db_type
         
         if db_type == 'postgresql':
-            return await self._get_postgresql_analytics()
+            result = await self._get_postgresql_analytics()
         elif db_type == 'mysql':
-            return await self._get_mysql_analytics()
+            result = await self._get_mysql_analytics()
         elif db_type == 'mongodb':
-            return await self._get_mongodb_analytics()
+            result = await self._get_mongodb_analytics()
         elif db_type == 'sqlite':
-            return await self._get_sqlite_analytics()
+            result = await self._get_sqlite_analytics()
         else:
             return {"error": "Unsupported database type"}
+        
+        # Store historical data
+        if result.get('success'):
+            self._store_historical_data(connection_id, result)
+        
+        return result
+    
+    def _store_historical_data(self, connection_id: int, data: Dict[str, Any]):
+        """Store metrics for historical analysis (last 3 hours)."""
+        key = f"conn_{connection_id}"
+        timestamp = datetime.utcnow()
+        
+        historical_metrics[key].append({
+            'timestamp': timestamp.isoformat(),
+            'cpu': data['system_stats']['cpu_usage'],
+            'memory': data['system_stats']['memory_usage'],
+            'disk': data['system_stats']['disk_usage'],
+            'connections': data['active_connections'],
+            'idle_connections': data['idle_connections'],
+            'database_size': data['database_size']
+        })
+        
+        # Keep only last 3 hours (3600 data points at 3s intervals)
+        cutoff = timestamp - timedelta(hours=3)
+        historical_metrics[key] = [
+            m for m in historical_metrics[key]
+            if datetime.fromisoformat(m['timestamp']) > cutoff
+        ]
+    
+    def get_historical_data(self, connection_id: int, hours: int = 3) -> List[Dict[str, Any]]:
+        """Get historical metrics for specified time range."""
+        key = f"conn_{connection_id}"
+        cutoff = datetime.utcnow() - timedelta(hours=hours)
+        
+        return [
+            m for m in historical_metrics.get(key, [])
+            if datetime.fromisoformat(m['timestamp']) > cutoff
+        ]
 
     async def _get_postgresql_analytics(self) -> Dict[str, Any]:
         """Get PostgreSQL analytics."""
         try:
-            # Current queries
+            # Current queries with timing and cost
             current_queries_sql = """
                 SELECT pid, usename, application_name, client_addr, 
-                       state, query, query_start, state_change
+                       state, query, query_start, state_change,
+                       EXTRACT(EPOCH FROM (NOW() - query_start)) as duration,
+                       CASE 
+                         WHEN query ILIKE 'SELECT%' THEN 'SELECT'
+                         WHEN query ILIKE 'INSERT%' THEN 'INSERT'
+                         WHEN query ILIKE 'UPDATE%' THEN 'UPDATE'
+                         WHEN query ILIKE 'DELETE%' THEN 'DELETE'
+                         ELSE 'OTHER'
+                       END as query_type
                 FROM pg_stat_activity
                 WHERE state != 'idle' AND query NOT LIKE '%pg_stat_activity%'
                 ORDER BY query_start DESC
                 LIMIT 50
             """
             current_queries = await self.connection.fetch(current_queries_sql)
+            
+            # Group queries by type
+            query_stats = {'SELECT': 0, 'INSERT': 0, 'UPDATE': 0, 'DELETE': 0, 'OTHER': 0}
+            for q in current_queries:
+                query_stats[q['query_type']] += 1
 
             # Idle connections
             idle_sql = """
@@ -119,6 +174,7 @@ class AnalyticsManager:
                 "database_size": db_size,
                 "active_connections": active_connections,
                 "system_stats": system_stats,
+                "query_stats": query_stats,
                 "timestamp": datetime.utcnow().isoformat()
             }
         except Exception as e:
@@ -320,6 +376,24 @@ class AnalyticsManager:
                 "error": str(e)
             }
 
+    async def get_query_plan(self, query: str, config: DatabaseConnection) -> Dict[str, Any]:
+        """Get query execution plan."""
+        db_type = config.db_type.value if hasattr(config.db_type, 'value') else config.db_type
+        
+        try:
+            if db_type == 'postgresql':
+                result = await self.connection.fetch(f"EXPLAIN (FORMAT JSON, ANALYZE) {query}")
+                plan = result[0]['QUERY PLAN'] if result else {}
+                return {"success": True, "plan": plan}
+            elif db_type == 'mysql':
+                result = await self.connection.fetch(f"EXPLAIN FORMAT=JSON {query}")
+                plan = result[0]['EXPLAIN'] if result else {}
+                return {"success": True, "plan": plan}
+            else:
+                return {"success": False, "error": "Query plan not supported for this database"}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+    
     async def kill_query(self, pid: int, config: DatabaseConnection) -> Dict[str, Any]:
         """Kill a running query by PID."""
         db_type = config.db_type.value if hasattr(config.db_type, 'value') else config.db_type

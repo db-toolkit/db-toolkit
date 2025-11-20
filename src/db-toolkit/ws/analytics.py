@@ -34,7 +34,7 @@ async def websocket_analytics(websocket: WebSocket):
         
         # Send analytics every 5 seconds
         while True:
-            result = await analytics_manager.get_analytics(config)
+            result = await analytics_manager.get_analytics(config, connection_id)
             await websocket.send_json(result)
             await asyncio.sleep(3)
             
