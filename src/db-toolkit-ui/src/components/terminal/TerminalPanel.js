@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import { X, Minimize2, Maximize2, Plus } from 'lucide-react';
+import { X, Minimize2, Maximize2, Plus, Database } from 'lucide-react';
 import { WS_ENDPOINTS } from '../../services/websocket';
 import 'xterm/css/xterm.css';
 
@@ -263,7 +263,52 @@ function TerminalPanel({ isOpen, onClose }) {
       />
       
       <div className="flex items-center justify-between px-4 py-2 bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50">
-        <div className="flex items-center gap-2 flex-1 overflow-x-auto">
+        <div className="flex items-center gap-3 flex-1 overflow-x-auto">
+          <div className="flex items-center gap-1 border-r border-slate-700 pr-3">
+            <button
+              onClick={() => {
+                const term = terminalsRef.current[activeTab]?.term;
+                const ws = terminalsRef.current[activeTab]?.ws;
+                if (term && ws && ws.readyState === WebSocket.OPEN) {
+                  ws.send('psql\r');
+                }
+              }}
+              className="px-2 py-1 text-xs rounded bg-slate-700/50 text-slate-300 hover:text-cyan-400 hover:bg-slate-700 transition-all flex items-center gap-1"
+              title="PostgreSQL CLI"
+            >
+              <Database size={12} />
+              psql
+            </button>
+            <button
+              onClick={() => {
+                const term = terminalsRef.current[activeTab]?.term;
+                const ws = terminalsRef.current[activeTab]?.ws;
+                if (term && ws && ws.readyState === WebSocket.OPEN) {
+                  ws.send('mysql\r');
+                }
+              }}
+              className="px-2 py-1 text-xs rounded bg-slate-700/50 text-slate-300 hover:text-cyan-400 hover:bg-slate-700 transition-all flex items-center gap-1"
+              title="MySQL CLI"
+            >
+              <Database size={12} />
+              mysql
+            </button>
+            <button
+              onClick={() => {
+                const term = terminalsRef.current[activeTab]?.term;
+                const ws = terminalsRef.current[activeTab]?.ws;
+                if (term && ws && ws.readyState === WebSocket.OPEN) {
+                  ws.send('mongo\r');
+                }
+              }}
+              className="px-2 py-1 text-xs rounded bg-slate-700/50 text-slate-300 hover:text-cyan-400 hover:bg-slate-700 transition-all flex items-center gap-1"
+              title="MongoDB CLI"
+            >
+              <Database size={12} />
+              mongo
+            </button>
+          </div>
+          <div className="flex items-center gap-2 flex-1 overflow-x-auto">
           {tabs.map(tab => (
             <div
               key={tab.id}
@@ -295,6 +340,7 @@ function TerminalPanel({ isOpen, onClose }) {
           >
             <Plus size={14} />
           </button>
+          </div>
         </div>
         
         <div className="flex items-center gap-2 ml-4">
