@@ -21,7 +21,7 @@ function App() {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
+      <div className="flex flex-col bg-white dark:bg-gray-900">
         <Header onSearchClick={() => setIsCommandOpen(true)} />
         <Suspense fallback={
           <div className="flex items-center justify-center h-screen">
