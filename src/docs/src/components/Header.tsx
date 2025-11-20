@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Database, Github, Moon, Sun, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { fadeIn } from '../utils/motion';
@@ -7,7 +8,7 @@ interface HeaderProps {
   onSearchClick: () => void;
 }
 
-export default function Header({ onSearchClick }: HeaderProps) {
+function Header({ onSearchClick }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -52,3 +53,5 @@ export default function Header({ onSearchClick }: HeaderProps) {
     </motion.header>
   );
 }
+
+export default memo(Header);

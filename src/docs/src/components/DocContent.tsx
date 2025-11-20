@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { DocData } from '../data';
 import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer } from '../utils/motion';
@@ -10,7 +11,7 @@ interface DocContentProps {
   onNavigate?: (id: string) => void;
 }
 
-export default function DocContent({ data, prevSection, nextSection, onNavigate }: DocContentProps) {
+function DocContent({ data, prevSection, nextSection, onNavigate }: DocContentProps) {
   const handleNavigate = (id: string) => {
     if (onNavigate) {
       onNavigate(id);
@@ -81,3 +82,5 @@ export default function DocContent({ data, prevSection, nextSection, onNavigate 
     </motion.main>
   );
 }
+
+export default memo(DocContent);

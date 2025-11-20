@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import Sidebar from '../components/Sidebar';
 import DocContent from '../components/DocContent';
 import {
@@ -37,16 +37,25 @@ const docMap: Record<string, any> = {
 export default function GuidePage() {
   const [activeSection, setActiveSection] = useState('getting-started');
   
-  const currentIndex = sections.findIndex(s => s.id === activeSection);
-  const prevSection = currentIndex > 0 ? sections[currentIndex - 1] : undefined;
-  const nextSection = currentIndex < sections.length - 1 ? sections[currentIndex + 1] : undefined;
+  const { prevSection, nextSection, currentData } = useMemo(() => {
+    const currentIndex = sections.findIndex(s => s.id === activeSection);
+    return {
+      prevSection: currentIndex > 0 ? sections[currentIndex - 1] : undefined,
+      nextSection: currentIndex < sections.length - 1 ? sections[currentIndex + 1] : undefined,
+      currentData: docMap[activeSection]
+    };
+  }, [activeSection]);
+  
+  const handleSectionChange = useCallback((section: string) => {
+    setActiveSection(section);
+  }, []);
 
   return (
     <div className="flex w-full">
       <div className="w-72 flex-shrink-0" />
-      <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
+      <Sidebar activeSection={activeSection} onSectionChange={handleSectionChange} />
       <DocContent 
-        data={docMap[activeSection]} 
+        data={currentData} 
         prevSection={prevSection}
         nextSection={nextSection}
         onNavigate={setActiveSection}

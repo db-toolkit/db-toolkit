@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { scaleIn } from '../utils/motion';
@@ -30,7 +30,7 @@ const allSections = [
   { id: 'settings', data: settingsData },
 ];
 
-export default function CommandPalette({ isOpen, onClose, onNavigate }: CommandPaletteProps) {
+function CommandPalette({ isOpen, onClose, onNavigate }: CommandPaletteProps) {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<any[]>([]);
 
@@ -124,3 +124,5 @@ export default function CommandPalette({ isOpen, onClose, onNavigate }: CommandP
     </AnimatePresence>
   );
 }
+
+export default memo(CommandPalette);

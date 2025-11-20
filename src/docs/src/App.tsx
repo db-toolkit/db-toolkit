@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/Header';
-import DocsPage from './pages/DocsPage';
+
+const DocsPage = lazy(() => import('./pages/DocsPage'));
 
 function App() {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
@@ -22,7 +23,13 @@ function App() {
     <ThemeProvider>
       <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
         <Header onSearchClick={() => setIsCommandOpen(true)} />
-        <DocsPage isCommandOpen={isCommandOpen} onCommandClose={() => setIsCommandOpen(false)} />
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          </div>
+        }>
+          <DocsPage isCommandOpen={isCommandOpen} onCommandClose={() => setIsCommandOpen(false)} />
+        </Suspense>
       </div>
     </ThemeProvider>
   );

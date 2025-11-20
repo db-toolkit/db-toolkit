@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import CommandPalette from '../components/CommandPalette';
-import GuidePage from './GuidePage';
-import ChangelogPage from './ChangelogPage';
+
+const GuidePage = lazy(() => import('./GuidePage'));
+const ChangelogPage = lazy(() => import('./ChangelogPage'));
 
 interface DocsPageProps {
   isCommandOpen: boolean;
@@ -39,7 +40,13 @@ export default function DocsPage({ isCommandOpen, onCommandClose }: DocsPageProp
       </div>
       
       <div className="pt-[124px]">
-        {activeTab === 'guide' ? <GuidePage /> : <ChangelogPage />}
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          </div>
+        }>
+          {activeTab === 'guide' ? <GuidePage /> : <ChangelogPage />}
+        </Suspense>
       </div>
       
       <CommandPalette 
