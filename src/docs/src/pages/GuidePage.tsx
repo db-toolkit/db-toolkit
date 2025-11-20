@@ -12,6 +12,17 @@ import {
   settingsData,
 } from '../data';
 
+const sections = [
+  { id: 'getting-started', label: 'Getting Started', data: gettingStartedData },
+  { id: 'connections', label: 'Connections', data: connectionsData },
+  { id: 'query-editor', label: 'Query Editor', data: queryEditorData },
+  { id: 'schema-explorer', label: 'Schema Explorer', data: schemaExplorerData },
+  { id: 'data-explorer', label: 'Data Explorer', data: dataExplorerData },
+  { id: 'backup-restore', label: 'Backup & Restore', data: backupRestoreData },
+  { id: 'migrations', label: 'Migrations', data: migrationsData },
+  { id: 'settings', label: 'Settings', data: settingsData },
+];
+
 const docMap: Record<string, any> = {
   'getting-started': gettingStartedData,
   'connections': connectionsData,
@@ -25,12 +36,19 @@ const docMap: Record<string, any> = {
 
 export default function GuidePage() {
   const [activeSection, setActiveSection] = useState('getting-started');
+  
+  const currentIndex = sections.findIndex(s => s.id === activeSection);
+  const nextSection = currentIndex < sections.length - 1 ? sections[currentIndex + 1] : undefined;
 
   return (
     <div className="flex w-full">
       <div className="w-72 flex-shrink-0" />
       <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
-      <DocContent data={docMap[activeSection]} />
+      <DocContent 
+        data={docMap[activeSection]} 
+        nextSection={nextSection}
+        onNavigate={setActiveSection}
+      />
     </div>
   );
 }
