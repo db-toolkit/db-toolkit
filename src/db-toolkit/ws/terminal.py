@@ -65,6 +65,12 @@ async def websocket_terminal(websocket: WebSocket):
         # Parent process
         os.close(slave_fd)
         
+        # Set initial cwd to match child process
+        if previous_session and os.path.exists(previous_session.get('cwd', '')):
+            initial_cwd = previous_session['cwd']
+        else:
+            initial_cwd = os.path.expanduser('~')
+        
         async def read_output():
             """Read from terminal and send to WebSocket."""
             while True:
@@ -81,7 +87,7 @@ async def websocket_terminal(websocket: WebSocket):
                     break
         
         command_history = []
-        current_cwd = os.getcwd()
+        current_cwd = initial_cwd
         
         async def write_input():
             """Receive from WebSocket and write to terminal."""
