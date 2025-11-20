@@ -1,27 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import LoadingSpinner from './LoadingSpinner';
 
 export default function NavigationLoader() {
   const [loading, setLoading] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    setLoading(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    const handleStart = () => setLoading(true);
-    const handleComplete = () => setLoading(false);
-
-    window.addEventListener('beforeunload', handleStart);
-    
-    return () => {
-      window.removeEventListener('beforeunload', handleStart);
-    };
-  }, []);
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, [pathname, searchParams]);
 
   if (!loading) return null;
   return <LoadingSpinner />;

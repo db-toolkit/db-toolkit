@@ -35,32 +35,34 @@ export default function BlogPost({ params }) {
   };
 
   return (
-    <main className="min-h-screen bg-white dark:bg-gray-900 pt-24">
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24">
       <article className="container mx-auto px-6 max-w-4xl py-12">
         <Link
           href="/blog"
-          className="inline-flex items-center gap-2 text-cyan-600 dark:text-teal-400 hover:underline mb-8"
+          className="inline-flex items-center gap-2 px-4 py-2 text-cyan-600 dark:text-teal-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors mb-8"
         >
           <ArrowLeft size={20} />
           Back to Blog
         </Link>
         
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-          {post.title}
-        </h1>
-        
-        <div className="flex items-center gap-4 text-gray-500 dark:text-gray-400 mb-8">
-          <span className="flex items-center gap-1">
-            <Calendar size={16} />
-            {post.date}
-          </span>
-          <span className="flex items-center gap-1">
-            <Clock size={16} />
-            {post.readTime}
-          </span>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 md:p-12">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 dark:from-cyan-400 dark:to-teal-400 bg-clip-text text-transparent mb-6">
+            {post.title}
+          </h1>
+          
+          <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mb-8 pb-8 border-b border-gray-200 dark:border-gray-700">
+            <span className="flex items-center gap-2">
+              <Calendar size={18} />
+              {post.date}
+            </span>
+            <span className="flex items-center gap-2">
+              <Clock size={18} />
+              {post.readTime}
+            </span>
+          </div>
+          
+          <BlogContent content={post.content} />
         </div>
-        
-        <BlogContent content={post.content} />
       </article>
     </main>
   );
