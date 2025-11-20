@@ -16,6 +16,10 @@ async def websocket_terminal(websocket: WebSocket):
     # Create pseudo-terminal
     master_fd, slave_fd = pty.openpty()
     
+    # Set initial terminal size
+    winsize = struct.pack('HHHH', 24, 80, 0, 0)
+    fcntl.ioctl(master_fd, termios.TIOCSWINSZ, winsize)
+    
     # Start shell process
     shell = os.environ.get('SHELL', '/bin/bash')
     pid = os.fork()
@@ -56,7 +60,14 @@ async def websocket_terminal(websocket: WebSocket):
                     if 'bytes' in data:
                         os.write(master_fd, data['bytes'])
                     elif 'text' in data:
-                        os.write(master_fd, data['text'].encode())
+                        text = data['text']
+                        if text.startswith('RESIZE:'):
+                            # Handle resize: RESIZE:rows:cols
+                            _, rows, cols = text.split(':')
+                            winsize = struct.pack('HHHH', int(rows), int(cols), 0, 0)
+                            fcntl.ioctl(master_fd, termios.TIOCSWINSZ, winsize)
+                        else:
+                            os.write(master_fd, text.encode())
             except WebSocketDisconnect:
                 pass
         

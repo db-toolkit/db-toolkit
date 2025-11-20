@@ -18,12 +18,16 @@ function TerminalPanel({ isOpen, onClose }) {
   const [isResizing, setIsResizing] = useState(false);
 
   const handleData = useCallback((data, type) => {
-    if (termRef.current) {
+    if (termRef.current && type === 'data') {
       termRef.current.write(data);
     }
   }, []);
 
   const { sendData, isConnected } = useTerminal(handleData);
+
+  const sendResize = useCallback((rows, cols) => {
+    sendData(`RESIZE:${rows}:${cols}`);
+  }, [sendData]);
 
   useEffect(() => {
     if (!isOpen || !containerRef.current) return;
@@ -67,11 +71,15 @@ function TerminalPanel({ isOpen, onClose }) {
       sendData(data);
     });
 
+    term.onResize(({ rows, cols }) => {
+      sendResize(rows, cols);
+    });
+
     return () => {
       term.dispose();
       termRef.current = null;
     };
-  }, [isOpen, sendData]);
+  }, [isOpen, sendData, sendResize]);
 
   useEffect(() => {
     if (!fitAddon) return;
@@ -85,10 +93,14 @@ function TerminalPanel({ isOpen, onClose }) {
   }, [fitAddon]);
 
   useEffect(() => {
-    if (fitAddon && isOpen) {
-      setTimeout(() => fitAddon.fit(), 100);
+    if (fitAddon && isOpen && termRef.current) {
+      setTimeout(() => {
+        fitAddon.fit();
+        const { rows, cols } = termRef.current;
+        sendResize(rows, cols);
+      }, 100);
     }
-  }, [height, isMaximized, fitAddon, isOpen]);
+  }, [height, isMaximized, fitAddon, isOpen, sendResize]);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
