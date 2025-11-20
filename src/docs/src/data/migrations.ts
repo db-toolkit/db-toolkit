@@ -3,45 +3,73 @@ export const migrationsData = {
   sections: [
     {
       heading: "Overview",
-      content: `DB Toolkit integrates Migrator CLI - a universal migration tool for Python apps using SQLAlchemy.
+      content: `DB Toolkit provides a built-in Migration Panel powered by Migrator CLI.
 
-Features:
-- Zero boilerplate - one command to init and start migrating
-- Auto-detect models - finds SQLAlchemy Base classes automatically
-- Smart config - no need to manually edit alembic.ini or env.py
-- Framework agnostic - works with FastAPI, Flask, or standalone SQLAlchemy
-- Pythonic CLI - clean, readable, extensible commands`
+Manage database schema changes with:
+- Project-based migrations - Link migration folders to database connections
+- Real-time terminal output via WebSocket
+- Execute migration commands directly from the UI
+- Track migration history and status
+- No manual configuration needed`
     },
     {
-      heading: "Installation",
-      content: `Install Migrator CLI:
+      heading: "Getting Started",
+      content: `**1. Open Migration Panel**
+Click "Migrations" in the sidebar
 
-**Quick install:**
-curl -sSL https://raw.githubusercontent.com/Adelodunpeter25/migrator/main/install.sh | bash
+**2. Create Migration Project**
+- Click "New Project" or go to Settings > Migrations
+- Select your project folder (where your Python code lives)
+- Link it to a database connection
+- DB Toolkit will remember this setup
 
-**Using pip:**
-pip install migrator-cli
-
-**Using uv:**
-uv add migrator-cli`
-    },
-    {
-      heading: "Quick Start",
-      content: `**1. Set up your database URL**
-
-Create a .env file:
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname
-
-Or use settings.py, config.py, config.yaml, or config.toml
-
-**2. Initialize migrations**
+**3. Initialize Migrations**
+In the terminal panel, run:
 migrator init
 
-**3. Create your first migration**
-migrator makemigrations "create user table"
+This creates a migrations/ folder in your project with all necessary files.`
+    },
+    {
+      heading: "Creating Migrations",
+      content: `**1. Make changes to your SQLAlchemy models**
+Edit your Python files with model definitions
 
-**4. Apply migrations**
-migrator migrate`
+**2. Generate migration**
+In the Migration Panel terminal:
+migrator makemigrations "describe your changes"
+
+Example:
+migrator makemigrations "add email column to users"
+
+**3. Review the migration**
+DB Toolkit shows the generated migration file
+Check the upgrade() and downgrade() functions
+
+**4. Apply migration**
+migrator migrate
+
+The terminal shows real-time output as the migration runs.`
+    },
+    {
+      heading: "Migration Projects",
+      content: `DB Toolkit uses a project-based approach:
+
+**What is a Migration Project?**
+A migration project links:
+- Your project folder (where Python code lives)
+- A database connection
+- Migration settings (auto-detected or custom)
+
+**Managing Projects:**
+1. Go to Settings > Migrations
+2. Click "Add Project"
+3. Select folder with your SQLAlchemy models
+4. Choose database connection
+5. Save
+
+**Switching Projects:**
+Use the dropdown in Migration Panel to switch between projects.
+Each project has its own migration history and settings.`
     },
     {
       heading: "Commands",
@@ -69,46 +97,67 @@ migrator stamp head
 **Show migration status:**
 migrator status`
     },
+
     {
-      heading: "Advanced Usage",
-      content: `**Nested Project Structures:**
-migrator init --base app.core.database:Base
-migrator makemigrations "initial" --base app.core.database:Base
+      heading: "Migration Terminal",
+      content: `The Migration Panel includes an integrated terminal:
 
-**Async SQLAlchemy:**
-DATABASE_URL=postgresql+asyncpg://user:pass@localhost/db
-Migrator auto-converts to: postgresql://user:pass@localhost/db
+**Features:**
+- Real-time command output via WebSocket
+- Drag to resize terminal height
+- Auto-scroll to latest output
+- Command history
+- Color-coded output (errors in red)
 
-**Custom Config:**
-migrator init --config backend/settings.py
-
-**Verbose Mode:**
-migrator init --verbose`
+**Available Commands:**
+migrator init - Initialize migrations
+migrator makemigrations "message" - Create migration
+migrator migrate - Apply migrations
+migrator downgrade - Rollback last migration
+migrator history - Show migration history
+migrator current - Show current revision
+migrator status - Show migration status
+migrator stamp head - Mark existing DB as migrated`
     },
     {
-      heading: "Using in DB Toolkit",
-      content: `DB Toolkit provides a Migration Panel with:
-- Execute migration commands with real-time WebSocket output
-- Manage migration projects with folder selection
-- Link migrations to database connections
-- View migration history and status
-- Terminal output for all migration operations
+      heading: "Working with Existing Databases",
+      content: `If you have an existing database with tables:
 
-Access via the "Migrations" tab in the sidebar.`
+**1. Initialize migrations**
+migrator init
+
+**2. Mark current state**
+migrator stamp head
+
+This tells Migrator your database is already at the "head" revision.
+
+**3. Make changes**
+Now you can create new migrations for future changes:
+migrator makemigrations "add new column"
+migrator migrate`
     },
     {
       heading: "Troubleshooting",
-      content: `**Base not found?**
-Use --base flag:
-migrator init --base app.core.database:Base
+      content: `**Project not showing?**
+Go to Settings > Migrations and verify:
+- Folder path is correct
+- Database connection is active
+- Project is saved
 
-**Existing database?**
-Use stamp to mark current state:
-migrator stamp head
+**Base class not found?**
+Use --base flag in terminal:
+migrator init --base app.database:Base
 
-**Connection issues?**
-Verify DATABASE_URL in .env file
-Check database is running and accessible`
+**Migration failed?**
+- Check terminal output for errors
+- Verify database connection is active
+- Check your model definitions
+- Try: migrator downgrade (to rollback)
+
+**Terminal not responding?**
+- Check WebSocket connection
+- Refresh the page
+- Verify backend is running`
     }
   ]
 };
