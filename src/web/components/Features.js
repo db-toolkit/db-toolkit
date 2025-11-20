@@ -29,7 +29,7 @@ export default function Features() {
       icon: Code,
       title: 'Developer Friendly',
       description: 'Syntax highlighting, code completion, and query formatting built-in',
-      color: 'green'
+      color: 'orange'
     },
     {
       icon: Lock,
@@ -41,7 +41,7 @@ export default function Features() {
       icon: Layers,
       title: 'Migration Ready',
       description: 'Built-in database migration tools with real-time output streaming',
-      color: 'blue'
+      color: 'indigo'
     }
   ];
 
