@@ -30,8 +30,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Email</h3>
-                  <a href="mailto:adelodunpeter25@gmail.com" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-                    adelodunpeter25@gmail.com
+                  <a href="mailto:adelodunpeter24@gmail.com" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+                    adelodunpeter24@gmail.com
                   </a>
                 </div>
               </motion.div>

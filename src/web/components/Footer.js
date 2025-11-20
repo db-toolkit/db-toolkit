@@ -40,7 +40,7 @@ export default function Footer() {
               <a href="https://github.com/Adelodunpeter25/db-toolkit" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">
                 <Github size={20} />
               </a>
-              <a href="mailto:adelodunpeter25@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">
+              <a href="mailto:adelodunpeter24@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">
                 <Mail size={20} />
               </a>
             </div>
