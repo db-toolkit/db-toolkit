@@ -2,6 +2,7 @@
  * Data Explorer page for browsing table data
  */
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, RefreshCw, Database, Download, Filter } from 'lucide-react';
 import { useConnections, useSchema } from '../hooks';
@@ -18,6 +19,7 @@ import { pageTransition } from '../utils/animations';
 import api from '../services/api';
 
 function DataExplorerPage() {
+  const navigate = useNavigate();
   const { connections, connectToDatabase } = useConnections();
   const toast = useToast();
   const [connectionId, setConnectionId] = useState(null);
@@ -225,7 +227,7 @@ function DataExplorerPage() {
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               Create a database connection first to explore your data
             </p>
-            <Button onClick={() => window.location.href = '/connections'}>
+            <Button onClick={() => navigate('/connections')}>
               Create Connection
             </Button>
           </div>

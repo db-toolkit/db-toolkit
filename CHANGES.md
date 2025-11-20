@@ -18,5 +18,6 @@ This file tracks changes during development before they are added to CHANGELOG.m
 - URL field clears when toggling checkbox off
 - Parsed URL values auto-populate fields for immediate editing
 - Visual feedback (toast) when URL is parsed successfully
+- Create Connection button in Data Explorer now navigates correctly without page refresh
 
 ### Removed
