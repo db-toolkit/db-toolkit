@@ -45,10 +45,10 @@ export default function Navbar() {
               href="https://github.com/Adelodunpeter25/db-toolkit"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-110 transition-all"
+              className="hidden sm:flex p-2 rounded-full hover:bg-gray-900 dark:hover:bg-white hover:scale-110 transition-all group"
               aria-label="GitHub"
             >
-              <Github size={20} className="text-gray-700 dark:text-gray-300" />
+              <Github size={20} className="text-gray-700 dark:text-gray-300 group-hover:text-white dark:group-hover:text-gray-900" />
             </a>
             <button
               onClick={toggleTheme}
