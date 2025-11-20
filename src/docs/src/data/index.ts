@@ -1,0 +1,17 @@
+export { gettingStartedData } from './gettingStarted';
+export { connectionsData } from './connections';
+export { queryEditorData } from './queryEditor';
+export { schemaExplorerData } from './schemaExplorer';
+export { dataExplorerData } from './dataExplorer';
+export { backupRestoreData } from './backupRestore';
+export { settingsData } from './settings';
+
+export interface DocSection {
+  heading: string;
+  content: string;
+}
+
+export interface DocData {
+  title: string;
+  sections: DocSection[];
+}
