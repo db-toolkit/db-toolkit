@@ -81,6 +81,51 @@ Features:
 - Column mapping
 - Data validation
 - Error reporting`
+    },
+    {
+      heading: "Cell Preview",
+      content: `For large text/blob fields:
+
+1. Click **"Preview"** icon in cell
+2. View full content in modal
+3. Copy or edit content
+4. Close modal to return
+
+Useful for:
+- Long text fields
+- JSON data
+- Binary data (base64)
+- XML content`
+    },
+    {
+      heading: "Refresh Data",
+      content: `Click **"Refresh"** button to reload table data after:
+- External changes
+- Concurrent edits
+- Database updates
+
+Keyboard shortcut: **Ctrl/Cmd + R**`
+    },
+    {
+      heading: "Tips",
+      content: `**Performance:**
+For tables with millions of rows:
+- Use filters to reduce dataset
+- Increase rows per page cautiously
+- Use indexes for faster sorting
+- Consider query editor for complex filters
+
+**Bulk Operations:**
+For bulk updates:
+- Use SQL UPDATE in Query Editor
+- More efficient than inline editing
+- Supports complex conditions
+
+**Data Integrity:**
+- Foreign key violations prevent save
+- Unique constraint violations show error
+- NOT NULL fields require values
+- Check constraints validated before save`
     }
   ]
 };
