@@ -1,32 +1,25 @@
 /**
  * Terminal panel with xterm.js integration.
  */
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { X, Minimize2, Maximize2 } from 'lucide-react';
-import { useTerminal } from '../../hooks/useTerminal';
+import { WS_ENDPOINTS } from '../../services/websocket';
 import 'xterm/css/xterm.css';
 
 function TerminalPanel({ isOpen, onClose }) {
   const terminalRef = useRef(null);
   const containerRef = useRef(null);
   const termRef = useRef(null);
-  const [fitAddon, setFitAddon] = useState(null);
+  const fitAddonRef = useRef(null);
+  const wsRef = useRef(null);
   const [isMaximized, setIsMaximized] = useState(false);
   const [height, setHeight] = useState(384);
   const [isResizing, setIsResizing] = useState(false);
 
-  const handleData = useCallback((data, type) => {
-    if (termRef.current && type === 'data') {
-      termRef.current.write(data);
-    }
-  }, []);
-
-  const { sendData, isConnected } = useTerminal(handleData);
-
   useEffect(() => {
-    if (!isOpen || !containerRef.current) return;
+    if (!isOpen || !terminalRef.current) return;
 
     const term = new Terminal({
       cursorBlink: true,
@@ -36,67 +29,72 @@ function TerminalPanel({ isOpen, onClose }) {
         background: '#1e1e1e',
         foreground: '#d4d4d4',
         cursor: '#ffffff',
-        black: '#000000',
-        red: '#cd3131',
-        green: '#0dbc79',
-        yellow: '#e5e510',
-        blue: '#2472c8',
-        magenta: '#bc3fbc',
-        cyan: '#11a8cd',
-        white: '#e5e5e5',
-        brightBlack: '#666666',
-        brightRed: '#f14c4c',
-        brightGreen: '#23d18b',
-        brightYellow: '#f5f543',
-        brightBlue: '#3b8eea',
-        brightMagenta: '#d670d6',
-        brightCyan: '#29b8db',
-        brightWhite: '#e5e5e5',
       },
     });
 
     const fit = new FitAddon();
     term.loadAddon(fit);
     term.open(terminalRef.current);
-    fit.fit();
+    
+    setTimeout(() => {
+      fit.fit();
+      term.focus();
+    }, 50);
 
     termRef.current = term;
-    setFitAddon(fit);
+    fitAddonRef.current = fit;
+
+    const ws = new WebSocket(WS_ENDPOINTS.TERMINAL);
+    wsRef.current = ws;
+
+    ws.onmessage = (event) => {
+      if (event.data instanceof Blob) {
+        event.data.arrayBuffer().then((buffer) => {
+          term.write(new Uint8Array(buffer));
+        });
+      } else {
+        term.write(event.data);
+      }
+    };
 
     term.onData((data) => {
-      sendData(data);
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(data);
+      }
     });
 
     term.onResize(({ rows, cols }) => {
-      sendData(`RESIZE:${rows}:${cols}`);
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(`RESIZE:${rows}:${cols}`);
+      }
     });
 
+    const handleWindowResize = () => {
+      if (fitAddonRef.current) {
+        fitAddonRef.current.fit();
+      }
+    };
+    window.addEventListener('resize', handleWindowResize);
+
     return () => {
+      window.removeEventListener('resize', handleWindowResize);
       term.dispose();
+      ws.close();
       termRef.current = null;
-      setFitAddon(null);
+      fitAddonRef.current = null;
+      wsRef.current = null;
     };
-  }, [isOpen, sendData]);
+  }, [isOpen]);
 
   useEffect(() => {
-    if (!fitAddon) return;
-
-    const handleResize = () => {
-      fitAddon.fit();
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [fitAddon]);
-
-  useEffect(() => {
-    if (fitAddon && isOpen && termRef.current) {
+    if (isOpen && fitAddonRef.current && termRef.current) {
       const timer = setTimeout(() => {
-        fitAddon.fit();
+        fitAddonRef.current.fit();
+        termRef.current.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [height, isMaximized, fitAddon, isOpen]);
+  }, [height, isMaximized, isOpen]);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
