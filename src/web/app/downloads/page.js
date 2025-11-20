@@ -5,9 +5,9 @@ import { Download, Monitor, Apple, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DownloadsPage() {
-  const [downloading, setDownloading] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(null);
 
-  const handleDownload = (url: string, label: string) => {
+  const handleDownload = (url, label) => {
     setDownloading(label);
     window.location.href = url;
     setTimeout(() => setDownloading(null), 2000);
