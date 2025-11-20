@@ -30,7 +30,7 @@ export default function Hero() {
             repeat: Infinity,
             ease: "linear"
           }}
-          className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-100/30 to-transparent rounded-full blur-3xl"
+          className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-100/30 to-transparent rounded-full blur-3xl motion-reduce:animate-none"
         />
         <motion.div
           animate={{
@@ -42,14 +42,14 @@ export default function Hero() {
             repeat: Infinity,
             ease: "linear"
           }}
-          className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-100/30 to-transparent rounded-full blur-3xl"
+          className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-100/30 to-transparent rounded-full blur-3xl motion-reduce:animate-none"
         />
         
         {/* Floating particles */}
-        {[...Array(30)].map((_, i) => (
+        {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-3 h-3 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-full"
+            className="absolute w-3 h-3 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-full motion-reduce:hidden"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,

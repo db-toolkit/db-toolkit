@@ -1,5 +1,13 @@
+import dynamic from 'next/dynamic';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+
+const BlogContent = dynamic(() => Promise.resolve(({ content }) => (
+  <div
+    className="prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300"
+    dangerouslySetInnerHTML={{ __html: content }}
+  />
+)), { ssr: true });
 
 export function generateStaticParams() {
   return [
@@ -52,10 +60,7 @@ export default function BlogPost({ params }) {
           </span>
         </div>
         
-        <div
-          className="prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <BlogContent content={post.content} />
       </article>
     </main>
   );

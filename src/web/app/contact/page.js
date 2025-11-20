@@ -1,10 +1,15 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import ContactForm from '@/components/ContactForm';
 import { Mail, Github, MessageSquare } from 'lucide-react';
 import { fadeInUp, staggerContainer } from '@/utils/motion';
 import Footer from '@/components/Footer';
+
+const ContactForm = dynamic(() => import('@/components/ContactForm'), { 
+  loading: () => <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-96 rounded-lg"></div>,
+  ssr: false 
+});
 
 export default function Contact() {
   return (
