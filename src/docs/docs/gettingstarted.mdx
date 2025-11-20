@@ -1,0 +1,164 @@
+---
+sidebar_position: 1
+id: "gettingstarted"
+title: "Getting Started"
+---
+
+import { PlatformProvider, PlatformSelectorButton, PlatformItem } from "@site/src/components/platformcontext";
+import { Kbd } from "@site/src/components/kbd";
+
+Wave Terminal is a modern terminal that includes graphical capabilities like web browsing, file previews, and AI assistance alongside traditional terminal features. This guide will help you get started.
+
+## Installation
+
+<PlatformProvider>
+  <PlatformSelectorButton />
+
+### Platform requirements
+
+<PlatformItem platforms={["mac"]}>
+
+- Supported architectures: Apple Silicon, x64
+- Supported OS version: macOS 11 Big Sur or later
+
+</PlatformItem>
+
+<PlatformItem platforms={["windows"]}>
+
+- Supported architectures: x64
+- Supported OS version: Windows 10 1809 or later, Windows 11
+
+:::note
+
+ARM64 is planned, but is currently blocked by upstream dependencies (see [Windows ARM Support](https://github.com/wavetermdev/waveterm/issues/928)).
+
+:::
+
+</PlatformItem>
+
+<PlatformItem platforms={["linux"]}>
+
+- Supported architectures: x64, ARM64
+- Supported OS version: must have glibc-2.28 or later (Debian >=10, RHEL >=8, Ubuntu >=20.04, etc.)
+
+</PlatformItem>
+
+### Package managers
+
+<PlatformItem platforms={["mac"]}>
+
+#### Homebrew
+
+```bash
+brew install --cask wave
+```
+
+</PlatformItem>
+
+<PlatformItem platforms={["windows"]}>
+
+#### Windows Package Manager
+
+```powershell
+winget install CommandLine.Wave
+```
+
+#### Chocolatey
+
+```powershell
+choco install wave
+```
+
+</PlatformItem>
+
+<PlatformItem platforms={["linux"]}>
+
+#### Snap
+
+```bash
+sudo snap install --classic waveterm
+```
+
+Other options available: [AUR package](https://aur.archlinux.org/packages/waveterm) (community maintained), [Nix package](https://search.nixos.org/packages?channel=unstable&show=waveterm) (community maintained)
+
+</PlatformItem>
+
+You can also download installers directly from our [Downloads page](https://www.waveterm.dev/download).
+
+## Core Concepts
+
+### Tabs and Blocks
+
+- **Tabs**: Like browser tabs, these help organize your work. Create new tabs with <Kbd k="Cmd:t"/>.
+- **Blocks**: The building blocks of Wave. Each block can be a terminal, web browser, file preview, or other widget.
+- **Layout**: Blocks can be dragged, dropped, and resized to create your ideal layout.
+
+### Key Features
+
+1. **Terminal Features**
+
+   - Works with common shells (bash, zsh, fish)
+   - Supports standard terminal features (readline, control sequences, etc)
+   - Includes the `wsh` command for interacting with Wave's GUI features
+   - GPU accelerated (on most platforms)
+
+2. **Graphical Widgets**
+
+   - Preview files (images, video, markdown, code with syntax highlighting)
+   - Browse web pages
+   - Ask questions and get AI help directly from the terminal (set up multiple AI models)
+   - Basic system monitoring graphs
+
+3. **Remote Connections**
+   - Easy SSH connections with the connection button <i className="fa-sharp fa-laptop"/>
+   - WSL integration on Windows
+   - Consistent experience across local and remote sessions
+
+## Quick Start Guide
+
+1. **Open Your First New Tab**
+
+   - New Wave tabs start with a single terminal block
+   - Use it just like your regular terminal
+   - Create additional terminal blocks with <Kbd k="Cmd:n"/>
+
+2. **Try Some Basic Commands**
+
+   ```bash
+   # View a file or directory
+   wsh view ~/Documents
+
+   # Open a webpage
+   wsh web open github.com
+
+   # Get AI assistance
+   wsh ai -m "how do I find large files in my current directory?" -s
+   ```
+
+3. **Customize Your Layout**
+
+   - Drag block headers to rearrange them
+   - Hover between blocks to resize them
+   - Right-click tab headers for background options
+   - Right-click block headers for block-specific options
+
+4. **Connect to Remote Machines**
+   - Click the <i className="fa-sharp fa-laptop"/> button
+   - Enter `username@hostname` for SSH connections
+   - Or select a WSL distribution on Windows
+
+## Next Steps
+
+- Explore [Key Bindings](./keybindings) to work more efficiently
+- Learn about [Tab Layouts](./layout) to organize your workspace
+- Set up [Custom Widgets](./customwidgets) for quick access to your tools
+- Configure [Wave AI](./waveai) to use your preferred AI models
+- Check out [Configuration](./config) for detailed customization options
+
+## Getting Help
+
+- Join our [Discord community](https://discord.gg/XfvZ334gwU) for help and discussions
+- Report issues on [GitHub](https://github.com/wavetermdev/waveterm/issues)
+- Check our [FAQ](./faq) for common questions
+
+</PlatformProvider>

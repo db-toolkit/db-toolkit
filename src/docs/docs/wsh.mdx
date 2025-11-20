@@ -1,0 +1,191 @@
+---
+sidebar_position: 4
+id: "wsh"
+title: "wsh overview"
+---
+
+The `wsh` command provides Wave Terminal's core command line interface, allowing users to interact with both terminal and graphical elements from the command line. This guide covers the basics of using `wsh` and its key features.
+
+See the [wsh reference](/wsh-reference) for a list of all wsh commands and their arguments.
+
+## Overview
+
+At its core, `wsh` enables seamless interaction between your terminal commands and Wave's graphical blocks. It allows you to:
+
+- Control graphical widgets directly from the command line
+- Share data between terminal sessions and GUI components
+- Manage your workspace programmatically
+- Connect remote and local environments
+- Send CLI output and files directly to AI conversations
+- Run terminal commands in separate, isolated blocks
+
+## Key Concepts
+
+### Interacting with Blocks
+
+`wsh` provides direct interaction with Wave's graphical blocks through the command line. For example:
+
+```bash
+# Open a file in the editor
+wsh edit config.json
+
+# Get the current file path from a preview block
+wsh getmeta -b 2 file
+
+# Send output to an AI assistant (the "-" reads from stdin)
+ls -la | wsh ai - "what are the largest files here?"
+```
+
+### Persistent State
+
+`wsh` can maintain state across terminal sessions through its variable and file storage system:
+
+```bash
+# Store a variable that persists across sessions
+wsh setvar API_KEY=abc123
+
+# Store globally
+wsh setvar DEPLOY_ENV=prod
+# Or store in the current workspace
+wsh setvar -b workspace DEPLOY_ENV=staging
+
+# Use stored variables in commands
+curl -H "Authorization: $(wsh getvar API_KEY)" https://api.example.com
+
+# Store a file that can be accessed from any block
+echo "data" | wsh file write wavefile://global/config.txt
+
+# Append logs from multiple terminals
+echo "Terminal 1 log" | wsh file append wavefile://workspace/logs.txt
+```
+
+### Block Management
+
+Every visual element in Wave is a block, and `wsh` gives you complete control over them (hold Ctrl+Shift to see block numbers):
+
+```bash
+# Create a new block showing a webpage
+wsh web open github.com
+
+# Do a web search in a new block
+wsh web open "wave terminal"
+
+# Run a command in a new block and auto-close when done
+wsh run -x -- npm test
+
+# Get information about the current block
+wsh getmeta
+```
+
+## Common Workflows
+
+Here are some common ways to use `wsh`:
+
+### Development Workflow
+
+```bash
+# Open directory or markdown files
+wsh view .
+wsh view README.md
+
+# add a -m to open the block in "magnified" mode
+wsh view -m README.md
+
+# Start development server in a new block (-m will magnify the block on startup)
+wsh run -m -- npm run dev
+
+# Open documentation in a web block
+wsh web open http://localhost:3000
+```
+
+### Remote Development
+
+```bash
+# Connect to remote server with optional key
+wsh ssh -i ~/.ssh/mykey.pem dev@server
+
+# Edit remote files
+wsh edit /etc/nginx/nginx.conf
+
+# Monitor remote logs
+wsh run -- tail -f /var/log/app.log
+
+# Share variables between sessions
+wsh setvar -b tab SHARED_ENV=staging
+```
+
+### AI-Assisted Development
+
+The `wsh ai` command appends content to the Wave AI sidebar. By default, files are attached without auto-submitting, allowing you to review and add more context before sending.
+
+```bash
+# Pipe output to AI sidebar (ask question in UI)
+git diff | wsh ai -
+
+# Attach files with a message
+wsh ai main.go utils.go -m "find bugs in these files"
+
+# Auto-submit with message
+wsh ai config.json -s -m "explain this config"
+
+# Start new chat with attached files
+wsh ai -n *.log -m "analyze these logs"
+
+# Attach multiple file types (images, PDFs, code)
+wsh ai screenshot.png report.pdf app.py -m "review these"
+
+# Debug with stdin and auto-submit
+dmesg | wsh ai -s - -m "help me understand these errors"
+```
+
+**Flags:**
+- `-` - Read from stdin instead of a file
+- `-m, --message` - Add message text along with files
+- `-s, --submit` - Auto-submit immediately (default is to wait for user)
+- `-n, --new` - Clear chat and start fresh conversation
+
+**File Limits:**
+- Text files: 200KB max
+- PDFs: 5MB max
+- Images: 7MB max
+- Maximum 15 files per command
+
+## Tips & Features
+
+1. **Working with Blocks**
+
+   - Use block numbers (1-9) to target specific blocks within a tab (hold Ctrl+Shift to see block numbers)
+   - Can get full block ids by right click a block's header and selecting "Copy Block Id" (useful for scripting)
+   - Use references like "this", "tab", "workspace", or "global" for different scopes
+
+2. **Data Storage**
+
+   - Use `wsh setvar/getvar` for configuration and secrets
+   - Store file data using `wsh file`, which can be easily referenced in all terminals (local and remote)
+   - Use appropriate storage scopes (block, tab, workspace, global)
+
+3. **Command Execution**
+   - Use `wsh run` to execute commands in new blocks
+   - Send command output and files quickly to AI blocks with `wsh ai`
+
+## Scripting with wsh
+
+wsh commands can be combined in scripts to automate common tasks. Here's an example that sets up a development environment and uses `wsh notify` to monitor a long-running build:
+
+```bash
+#!/bin/bash
+# Setup development environment
+wsh run -- docker-compose up -d
+wsh web open localhost:8080
+wsh view ./src
+wsh run -- npm run test:watch
+
+# Get notified when long-running tasks complete using wsh notify
+npm run build && wsh notify "Build complete" || wsh notify "Build failed"
+```
+
+## Getting Help
+
+You can get help on available commands by running `wsh` with no arguments, or get detailed help for a specific command using `wsh [command] -h`.
+
+For a complete reference of all `wsh` functionality, see the [WSH Command Reference](./wsh-reference).
