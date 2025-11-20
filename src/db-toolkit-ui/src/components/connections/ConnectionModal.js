@@ -10,6 +10,8 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
   const { settings } = useSettingsContext();
   const toast = useToast();
   const [testing, setTesting] = useState(false);
+  const [useUrl, setUseUrl] = useState(false);
+  const [databaseUrl, setDatabaseUrl] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     db_type: settings?.default_db_type || 'postgresql',
@@ -69,9 +71,36 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
     }
   };
 
+  const parseConnectionUrl = (url) => {
+    try {
+      const urlObj = new URL(url);
+      const dbType = urlObj.protocol.replace(':', '');
+      
+      return {
+        db_type: dbType === 'postgres' ? 'postgresql' : dbType,
+        host: urlObj.hostname,
+        port: parseInt(urlObj.port) || (dbType === 'postgresql' ? 5432 : dbType === 'mysql' ? 3306 : dbType === 'mongodb' ? 27017 : 0),
+        database: urlObj.pathname.replace('/', ''),
+        username: urlObj.username || '',
+        password: urlObj.password || '',
+      };
+    } catch (err) {
+      toast.error('Invalid database URL format');
+      return null;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await onSave(connection ? { ...formData, id: connection.id } : formData);
+    
+    let dataToSave = formData;
+    if (useUrl) {
+      const parsed = parseConnectionUrl(databaseUrl);
+      if (!parsed) return;
+      dataToSave = { ...formData, ...parsed };
+    }
+    
+    await onSave(connection ? { ...dataToSave, id: connection.id } : dataToSave);
     onClose();
   };
 
@@ -86,9 +115,42 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
         />
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Database Type
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={useUrl}
+              onChange={(e) => setUseUrl(e.target.checked)}
+              className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Use Database URL
+            </span>
           </label>
+        </div>
+
+        {useUrl ? (
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Database URL
+            </label>
+            <textarea
+              value={databaseUrl}
+              onChange={(e) => setDatabaseUrl(e.target.value)}
+              placeholder="postgresql://user:password@localhost:5432/database"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm"
+              rows="3"
+              required
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Examples: postgresql://user:pass@host:5432/db, mysql://user:pass@host:3306/db, mongodb://user:pass@host:27017/db
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Database Type
+              </label>
           <select
             value={formData.db_type}
             onChange={(e) => {
@@ -109,9 +171,9 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
             <option value="sqlite">SQLite</option>
             <option value="mongodb">MongoDB</option>
           </select>
-        </div>
+            </div>
 
-        {formData.db_type !== 'sqlite' && (
+            {formData.db_type !== 'sqlite' && (
           <>
             <Input
               label="Host"
@@ -124,29 +186,31 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
               value={formData.port}
               onChange={(e) => handleChange('port', parseInt(e.target.value))}
             />
-          </>
-        )}
+              </>
+            )}
 
-        <Input
+            <Input
           label="Database"
           value={formData.database}
           onChange={(e) => handleChange('database', e.target.value)}
           required
         />
 
-        {formData.db_type !== 'sqlite' && (
-          <>
-            <Input
-              label="Username"
-              value={formData.username}
-              onChange={(e) => handleChange('username', e.target.value)}
-            />
-            <Input
-              label="Password"
-              type="password"
-              value={formData.password}
-              onChange={(e) => handleChange('password', e.target.value)}
-            />
+            {formData.db_type !== 'sqlite' && (
+              <>
+                <Input
+                  label="Username"
+                  value={formData.username}
+                  onChange={(e) => handleChange('username', e.target.value)}
+                />
+                <Input
+                  label="Password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleChange('password', e.target.value)}
+                />
+              </>
+            )}
           </>
         )}
 
