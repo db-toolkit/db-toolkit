@@ -38,6 +38,7 @@ export default function GuidePage() {
   const [activeSection, setActiveSection] = useState('getting-started');
   
   const currentIndex = sections.findIndex(s => s.id === activeSection);
+  const prevSection = currentIndex > 0 ? sections[currentIndex - 1] : undefined;
   const nextSection = currentIndex < sections.length - 1 ? sections[currentIndex + 1] : undefined;
 
   return (
@@ -46,6 +47,7 @@ export default function GuidePage() {
       <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
       <DocContent 
         data={docMap[activeSection]} 
+        prevSection={prevSection}
         nextSection={nextSection}
         onNavigate={setActiveSection}
       />
