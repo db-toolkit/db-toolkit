@@ -1,4 +1,5 @@
-import { memo, ReactNode } from 'react';
+import { memo } from 'react';
+import type { ReactNode } from 'react';
 import { Menu } from 'lucide-react';
 
 interface BottomBarItem {

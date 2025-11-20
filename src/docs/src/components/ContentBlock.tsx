@@ -1,4 +1,5 @@
-import { memo, ReactNode } from 'react';
+import { memo } from 'react';
+import type { ReactNode } from 'react';
 import { AlertCircle, CheckCircle, Info, Lightbulb } from 'lucide-react';
 
 interface ContentBlockProps {

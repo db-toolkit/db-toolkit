@@ -6,7 +6,7 @@ interface CodeBlockProps {
   language?: string;
 }
 
-function CodeBlock({ code, language = 'bash' }: CodeBlockProps) {
+function CodeBlock({ code }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useMemo } from 'react';
+import { useState, memo, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
 import { motion, AnimatePresence } from 'framer-motion';
