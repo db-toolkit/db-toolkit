@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer } from '../utils/motion';
 import { ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
 import { parseContent } from '../utils/contentParser';
-import { VariableSizeList as List } from 'react-window';
+import { VariableSizeList } from 'react-window';
 
 interface VirtualDocContentProps {
   data: DocData;
@@ -66,14 +66,14 @@ function VirtualDocContent({ data, prevSection, nextSection, onNavigate }: Virtu
         {data.title}
       </motion.h1>
       
-      <List
+      <VariableSizeList
         height={800}
         itemCount={sections.length}
         itemSize={getItemSize}
         width="100%"
       >
         {Row}
-      </List>
+      </VariableSizeList>
       
       {(prevSection || nextSection) && onNavigate && (
         <motion.div 
