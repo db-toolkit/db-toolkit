@@ -28,7 +28,7 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Resources</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="https://github.com/Adelodunpeter25/db-toolkit" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">Documentation</a></li>
+              <li><a href="https://docs-db-toolkit.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">Documentation</a></li>
               <li><a href="https://github.com/Adelodunpeter25/db-toolkit/releases" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">Downloads</a></li>
               <li><a href="https://github.com/Adelodunpeter25/db-toolkit/issues" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">Support</a></li>
             </ul>
