@@ -123,7 +123,7 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
         return null;
       }
       
-      return {
+      const parsed = {
         db_type: dbType,
         host: urlObj.hostname || 'localhost',
         port: parseInt(urlObj.port) || defaultPorts[dbType] || 0,
@@ -131,6 +131,12 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
         username: urlObj.username || '',
         password: urlObj.password || '',
       };
+      
+      // Auto-populate fields for immediate editing
+      setFormData(prev => ({ ...prev, ...parsed }));
+      toast.success('URL parsed successfully');
+      
+      return parsed;
     } catch (err) {
       toast.error('Invalid database URL format. Expected: protocol://user:pass@host:port/database');
       return null;
@@ -139,15 +145,7 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    let dataToSave = formData;
-    if (useUrl) {
-      const parsed = parseConnectionUrl(databaseUrl);
-      if (!parsed) return;
-      dataToSave = { ...formData, ...parsed };
-    }
-    
-    await onSave(connection ? { ...dataToSave, id: connection.id } : dataToSave);
+    await onSave(connection ? { ...formData, id: connection.id } : formData);
     onClose();
   };
 
@@ -166,7 +164,13 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
             <input
               type="checkbox"
               checked={useUrl}
-              onChange={(e) => setUseUrl(e.target.checked)}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setUseUrl(checked);
+                if (!checked) {
+                  setDatabaseUrl('');
+                }
+              }}
               className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
             />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -183,6 +187,11 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
             <textarea
               value={databaseUrl}
               onChange={(e) => setDatabaseUrl(e.target.value)}
+              onBlur={(e) => {
+                if (e.target.value.trim()) {
+                  parseConnectionUrl(e.target.value);
+                }
+              }}
               placeholder="postgresql://user:password@localhost:5432/database"
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm"
               rows="3"

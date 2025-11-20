@@ -15,5 +15,8 @@ This file tracks changes during development before they are added to CHANGELOG.m
 ### Fixed
 - Database URL parsing now handles async driver protocols correctly
 - SQLite URL format (sqlite:///) now parsed correctly
+- URL field clears when toggling checkbox off
+- Parsed URL values auto-populate fields for immediate editing
+- Visual feedback (toast) when URL is parsed successfully
 
 ### Removed
