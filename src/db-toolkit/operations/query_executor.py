@@ -2,10 +2,65 @@
 
 import time
 import asyncio
+import hashlib
 from typing import Dict, Any, Optional
 from core.models import DatabaseConnection
 from operations.connection_manager import connection_manager
 from utils.cache import query_cache, prepared_cache
+
+
+class QueryValidationCache:
+    """Cache for query validation results to reduce CPU overhead."""
+    
+    def __init__(self, max_size: int = 1000):
+        """Initialize validation cache."""
+        self.cache: Dict[str, Dict[str, Any]] = {}
+        self.access_times: Dict[str, float] = {}
+        self.max_size = max_size
+    
+    def _generate_key(self, query: str, db_type: str) -> str:
+        """Generate cache key for query validation."""
+        query_normalized = ' '.join(query.upper().strip().split())
+        key_string = f"{db_type}:{query_normalized}"
+        return hashlib.md5(key_string.encode()).hexdigest()[:16]
+    
+    def _evict_lru(self) -> None:
+        """Evict least recently used entries."""
+        if len(self.cache) >= self.max_size:
+            # Remove 20% of oldest entries
+            sorted_keys = sorted(self.access_times.items(), key=lambda x: x[1])
+            keys_to_remove = [k for k, _ in sorted_keys[:self.max_size // 5]]
+            for key in keys_to_remove:
+                self.cache.pop(key, None)
+                self.access_times.pop(key, None)
+    
+    def get_validation(self, query: str, db_type: str) -> Optional[Dict[str, Any]]:
+        """Get cached validation result."""
+        key = self._generate_key(query, db_type)
+        
+        if key not in self.cache:
+            return None
+        
+        # Update access time
+        self.access_times[key] = time.time()
+        return self.cache[key]
+    
+    def set_validation(self, query: str, db_type: str, result: Dict[str, Any]) -> None:
+        """Cache validation result."""
+        key = self._generate_key(query, db_type)
+        
+        self._evict_lru()
+        
+        self.cache[key] = result
+        self.access_times[key] = time.time()
+    
+    def clear(self) -> None:
+        """Clear validation cache."""
+        self.cache.clear()
+        self.access_times.clear()
+
+
+validation_cache = QueryValidationCache()
 
 
 class QueryExecutor:
@@ -39,8 +94,8 @@ class QueryExecutor:
         limit = limit or self.default_limit
         timeout = timeout or self.default_timeout
         
-        # Validate query safety
-        validation_result = self._validate_query(query, connection.db_type.value)
+        # Validate query safety with caching
+        validation_result = self._validate_query_cached(query, connection.db_type.value)
         if not validation_result["safe"]:
             return {
                 "success": False,
@@ -100,6 +155,10 @@ class QueryExecutor:
                 # Cache successful SELECT queries
                 if query.strip().upper().startswith('SELECT'):
                     query_cache.set_query_result(connection.id, query, formatted_result)
+                
+                # Record query activity for adaptive scheduling
+                from operations.background_tasks import record_query_activity
+                record_query_activity()
                 
                 return formatted_result
             else:
@@ -171,3 +230,18 @@ class QueryExecutor:
             return f"{query} LIMIT {limit} OFFSET {offset}"
         
         return query
+    
+    def _validate_query_cached(self, query: str, db_type: str) -> Dict[str, Any]:
+        """Validate query with caching to reduce CPU overhead."""
+        # Check cache first
+        cached_result = validation_cache.get_validation(query, db_type)
+        if cached_result:
+            return cached_result
+        
+        # Perform validation
+        result = self._validate_query(query, db_type)
+        
+        # Cache the result
+        validation_cache.set_validation(query, db_type, result)
+        
+        return result

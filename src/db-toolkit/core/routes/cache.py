@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter
 from utils.cache import schema_cache, query_cache, prepared_cache
+from operations.background_tasks import get_scheduler_stats
 
 router = APIRouter()
 
@@ -68,4 +69,13 @@ async def clear_connection_cache(connection_id: str):
         "message": f"Cleared cache for connection {connection_id}",
         "schema_keys_removed": keys_removed,
         "query_keys_removed": query_keys_removed
+    }
+
+
+@router.get("/scheduler/stats")
+async def get_background_task_stats():
+    """Get background task scheduler statistics."""
+    return {
+        "success": True,
+        "scheduler": get_scheduler_stats()
     }
