@@ -28,7 +28,7 @@ export default function Header() {
             href="https://github.com/Adelodunpeter25/db-toolkit" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="hover:scale-110 transition-transform"
+            className="hover:scale-110 hover:text-gray-900 dark:hover:text-white transition-all"
             aria-label="GitHub"
           >
             <Github size={24} />
