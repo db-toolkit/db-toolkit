@@ -1,101 +1,154 @@
 /**
- * Terminal panel with xterm.js integration.
+ * Terminal panel with tabs and modern theme.
  */
 import { useEffect, useRef, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import { X, Minimize2, Maximize2 } from 'lucide-react';
+import { X, Minimize2, Maximize2, Plus } from 'lucide-react';
 import { WS_ENDPOINTS } from '../../services/websocket';
 import 'xterm/css/xterm.css';
 
 function TerminalPanel({ isOpen, onClose }) {
-  const terminalRef = useRef(null);
-  const containerRef = useRef(null);
-  const termRef = useRef(null);
-  const fitAddonRef = useRef(null);
-  const wsRef = useRef(null);
+  const [tabs, setTabs] = useState([{ id: 1, title: 'Terminal 1' }]);
+  const [activeTab, setActiveTab] = useState(1);
   const [isMaximized, setIsMaximized] = useState(false);
   const [height, setHeight] = useState(384);
   const [isResizing, setIsResizing] = useState(false);
+  const terminalsRef = useRef({});
+  const containerRefs = useRef({});
+
+  const addTab = () => {
+    const newId = Math.max(...tabs.map(t => t.id)) + 1;
+    setTabs([...tabs, { id: newId, title: `Terminal ${newId}` }]);
+    setActiveTab(newId);
+  };
+
+  const closeTab = (id) => {
+    if (tabs.length === 1) return;
+    
+    const terminal = terminalsRef.current[id];
+    if (terminal) {
+      terminal.term?.dispose();
+      terminal.ws?.close();
+      delete terminalsRef.current[id];
+    }
+    
+    const newTabs = tabs.filter(t => t.id !== id);
+    setTabs(newTabs);
+    
+    if (activeTab === id) {
+      setActiveTab(newTabs[newTabs.length - 1].id);
+    }
+  };
 
   useEffect(() => {
-    if (!isOpen || !terminalRef.current) return;
+    if (!isOpen) return;
 
-    const term = new Terminal({
-      cursorBlink: true,
-      fontSize: 14,
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
-      scrollback: 10000,
-      theme: {
-        background: '#1e1e1e',
-        foreground: '#d4d4d4',
-        cursor: '#ffffff',
-      },
-    });
+    tabs.forEach(tab => {
+      if (terminalsRef.current[tab.id]) return;
 
-    const fit = new FitAddon();
-    term.loadAddon(fit);
-    term.open(terminalRef.current);
-    
-    setTimeout(() => {
-      fit.fit();
-      term.focus();
-    }, 50);
+      const containerRef = containerRefs.current[tab.id];
+      if (!containerRef) return;
 
-    termRef.current = term;
-    fitAddonRef.current = fit;
+      const term = new Terminal({
+        cursorBlink: true,
+        fontSize: 14,
+        fontFamily: 'JetBrains Mono, Menlo, Monaco, "Courier New", monospace',
+        scrollback: 10000,
+        theme: {
+          background: '#0f172a',
+          foreground: '#e2e8f0',
+          cursor: '#06b6d4',
+          cursorAccent: '#0f172a',
+          black: '#1e293b',
+          red: '#ef4444',
+          green: '#10b981',
+          yellow: '#f59e0b',
+          blue: '#3b82f6',
+          magenta: '#a855f7',
+          cyan: '#06b6d4',
+          white: '#cbd5e1',
+          brightBlack: '#475569',
+          brightRed: '#f87171',
+          brightGreen: '#34d399',
+          brightYellow: '#fbbf24',
+          brightBlue: '#60a5fa',
+          brightMagenta: '#c084fc',
+          brightCyan: '#22d3ee',
+          brightWhite: '#f1f5f9',
+        },
+      });
 
-    const ws = new WebSocket(WS_ENDPOINTS.TERMINAL);
-    wsRef.current = ws;
+      const fit = new FitAddon();
+      term.loadAddon(fit);
+      term.open(containerRef);
+      
+      setTimeout(() => {
+        fit.fit();
+        if (tab.id === activeTab) {
+          term.focus();
+        }
+      }, 50);
 
-    ws.onmessage = (event) => {
-      if (event.data instanceof Blob) {
-        event.data.arrayBuffer().then((buffer) => {
-          term.write(new Uint8Array(buffer));
-        });
-      } else {
-        term.write(event.data);
-      }
-    };
+      const ws = new WebSocket(WS_ENDPOINTS.TERMINAL);
 
-    term.onData((data) => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(data);
-      }
-    });
+      ws.onmessage = (event) => {
+        if (event.data instanceof Blob) {
+          event.data.arrayBuffer().then((buffer) => {
+            term.write(new Uint8Array(buffer));
+          });
+        } else {
+          term.write(event.data);
+        }
+      };
 
-    term.onResize(({ rows, cols }) => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(`RESIZE:${rows}:${cols}`);
-      }
+      term.onData((data) => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(data);
+        }
+      });
+
+      term.onResize(({ rows, cols }) => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(`RESIZE:${rows}:${cols}`);
+        }
+      });
+
+      terminalsRef.current[tab.id] = { term, fit, ws };
     });
 
     const handleWindowResize = () => {
-      if (fitAddonRef.current) {
-        fitAddonRef.current.fit();
-      }
+      Object.values(terminalsRef.current).forEach(({ fit }) => {
+        fit?.fit();
+      });
     };
     window.addEventListener('resize', handleWindowResize);
 
     return () => {
       window.removeEventListener('resize', handleWindowResize);
-      term.dispose();
-      ws.close();
-      termRef.current = null;
-      fitAddonRef.current = null;
-      wsRef.current = null;
     };
-  }, [isOpen]);
+  }, [isOpen, tabs, activeTab]);
 
   useEffect(() => {
-    if (isOpen && fitAddonRef.current && termRef.current) {
+    if (isOpen && terminalsRef.current[activeTab]) {
+      const { fit, term } = terminalsRef.current[activeTab];
       const timer = setTimeout(() => {
-        fitAddonRef.current.fit();
-        termRef.current.focus();
+        fit?.fit();
+        term?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [height, isMaximized, isOpen]);
+  }, [height, isMaximized, isOpen, activeTab]);
+
+  useEffect(() => {
+    return () => {
+      Object.values(terminalsRef.current).forEach(({ term, ws }) => {
+        term?.dispose();
+        ws?.close();
+      });
+      terminalsRef.current = {};
+    };
+  }, []);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
@@ -128,42 +181,81 @@ function TerminalPanel({ isOpen, onClose }) {
 
   return (
     <div
-      ref={containerRef}
-      className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700 z-40"
+      className="fixed bottom-0 left-0 right-0 bg-gradient-to-b from-slate-900 to-slate-950 border-t border-cyan-500/20 z-40 shadow-2xl"
       style={{ height: isMaximized ? '100vh' : `${height}px` }}
     >
       <div
         onMouseDown={handleMouseDown}
-        className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize hover:bg-blue-500 transition-colors"
+        className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize hover:bg-cyan-500 transition-colors"
       />
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
-        <span className="text-sm text-white font-medium">Terminal</span>
-        <div className="flex items-center gap-2">
+      
+      <div className="flex items-center justify-between px-4 py-2 bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50">
+        <div className="flex items-center gap-2 flex-1 overflow-x-auto">
+          {tabs.map(tab => (
+            <div
+              key={tab.id}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-t-lg cursor-pointer transition-all ${
+                activeTab === tab.id
+                  ? 'bg-slate-900 text-cyan-400 border-t-2 border-cyan-500'
+                  : 'bg-slate-800/50 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="text-xs font-medium whitespace-nowrap">{tab.title}</span>
+              {tabs.length > 1 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    closeTab(tab.id);
+                  }}
+                  className="hover:text-red-400 transition-colors"
+                >
+                  <X size={12} />
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            onClick={addTab}
+            className="p-1.5 rounded-lg bg-slate-800/50 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-all"
+            title="New Terminal"
+          >
+            <Plus size={14} />
+          </button>
+        </div>
+        
+        <div className="flex items-center gap-2 ml-4">
           <button
             onClick={() => setIsMaximized(!isMaximized)}
-            className="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-white"
+            className="p-1.5 hover:bg-slate-700 rounded text-slate-400 hover:text-cyan-400 transition-all"
             title={isMaximized ? 'Minimize' : 'Maximize'}
           >
             {isMaximized ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
           </button>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-white"
+            className="p-1.5 hover:bg-slate-700 rounded text-slate-400 hover:text-red-400 transition-all"
             title="Close"
           >
             <X size={16} />
           </button>
         </div>
       </div>
-      <div
-        ref={terminalRef}
-        className="w-full overflow-hidden"
-        style={{ 
-          height: isMaximized ? 'calc(100vh - 40px)' : `${height - 40}px`,
-          padding: '8px'
-        }}
-        onClick={() => termRef.current?.focus()}
-      />
+
+      <div className="relative w-full h-full" style={{ height: isMaximized ? 'calc(100vh - 48px)' : `${height - 48}px` }}>
+        {tabs.map(tab => (
+          <div
+            key={tab.id}
+            className={`absolute inset-0 ${activeTab === tab.id ? 'block' : 'hidden'}`}
+          >
+            <div
+              ref={el => containerRefs.current[tab.id] = el}
+              className="w-full h-full p-3"
+              onClick={() => terminalsRef.current[tab.id]?.term?.focus()}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
