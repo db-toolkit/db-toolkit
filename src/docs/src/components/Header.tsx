@@ -1,9 +1,13 @@
-import { Database, Github, Moon, Sun } from 'lucide-react';
+import { Database, Github, Moon, Sun, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { fadeIn } from '../utils/motion';
 import { useTheme } from '../context/ThemeContext';
 
-export default function Header() {
+interface HeaderProps {
+  onSearchClick: () => void;
+}
+
+export default function Header({ onSearchClick }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -17,6 +21,14 @@ export default function Header() {
           <span className="text-2xl font-bold">DB Toolkit Docs</span>
         </div>
         <div className="flex items-center gap-4">
+          <button
+            onClick={onSearchClick}
+            className="flex items-center gap-2 px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+          >
+            <Search size={16} />
+            <span className="text-sm">Search</span>
+            <kbd className="ml-2 px-2 py-0.5 text-xs bg-white/20 rounded">⌘K</kbd>
+          </button>
           <button 
             onClick={toggleTheme}
             className="hover:opacity-80 transition-opacity"
