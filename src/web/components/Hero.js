@@ -3,8 +3,19 @@
 import { motion } from 'framer-motion';
 import { Database, Download, Github, ArrowRight } from 'lucide-react';
 import { primaryGradient, buttonGradient } from '@/utils/gradients';
+import { detectPlatform, getDownloadUrl } from '@/utils/detectPlatform';
+import { useEffect, useState } from 'react';
 
 export default function Hero() {
+  const [downloadUrl, setDownloadUrl] = useState('/downloads');
+
+  useEffect(() => {
+    const platform = detectPlatform();
+    if (platform) {
+      setDownloadUrl(getDownloadUrl(platform));
+    }
+  }, []);
+
   return (
     <section className={`relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br ${primaryGradient.light} dark:from-gray-950 dark:via-gray-900 dark:to-gray-950`}>
       {/* Animated background elements */}
@@ -106,7 +117,7 @@ export default function Hero() {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
           <a
-            href="/downloads"
+            href={downloadUrl}
             className={`group flex items-center gap-2 px-8 py-4 bg-gradient-to-r ${buttonGradient} text-white rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold`}
           >
             <Download size={20} />
