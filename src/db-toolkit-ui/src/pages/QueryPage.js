@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Download, Plus, X } from 'lucide-react';
+import { Download, Plus, X, Bot } from 'lucide-react';
 import Split from 'react-split';
 import { useQuery, useSchema } from '../hooks';
 import { useExplain } from '../hooks/useExplain';
@@ -11,12 +11,14 @@ import { QueryEditor } from '../components/query/QueryEditor';
 import { QueryResultsPanel } from '../components/query/QueryResultsPanel';
 import { ExplainPlanModal } from '../components/query/ExplainPlanModal';
 import { CsvExportModal } from '../components/csv';
+import { AiAssistant } from '../components/query/AiAssistant';
 
 function QueryPage() {
   const { connectionId } = useParams();
   const [tabs, setTabs] = useState([{ id: 1, name: 'Query 1', query: '', result: null, executionTime: 0, error: null }]);
   const [activeTabId, setActiveTabId] = useState(1);
   const [showExport, setShowExport] = useState(false);
+  const [showAiAssistant, setShowAiAssistant] = useState(false);
   const { loading, executeQuery } = useQuery(connectionId);
   const { schema, fetchSchemaTree } = useSchema(connectionId);
   
@@ -139,6 +141,14 @@ function QueryPage() {
           </button>
         </div>
         <div className="flex gap-2 ml-4">
+          <Button
+            variant={showAiAssistant ? "primary" : "secondary"}
+            size="sm"
+            onClick={() => setShowAiAssistant(!showAiAssistant)}
+          >
+            <Bot size={16} className="mr-2" />
+            AI Assistant
+          </Button>
           {result && (
             <Button
               variant="secondary"
@@ -154,37 +164,53 @@ function QueryPage() {
 
 
 
-      <div className="flex-1 overflow-hidden">
-        <Split
-          direction="vertical"
-          sizes={[50, 50]}
-          minSize={200}
-          gutterSize={8}
-          className="flex flex-col h-full"
-          style={{ height: '100%' }}
-        >
-          <div className="overflow-hidden">
-            <QueryEditor
-              query={query}
-              onChange={setQuery}
-              onExecute={handleExecute}
-              onExplain={handleExplain}
-              loading={loading}
-              schema={schema}
-              error={error}
-            />
-          </div>
+      <div className="flex-1 overflow-hidden flex">
+        <div className="flex-1 overflow-hidden">
+          <Split
+            direction="vertical"
+            sizes={[50, 50]}
+            minSize={200}
+            gutterSize={8}
+            className="flex flex-col h-full"
+            style={{ height: '100%' }}
+          >
+            <div className="overflow-hidden">
+              <QueryEditor
+                query={query}
+                onChange={setQuery}
+                onExecute={handleExecute}
+                onExplain={handleExplain}
+                loading={loading}
+                schema={schema}
+                error={error}
+              />
+            </div>
 
-          <div className="overflow-hidden">
-            <QueryResultsPanel
-              connectionId={connectionId}
-              result={result}
-              executionTime={executionTime}
-              onSelectQuery={setQuery}
-              onRefresh={handleExecute}
-            />
-          </div>
-        </Split>
+            <div className="overflow-hidden">
+              <QueryResultsPanel
+                connectionId={connectionId}
+                result={result}
+                executionTime={executionTime}
+                onSelectQuery={setQuery}
+                onRefresh={handleExecute}
+              />
+            </div>
+          </Split>
+        </div>
+        
+        <AiAssistant
+          connectionId={connectionId}
+          currentQuery={query}
+          onQueryGenerated={setQuery}
+          onQueryOptimized={(result) => {
+            // Handle optimization results
+            console.log('Query optimized:', result);
+          }}
+          lastError={error}
+          schemaContext={{ tables: schema }}
+          isVisible={showAiAssistant}
+          onClose={() => setShowAiAssistant(false)}
+        />
       </div>
 
       <CsvExportModal
