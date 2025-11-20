@@ -2,7 +2,8 @@ import { memo } from 'react';
 import type { DocData } from '../data';
 import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer } from '../utils/motion';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
+import { parseContent } from '../utils/contentParser';
 
 interface DocContentProps {
   data: DocData;
@@ -35,14 +36,18 @@ function DocContent({ data, prevSection, nextSection, onNavigate }: DocContentPr
       {data.sections.map((section, index) => (
         <motion.section 
           key={index} 
-          className="mb-12"
+          className={`mb-12 p-8 rounded-xl ${index % 2 === 0 ? 'bg-gray-50/50 dark:bg-gray-800/30' : ''}`}
           variants={fadeInUp}
         >
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4 pb-2 border-b-2 border-gray-200 dark:border-gray-700">{section.heading}</h2>
-          <div className="space-y-4">
-            {section.content.split('\n').map((line, i) => (
-              line.trim() && <p key={i} className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{line}</p>
-            ))}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-1 h-8 bg-gradient-to-b from-emerald-600 to-teal-600 rounded-full" />
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
+              {section.heading}
+            </h2>
+            <Sparkles size={20} className="text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div className="space-y-2">
+            {parseContent(section.content)}
           </div>
         </motion.section>
       ))}
