@@ -6,10 +6,12 @@ import CommandPalette from './CommandPalette';
 import { NotificationCenter } from './NotificationCenter';
 import { SettingsModal } from '../settings/SettingsModal';
 import { Tooltip } from './Tooltip';
+import TerminalPanel from '../terminal/TerminalPanel';
 
 function Layout({ children }) {
   const [showSettings, setShowSettings] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [showTerminal, setShowTerminal] = useState(false);
   const [connections, setConnections] = useState([]);
   const [queries, setQueries] = useState([]);
 
@@ -51,9 +53,10 @@ function Layout({ children }) {
         <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-800 pt-16 md:pt-0">
           {children}
         </main>
-        <StatusBar />
+        <StatusBar onTerminalClick={() => setShowTerminal(!showTerminal)} />
       </div>
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <TerminalPanel isOpen={showTerminal} onClose={() => setShowTerminal(false)} />
       <CommandPalette 
         isOpen={showCommandPalette} 
         onClose={() => setShowCommandPalette(false)}
