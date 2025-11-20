@@ -24,7 +24,10 @@ export default function DownloadsPage() {
       name: 'Linux',
       icon: <Monitor size={48} />,
       version: 'Latest',
-      url: 'https://github.com/Adelodunpeter25/db-toolkit/releases/latest/download/DB.Toolkit-linux.AppImage'
+      downloads: [
+        { label: 'AppImage', url: 'https://github.com/Adelodunpeter25/db-toolkit/releases/latest/download/DB.Toolkit-linux.AppImage' },
+        { label: 'DEB Package', url: 'https://github.com/Adelodunpeter25/db-toolkit/releases/latest/download/DB.Toolkit-linux.deb' }
+      ]
     }
   ];
 
