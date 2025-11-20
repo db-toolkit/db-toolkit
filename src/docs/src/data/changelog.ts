@@ -1,5 +1,27 @@
 export const changelogVersions = [
   {
+    version: "0.4.0",
+    date: "2025-01-20",
+    sections: [
+      {
+        heading: "Added",
+        content: `- Terminal Enhancements - Multiple tabs, modern theme, session persistence, auto-reconnection
+- Database CLI Shortcuts - Quick buttons for psql, mysql, mongo
+- Migration File Browser - View, edit, delete, rename migration files in resizable sidebar
+- Clear Output Button - Reset migration command output
+- Resizable Sidebar - Drag divider to adjust file browser width (250px-600px)`
+      },
+      {
+        heading: "Improved",
+        content: `- Terminal starts in home directory by default
+- Terminal restores last working directory on reconnect
+- Silent reconnection (no status messages)
+- Migration documentation updated with new features
+- Terminal documentation simplified and focused`
+      }
+    ]
+  },
+  {
     version: "0.3.0",
     date: "2025-01-19",
     sections: [
