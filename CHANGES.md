@@ -25,6 +25,10 @@ This file tracks changes during development before they are added to CHANGELOG.m
   - Support for PostgreSQL, MySQL, MongoDB, SQLite
 
 ### Changed
+- Split analytics operations into database-specific modules for better maintainability
+- Enhanced MySQL analytics with query type classification and improved lock detection
+- Enhanced MongoDB analytics with operation type classification and lock wait detection
+- Enhanced SQLite analytics with table/index counts and database statistics
 
 ### Fixed
 - Database URL parsing now handles async driver protocols correctly
@@ -33,5 +37,12 @@ This file tracks changes during development before they are added to CHANGELOG.m
 - Parsed URL values auto-populate fields for immediate editing
 - Visual feedback (toast) when URL is parsed successfully
 - Create Connection button in Data Explorer now navigates correctly without page refresh
+- JSX parent element error in AnalyticsPage
+
+### Improved
+- PostgreSQL: Full analytics support with all features
+- MySQL: Enhanced with query type classification, improved lock detection, user info in blocked queries
+- MongoDB: Enhanced with operation type classification, lock wait detection, query stats
+- SQLite: Enhanced with table/index counts, page statistics, largest tables info
 
 ### Removed
