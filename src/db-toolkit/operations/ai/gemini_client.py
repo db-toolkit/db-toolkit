@@ -43,19 +43,24 @@ class GeminiClient:
     
     async def _make_request(self, prompt: str, max_retries: int = 3) -> str:
         """Make AI request with automatic key rotation and retry logic."""
+        # Get configuration from environment
+        model_name = os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')
+        temperature = float(os.getenv('GEMINI_TEMPERATURE', '0.3'))
+        max_tokens = int(os.getenv('GEMINI_MAX_TOKENS', '2048'))
+        
         for attempt in range(max_retries):
             for _ in range(len(self.api_keys)):
                 try:
                     api_key = self._get_next_key()
                     genai.configure(api_key=api_key)
-                    model = genai.GenerativeModel('gemini-pro')
+                    model = genai.GenerativeModel(model_name)
                     
                     response = await asyncio.to_thread(
                         model.generate_content, 
                         prompt,
                         generation_config=genai.types.GenerationConfig(
-                            temperature=0.1,
-                            max_output_tokens=2048,
+                            temperature=temperature,
+                            max_output_tokens=max_tokens,
                         )
                     )
                     return response.text
