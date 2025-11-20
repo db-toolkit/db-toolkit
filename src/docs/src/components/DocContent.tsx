@@ -1,4 +1,4 @@
-import { DocData } from '../data';
+import type { DocData } from '../data';
 
 interface DocContentProps {
   data: DocData;
