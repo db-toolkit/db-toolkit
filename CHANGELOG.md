@@ -2,6 +2,14 @@
 
 All notable changes to DB Toolkit will be documented in this file.
 
+## [0.4.1] - 2025-01-21
+
+### Fixed
+- White screen flash on backups page loading
+- Overview tab not auto-selected on app startup in production
+- HashRouter implementation for proper Electron routing
+- Navigation issues in packaged application
+
 ## [0.4.0] - 2025-01-20
 
 ### Added
