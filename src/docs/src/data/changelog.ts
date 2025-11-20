@@ -1,5 +1,18 @@
 export const changelogVersions = [
   {
+    version: "0.4.1",
+    date: "2025-01-21",
+    sections: [
+      {
+        heading: "Fixed",
+        content: `- White screen flash on backups page loading
+- Overview tab not auto-selected on app startup in production
+- HashRouter implementation for proper Electron routing
+- Navigation issues in packaged application`
+      }
+    ]
+  },
+  {
     version: "0.4.0",
     date: "2025-01-20",
     sections: [
