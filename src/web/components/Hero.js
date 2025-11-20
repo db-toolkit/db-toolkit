@@ -106,7 +106,7 @@ export default function Hero() {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
           <a
-            href="https://github.com/Adelodunpeter25/db-toolkit/releases/latest"
+            href="/downloads"
             className={`group flex items-center gap-2 px-8 py-4 bg-gradient-to-r ${buttonGradient} text-white rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold`}
           >
             <Download size={20} />
