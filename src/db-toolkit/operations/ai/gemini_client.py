@@ -1,9 +1,9 @@
 """Google Gemini AI client with API key rotation."""
 
-import os
 import asyncio
 from typing import List, Dict, Any, Optional
 import google.generativeai as genai
+from core.config import settings
 from .prompts import (
     QUERY_EXPLANATION_PROMPT,
     QUERY_OPTIMIZATION_PROMPT,
@@ -24,16 +24,15 @@ class GeminiClient:
         self.current_key_index = 0
         
     def _load_api_keys(self) -> List[str]:
-        """Load all available Gemini API keys from environment."""
+        """Load all available Gemini API keys from settings."""
         keys = []
         # Check for single key first
-        single_key = os.getenv('GEMINI_API_KEY')
-        if single_key:
-            keys.append(single_key)
+        if settings.gemini_api_key:
+            keys.append(settings.gemini_api_key)
         
         # Then check for numbered keys
         for i in range(1, 6):  # Support up to 5 keys
-            key = os.getenv(f'GEMINI_API_KEY_{i}')
+            key = getattr(settings, f'gemini_api_key_{i}', None)
             if key:
                 keys.append(key)
         return keys
@@ -49,10 +48,10 @@ class GeminiClient:
     
     async def _make_request(self, prompt: str, max_retries: int = 3) -> str:
         """Make AI request with automatic key rotation and retry logic."""
-        # Get configuration from environment
-        model_name = os.getenv('GEMINI_MODEL', 'gemini-1.5-flash')  # Changed to stable version
-        temperature = float(os.getenv('GEMINI_TEMPERATURE', '0.3'))
-        max_tokens = int(os.getenv('GEMINI_MAX_TOKENS', '2048'))
+        # Get configuration from settings
+        model_name = settings.gemini_model
+        temperature = settings.gemini_temperature
+        max_tokens = settings.gemini_max_tokens
         
         last_error = None
         
@@ -77,11 +76,20 @@ class GeminiClient:
                     last_error = e
                     error_msg = str(e).lower()
                     # Log the actual error for debugging
-                    print(f"Gemini API Error: {str(e)}")
+                    print(f"Gemini API Error (attempt {attempt+1}/{max_retries}, key {key_attempt+1}/{len(self.api_keys)}): {str(e)}")
+                    
                     if "quota" in error_msg or "rate limit" in error_msg:
                         continue  # Try next key
+                    elif "not found" in error_msg or "does not exist" in error_msg:
+                        # Try fallback model
+                        if model_name == 'gemini-1.5-flash':
+                            model_name = 'gemini-2.0-flash-lite'
+                            print(f"Trying fallback model: {model_name}")
+                            continue
+                        else:
+                            raise e
                     else:
-                        # For non-rate-limit errors, don't retry
+                        # For other errors, don't retry
                         raise e
         
         # Raise the actual last error with details
