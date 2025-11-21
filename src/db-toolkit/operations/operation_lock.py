@@ -4,6 +4,7 @@ import asyncio
 from typing import Dict
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
+from utils.logger import logger
 
 
 class OperationLock:
@@ -69,6 +70,7 @@ class OperationLock:
     
     def force_unlock(self, connection_id: str):
         """Force unlock a connection (use with caution)."""
+        logger.warning(f"Force unlocking connection '{connection_id}'")
         if connection_id in self._locks:
             try:
                 if self._locks[connection_id].locked():
@@ -88,6 +90,7 @@ class OperationLock:
             
         acquired = await self.acquire(connection_id, timeout)
         if not acquired:
+            logger.error(f"Failed to acquire lock for '{connection_id}' - operation in progress")
             raise RuntimeError("Cannot perform operation: another operation is in progress")
         
         try:

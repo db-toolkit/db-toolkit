@@ -4,6 +4,7 @@ import asyncio
 from typing import List, Dict, Any, Optional
 import google.generativeai as genai
 from core.config import settings
+from utils.logger import logger
 from .prompts import (
     QUERY_EXPLANATION_PROMPT,
     QUERY_OPTIMIZATION_PROMPT,
@@ -75,8 +76,7 @@ class GeminiClient:
                 except Exception as e:
                     last_error = e
                     error_msg = str(e).lower()
-                    # Log the actual error for debugging
-                    print(f"Gemini API Error (attempt {attempt+1}/{max_retries}, key {key_attempt+1}/{len(self.api_keys)}): {str(e)}")
+                    logger.error(f"Gemini API Error (attempt {attempt+1}/{max_retries}, key {key_attempt+1}/{len(self.api_keys)}): {str(e)}")
                     
                     if "quota" in error_msg or "rate limit" in error_msg:
                         continue  # Try next key
@@ -84,7 +84,7 @@ class GeminiClient:
                         # Try fallback model
                         if model_name == 'gemini-1.5-flash':
                             model_name = 'gemini-2.0-flash-lite'
-                            print(f"Trying fallback model: {model_name}")
+                            logger.info(f"Trying fallback model: {model_name}")
                             continue
                         else:
                             raise e

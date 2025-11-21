@@ -6,6 +6,7 @@ from typing import Dict, Optional
 
 from core.models import DatabaseConnection
 from core.storage import ConnectionStorage
+from utils.logger import logger
 
 
 class SessionManager:
@@ -32,7 +33,8 @@ class SessionManager:
                 json.dump(session_data, f, indent=2)
 
             return True
-        except Exception:
+        except Exception as e:
+            logger.error(f"Failed to save session: {str(e)}")
             return False
 
     async def load_session(self) -> Dict:
@@ -41,8 +43,8 @@ class SessionManager:
             if self.session_file.exists():
                 with open(self.session_file, "r") as f:
                     return json.load(f)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Failed to load session: {str(e)}")
 
         return {"active_connection_ids": [], "last_active_connection": None, "settings": {}}
 
@@ -52,7 +54,8 @@ class SessionManager:
             if self.session_file.exists():
                 self.session_file.unlink()
             return True
-        except Exception:
+        except Exception as e:
+            logger.error(f"Failed to clear session: {str(e)}")
             return False
 
     async def get_restorable_connections(self) -> list[DatabaseConnection]:

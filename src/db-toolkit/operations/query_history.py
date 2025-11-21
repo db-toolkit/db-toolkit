@@ -4,6 +4,7 @@ import json
 import time
 from pathlib import Path
 from typing import List, Dict, Any, Optional
+from utils.logger import logger
 
 
 class QueryHistory:
@@ -95,7 +96,8 @@ class QueryHistory:
         try:
             with open(self.storage_path, 'r') as f:
                 return json.load(f)
-        except Exception:
+        except Exception as e:
+            logger.error(f"Failed to load query history: {str(e)}")
             return {}
     
     def _save_history(self, history: Dict[str, List[Dict[str, Any]]]) -> None:
@@ -103,5 +105,5 @@ class QueryHistory:
         try:
             with open(self.storage_path, 'w') as f:
                 json.dump(history, f, indent=2)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Failed to save query history: {str(e)}")
