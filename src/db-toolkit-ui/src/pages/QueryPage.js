@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Download, Plus, X, Bot } from 'lucide-react';
+import { Download, Plus, X, Bot, Loader2 } from 'lucide-react';
 import Split from 'react-split';
 import { useQuery, useSchema } from '../hooks';
 import { useExplain } from '../hooks/useExplain';
 import { useSettingsContext } from '../contexts/SettingsContext';
 import { Button } from '../components/common/Button';
+import { connectionsAPI } from '../services/api';
+import { useToast } from '../contexts/ToastContext';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 import { QueryEditor } from '../components/query/QueryEditor';
 import { QueryResultsPanel } from '../components/query/QueryResultsPanel';
@@ -19,8 +21,10 @@ function QueryPage() {
   const [activeTabId, setActiveTabId] = useState(1);
   const [showExport, setShowExport] = useState(false);
   const [showAiAssistant, setShowAiAssistant] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
   const { loading, executeQuery } = useQuery(connectionId);
   const { schema, fetchSchemaTree } = useSchema(connectionId);
+  const toast = useToast();
   
   const activeTab = tabs.find(t => t.id === activeTabId);
   const query = activeTab?.query || '';
@@ -50,12 +54,26 @@ function QueryPage() {
     return () => clearTimeout(timer);
   }, [tabs, activeTabId, connectionId]);
 
-  // Fetch schema for autocomplete
+  // Auto-reconnect on page load
   useEffect(() => {
-    if (connectionId) {
-      fetchSchemaTree().catch(err => console.error('Failed to load schema:', err));
-    }
-  }, [connectionId, fetchSchemaTree]);
+    const reconnect = async () => {
+      if (!connectionId) return;
+      
+      setReconnecting(true);
+      try {
+        await connectionsAPI.connect(connectionId);
+        // Fetch schema after successful reconnection
+        await fetchSchemaTree();
+      } catch (err) {
+        console.error('Reconnection failed:', err);
+        toast.error('Failed to reconnect to database');
+      } finally {
+        setReconnecting(false);
+      }
+    };
+    
+    reconnect();
+  }, [connectionId, fetchSchemaTree, toast]);
 
   const setQuery = useCallback((newQuery) => {
     setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, query: newQuery } : t));
@@ -109,7 +127,14 @@ function QueryPage() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      <div className="flex-shrink-0 flex justify-between items-center px-6 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      {reconnecting && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+          <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" />
+          <span className="text-sm text-blue-700 dark:text-blue-300">Reconnecting to database...</span>
+        </div>
+      )}
+
+      <div className="flex-shrink-0 flex justify-between items-center px-6 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700" style={{ opacity: reconnecting ? 0.5 : 1, pointerEvents: reconnecting ? 'none' : 'auto' }}>
         <div className="flex items-center gap-2 flex-1 overflow-x-auto">
           {tabs.map(tab => (
             <div
