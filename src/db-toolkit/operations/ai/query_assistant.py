@@ -1,5 +1,6 @@
 """Query Assistant for DBAssist AI functionality."""
 
+from utils.logger import logger
 from typing import Dict, List, Any, Optional
 from .gemini_client import gemini_client
 
@@ -31,6 +32,7 @@ class QueryAssistant:
                 "confidence": "high"
             }
         except Exception as e:
+        logger.error(f"AI operation error: {str(e)}")
             return {
                 "success": False,
                 "error": str(e),
@@ -61,6 +63,7 @@ class QueryAssistant:
                 "improvements": []
             }
         except Exception as e:
+        logger.error(f"AI operation error: {str(e)}")
             return {
                 "success": False,
                 "error": str(e),
@@ -86,6 +89,7 @@ class QueryAssistant:
                 "complexity": "medium"
             }
         except Exception as e:
+        logger.error(f"AI operation error: {str(e)}")
             return {
                 "success": False,
                 "error": str(e),
@@ -114,6 +118,7 @@ class QueryAssistant:
                 "error_type": "syntax"
             }
         except Exception as e:
+        logger.error(f"AI operation error: {str(e)}")
             return {
                 "success": False,
                 "error": str(e),
@@ -142,6 +147,7 @@ class QueryAssistant:
                 "context": "basic"
             }
         except Exception as e:
+        logger.error(f"AI operation error: {str(e)}")
             return {
                 "success": False,
                 "error": str(e),

@@ -1,5 +1,6 @@
 """Settings management routes."""
 
+from utils.logger import logger
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from core.settings_storage import SettingsStorage
@@ -40,6 +41,7 @@ async def update_settings(request: SettingsUpdateRequest):
         updates = {k: v for k, v in request.model_dump().items() if v is not None}
         return await storage.update_settings(**updates)
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
 
 

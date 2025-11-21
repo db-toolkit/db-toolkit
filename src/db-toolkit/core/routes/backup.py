@@ -1,5 +1,6 @@
 """Backup management routes."""
 
+from utils.logger import logger
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from typing import Optional
@@ -50,6 +51,7 @@ async def create_backup(request: BackupCreateRequest):
         )
         return {"success": True, "backup": backup.model_dump()}
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -73,6 +75,7 @@ async def restore_backup(backup_id: str, request: BackupRestoreRequest):
         )
         return {"success": True, "message": "Backup restored successfully"}
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

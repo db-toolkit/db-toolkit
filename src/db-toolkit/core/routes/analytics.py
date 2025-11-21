@@ -1,5 +1,6 @@
 """Analytics routes for database monitoring."""
 
+from utils.logger import logger
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
@@ -45,6 +46,7 @@ async def get_analytics(connection_id: str):
             raise HTTPException(status_code=409, detail="Analytics temporarily unavailable. Please try again.")
         raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -65,6 +67,7 @@ async def get_historical_data(connection_id: str, hours: int = Query(default=3, 
         
         return {"success": True, "history": history}
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -85,6 +88,7 @@ async def get_query_plan(connection_id: str, request: QueryPlanRequest):
         
         return result
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -105,6 +109,7 @@ async def get_slow_queries(connection_id: str, hours: int = Query(default=24, ge
         
         return {"success": True, "slow_queries": slow_queries}
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -125,6 +130,7 @@ async def get_table_stats(connection_id: str):
         
         return {"success": True, "table_stats": table_stats}
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -145,6 +151,7 @@ async def get_pool_stats(connection_id: str):
         
         return {"success": True, "pool_stats": pool_stats}
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -184,6 +191,7 @@ async def export_pdf(connection_id: str):
             raise HTTPException(status_code=409, detail="Another operation is in progress. Please try again in a few seconds.")
         raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -204,4 +212,5 @@ async def kill_query(connection_id: str, request: KillQueryRequest):
         
         return result
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

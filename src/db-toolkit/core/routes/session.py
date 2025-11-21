@@ -1,5 +1,6 @@
 """Session management routes."""
 
+from utils.logger import logger
 from typing import List, Optional
 
 from fastapi import APIRouter

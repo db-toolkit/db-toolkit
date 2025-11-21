@@ -1,5 +1,6 @@
 """Cache management routes."""
 
+from utils.logger import logger
 from fastapi import APIRouter
 from utils.cache import schema_cache, query_cache, prepared_cache
 from operations.background_tasks import get_scheduler_stats

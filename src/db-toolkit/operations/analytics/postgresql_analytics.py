@@ -1,5 +1,6 @@
 """PostgreSQL-specific analytics operations."""
 
+from utils.logger import logger
 from typing import Dict, Any
 from datetime import datetime
 
@@ -104,5 +105,6 @@ async def get_postgresql_analytics(connector) -> Dict[str, Any]:
         }
             
     except Exception as e:
+        logger.error(f"Analytics error in postgresql_analytics.py: {str(e)}")
         return {"success": False, "error": str(e)}
 

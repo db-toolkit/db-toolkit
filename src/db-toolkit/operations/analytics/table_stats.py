@@ -1,5 +1,6 @@
 """Table-level statistics."""
 
+from utils.logger import logger
 from typing import Dict, List, Any
 
 
@@ -24,6 +25,7 @@ async def get_table_stats_postgresql(connection) -> List[Dict[str, Any]]:
         result = await connection.fetch(query)
         return [dict(row) for row in result]
     except Exception as e:
+        logger.error(f"Analytics error in table_stats.py: {str(e)}")
         return []
 
 
@@ -47,6 +49,7 @@ async def get_table_stats_mysql(connection) -> List[Dict[str, Any]]:
         result = await connection.fetch(query)
         return [dict(row) for row in result]
     except Exception as e:
+        logger.error(f"Analytics error in table_stats.py: {str(e)}")
         return []
 
 
@@ -68,6 +71,7 @@ async def get_table_stats_mongodb(connection) -> List[Dict[str, Any]]:
         
         return sorted(stats, key=lambda x: x['size_bytes'], reverse=True)
     except Exception as e:
+        logger.error(f"Analytics error in table_stats.py: {str(e)}")
         return []
 
 
@@ -100,4 +104,5 @@ async def get_table_stats_sqlite(connection) -> List[Dict[str, Any]]:
         
         return stats
     except Exception as e:
+        logger.error(f"Analytics error in table_stats.py: {str(e)}")
         return []

@@ -1,5 +1,6 @@
 """CSV import/export routes."""
 
+from utils.logger import logger
 from fastapi import APIRouter, HTTPException
 
 from core.schemas import (
@@ -38,6 +39,7 @@ async def export_csv(request: ExportCSVRequest):
         return ExportCSVResponse(csv_content=csv_content, row_count=row_count)
 
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -54,6 +56,7 @@ async def validate_csv(request: ValidateCSVRequest):
         )
 
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -89,4 +92,5 @@ async def import_csv(request: ImportCSVRequest):
         return ImportCSVResponse(**result)
 
     except Exception as e:
+        logger.error(f"Route error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
