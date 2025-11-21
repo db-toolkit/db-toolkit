@@ -111,7 +111,9 @@ export function useConnections() {
 
   useEffect(() => {
     fetchConnections();
-    
+  }, [fetchConnections]);
+
+  useEffect(() => {
     // Check connection timestamps and update active status
     const checkActiveConnections = () => {
       const now = Date.now();
@@ -125,14 +127,21 @@ export function useConnections() {
         }
       });
       
-      setConnectedIds(activeIds);
+      setConnectedIds(prev => {
+        const prevArray = Array.from(prev).sort();
+        const newArray = Array.from(activeIds).sort();
+        if (JSON.stringify(prevArray) === JSON.stringify(newArray)) {
+          return prev;
+        }
+        return activeIds;
+      });
     };
     
     checkActiveConnections();
-    const interval = setInterval(checkActiveConnections, 30000); // Check every 30 seconds
+    const interval = setInterval(checkActiveConnections, 30000);
     
     return () => clearInterval(interval);
-  }, [fetchConnections, connections]);
+  }, [connections]);
 
   return {
     connections,
