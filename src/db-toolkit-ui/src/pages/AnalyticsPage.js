@@ -194,6 +194,13 @@ function AnalyticsPage() {
               <p className="text-gray-600 dark:text-gray-400">Loading analytics...</p>
             </div>
           </div>
+        ) : loading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600 dark:text-gray-400">Loading analytics...</p>
+            </div>
+          </div>
         ) : analytics ? (
           <>
             <div className="space-y-6">
@@ -214,11 +221,7 @@ function AnalyticsPage() {
               plan={planModal.plan}
             />
           </>
-        ) : (
-          <div className="text-center text-gray-500 dark:text-gray-400">
-            No analytics data available
-          </div>
-        )}
+        ) : null}
       </div>
     </motion.div>
   );
