@@ -17,7 +17,7 @@ async def health_check():
         "timestamp": datetime.utcnow().isoformat(),
         "uptime_seconds": (datetime.utcnow() - start_time).total_seconds(),
         "connections": {
-            "active": len(connection_manager.connections)
+            "active": len(connection_manager._active_connections)
         },
         "system": {
             "cpu_percent": psutil.cpu_percent(interval=0.1),

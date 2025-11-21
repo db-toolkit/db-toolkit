@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 
 from connectors.base import BaseConnector
 from core.models import DatabaseType
+from utils.logger import logger
 
 class CSVHandler:
     """Handle CSV import and export operations."""
@@ -76,8 +77,10 @@ class CSVHandler:
                     rows.append(mapped_row)
 
         except csv.Error as e:
+            logger.error(f"CSV parsing error: {str(e)}")
             errors.append(f"CSV parsing error: {str(e)}")
         except Exception as e:
+            logger.error(f"CSV validation error: {str(e)}")
             errors.append(f"Validation error: {str(e)}")
 
         return rows, errors
@@ -117,10 +120,12 @@ class CSVHandler:
                             await connector.execute_query(query, row)
                             imported += 1
                         except Exception as e:
+                            logger.error(f"CSV import row {i + batch.index(row) + 1} failed: {str(e)}")
                             failed += 1
                             errors.append(f"Row {i + batch.index(row) + 1}: {str(e)}")
 
             except Exception as e:
+                logger.error(f"CSV import batch {i // batch_size + 1} failed: {str(e)}")
                 failed += len(batch)
                 errors.append(f"Batch {i // batch_size + 1}: {str(e)}")
 

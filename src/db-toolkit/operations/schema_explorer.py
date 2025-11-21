@@ -4,6 +4,7 @@ from typing import Dict, List, Any, Optional
 from core.models import DatabaseConnection
 from utils.cache import schema_cache
 from operations.connection_manager import connection_manager
+from utils.logger import logger
 
 
 class SchemaExplorer:
@@ -64,6 +65,7 @@ class SchemaExplorer:
             return schema_tree
             
         except Exception as e:
+            logger.error(f"Failed to get schema tree for '{connection.name}': {str(e)}")
             return {"error": str(e), "success": False}
     
     async def get_table_info(self, connection: DatabaseConnection, schema: str, table: str) -> Dict[str, Any]:
@@ -106,6 +108,7 @@ class SchemaExplorer:
             return table_info
             
         except Exception as e:
+            logger.error(f"Failed to get table info for '{connection.name}.{schema}.{table}': {str(e)}")
             return {"success": False, "error": str(e)}
     
     def _build_sample_query(self, db_type: str, schema: str, table: str) -> str:
@@ -152,7 +155,8 @@ class SchemaExplorer:
             schemas = await connector.get_schemas()
             schema_cache.set(cache_key, schemas, ttl=900)  # 15 minutes
             return schemas
-        except Exception:
+        except Exception as e:
+            logger.error(f"Failed to get schemas for '{connection.name}': {str(e)}")
             return []
     
     async def get_tables_cached(self, connection: DatabaseConnection, schema: str) -> List[str]:
@@ -175,7 +179,8 @@ class SchemaExplorer:
             tables = await connector.get_tables(schema)
             schema_cache.set(cache_key, tables, ttl=600)  # 10 minutes
             return tables
-        except Exception:
+        except Exception as e:
+            logger.error(f"Failed to get tables for '{connection.name}.{schema}': {str(e)}")
             return []
     
     async def get_columns_cached(self, connection: DatabaseConnection, table: str, schema: str) -> List[Dict[str, Any]]:
@@ -198,5 +203,6 @@ class SchemaExplorer:
             columns = await connector.get_columns(table, schema)
             schema_cache.set(cache_key, columns, ttl=600)  # 10 minutes
             return columns
-        except Exception:
+        except Exception as e:
+            logger.error(f"Failed to get columns for '{connection.name}.{schema}.{table}': {str(e)}")
             return []
