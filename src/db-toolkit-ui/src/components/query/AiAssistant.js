@@ -26,13 +26,16 @@ export function AiAssistant({
   lastError,
   schemaContext = {},
   isVisible,
-  onClose 
+  onClose,
+  chatHistory = [],
+  onChatUpdate
 }) {
-  const [activeTab, setActiveTab] = useState('generate');
+  const [activeTab, setActiveTab] = useState('chat');
   const [naturalLanguage, setNaturalLanguage] = useState('');
   const [copiedStates, setCopiedStates] = useState({});
   const [explanation, setExplanation] = useState(null);
   const [optimization, setOptimization] = useState(null);
+  const [chatInput, setChatInput] = useState('');
   
   const { generateQuery, optimizeQuery, explainQuery, fixQueryError, isLoading, error, clearError } = useAiAssistant(connectionId);
   const toast = useToast();
@@ -57,12 +60,19 @@ export function AiAssistant({
     }
 
     try {
+      const userMessage = { role: 'user', content: naturalLanguage, type: 'generate' };
+      onChatUpdate([...chatHistory, userMessage]);
+      
       const result = await generateQuery(naturalLanguage, schemaContext);
       if (result.success && result.sql) {
+        const assistantMessage = { role: 'assistant', content: result.sql, type: 'sql' };
+        onChatUpdate([...chatHistory, userMessage, assistantMessage]);
         onQueryGenerated(result.sql);
         toast.success('Query generated successfully');
         setNaturalLanguage('');
       } else {
+        const errorMessage = { role: 'assistant', content: result.error || 'Failed to generate query', type: 'error' };
+        onChatUpdate([...chatHistory, userMessage, errorMessage]);
         toast.error(result.error || 'Failed to generate query');
       }
     } catch (err) {
@@ -77,8 +87,13 @@ export function AiAssistant({
     }
 
     try {
+      const userMessage = { role: 'user', content: 'Optimize: ' + currentQuery, type: 'optimize' };
+      onChatUpdate([...chatHistory, userMessage]);
+      
       const result = await optimizeQuery(currentQuery, null, schemaContext);
       if (result.success) {
+        const assistantMessage = { role: 'assistant', content: result.suggestions?.[0] || result.explanation, type: 'text' };
+        onChatUpdate([...chatHistory, userMessage, assistantMessage]);
         setOptimization(result);
         setActiveTab('optimize');
         toast.success('Query optimization complete');
@@ -97,8 +112,13 @@ export function AiAssistant({
     }
 
     try {
+      const userMessage = { role: 'user', content: 'Explain: ' + currentQuery, type: 'explain' };
+      onChatUpdate([...chatHistory, userMessage]);
+      
       const result = await explainQuery(currentQuery, schemaContext);
       if (result.success) {
+        const assistantMessage = { role: 'assistant', content: result.explanation, type: 'text' };
+        onChatUpdate([...chatHistory, userMessage, assistantMessage]);
         setExplanation(result);
         setActiveTab('explain');
         toast.success('Query explained successfully');
@@ -149,6 +169,7 @@ export function AiAssistant({
       {/* Tabs */}
       <div className="flex border-b border-gray-200 dark:border-gray-700">
         {[
+          { id: 'chat', label: 'Chat', icon: MessageSquare },
           { id: 'generate', label: 'Generate', icon: Wand2 },
           { id: 'optimize', label: 'Optimize', icon: Zap },
           { id: 'explain', label: 'Explain', icon: MessageSquare }
@@ -171,6 +192,41 @@ export function AiAssistant({
       {/* Content */}
       <div className="flex-1 p-4 overflow-y-auto">
         <AnimatePresence mode="wait">
+          {activeTab === 'chat' && (
+            <motion.div
+              key="chat"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-4 h-full flex flex-col"
+            >
+              <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+                {chatHistory.length === 0 ? (
+                  <div className="text-center text-gray-500 dark:text-gray-400 text-sm py-8">
+                    No chat history yet. Start by generating, optimizing, or explaining a query.
+                  </div>
+                ) : (
+                  chatHistory.map((msg, idx) => (
+                    <div key={idx} className={`p-3 rounded-lg ${
+                      msg.role === 'user' 
+                        ? 'bg-blue-50 dark:bg-blue-900/20 ml-4' 
+                        : 'bg-gray-50 dark:bg-gray-900 mr-4'
+                    }`}>
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                        {msg.role === 'user' ? 'You' : 'DBAssist'}
+                      </div>
+                      <div className={`text-sm ${
+                        msg.type === 'sql' ? 'font-mono bg-gray-800 dark:bg-gray-950 text-green-400 p-2 rounded' : 'text-gray-700 dark:text-gray-300'
+                      }`}>
+                        {msg.content}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          )}
+
           {activeTab === 'generate' && (
             <motion.div
               key="generate"

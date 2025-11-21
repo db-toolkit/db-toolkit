@@ -17,7 +17,7 @@ import { AiAssistant } from '../components/query/AiAssistant';
 
 function QueryPage() {
   const { connectionId } = useParams();
-  const [tabs, setTabs] = useState([{ id: 1, name: 'Query 1', query: '', result: null, executionTime: 0, error: null }]);
+  const [tabs, setTabs] = useState([{ id: 1, name: 'Query 1', query: '', result: null, executionTime: 0, error: null, chatHistory: [] }]);
   const [activeTabId, setActiveTabId] = useState(1);
   const [showExport, setShowExport] = useState(false);
   const [showAiAssistant, setShowAiAssistant] = useState(false);
@@ -81,7 +81,7 @@ function QueryPage() {
 
   const addTab = () => {
     const newId = Math.max(...tabs.map(t => t.id)) + 1;
-    setTabs(prev => [...prev, { id: newId, name: `Query ${newId}`, query: '', result: null, executionTime: 0, error: null }]);
+    setTabs(prev => [...prev, { id: newId, name: `Query ${newId}`, query: '', result: null, executionTime: 0, error: null, chatHistory: [] }]);
     setActiveTabId(newId);
   };
 
@@ -241,6 +241,12 @@ function QueryPage() {
                 schemaContext={{ tables: schema }}
                 isVisible={showAiAssistant}
                 onClose={() => setShowAiAssistant(false)}
+                chatHistory={activeTab?.chatHistory || []}
+                onChatUpdate={(newHistory) => {
+                  setTabs(prev => prev.map(t => 
+                    t.id === activeTabId ? { ...t, chatHistory: newHistory.slice(-10) } : t
+                  ));
+                }}
               />
             </div>
           </Split>
