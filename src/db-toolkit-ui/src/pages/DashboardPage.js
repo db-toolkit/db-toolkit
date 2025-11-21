@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Database, FileText, HardDrive, Plus, ArrowRight, Activity } from 'lucide-react';
 import { useConnections } from '../hooks';
 import { Button } from '../components/common/Button';
+import api from '../services/api';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -11,13 +12,24 @@ export default function DashboardPage() {
   const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
-    const queryTabs = JSON.parse(localStorage.getItem('query-tabs') || '[]');
-    const backupSchedules = JSON.parse(localStorage.getItem('backup-schedules') || '[]');
+    const loadStats = async () => {
+      const queryTabs = JSON.parse(localStorage.getItem('query-tabs') || '[]');
+      
+      let backupCount = 0;
+      try {
+        const response = await api.get('/backup-schedules');
+        backupCount = response.data.schedules?.length || 0;
+      } catch (err) {
+        console.error('Failed to fetch backup schedules:', err);
+      }
+      
+      setStats({
+        queries: queryTabs.length,
+        backups: backupCount
+      });
+    };
     
-    setStats({
-      queries: queryTabs.length,
-      backups: backupSchedules.length
-    });
+    loadStats();
 
     const activity = [];
     const sessionState = JSON.parse(localStorage.getItem('session-state') || '{}');

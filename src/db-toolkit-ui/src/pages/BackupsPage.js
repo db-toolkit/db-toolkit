@@ -29,25 +29,7 @@ function BackupsPage() {
 
   const handleBackupUpdate = useCallback((data) => {
     fetchBackups(true);
-    
-    if (data.status === 'completed') {
-      if (Notification.permission === 'granted') {
-        new Notification('Backup Completed', {
-          body: `Backup completed successfully`,
-          icon: '/icon.png'
-        });
-      }
-      toast.success('Backup completed successfully');
-    } else if (data.status === 'failed') {
-      if (Notification.permission === 'granted') {
-        new Notification('Backup Failed', {
-          body: data.data?.error || 'Backup failed',
-          icon: '/icon.png'
-        });
-      }
-      toast.error('Backup failed');
-    }
-  }, [fetchBackups, toast]);
+  }, [fetchBackups]);
 
   useBackupWebSocket(handleBackupUpdate);
 
