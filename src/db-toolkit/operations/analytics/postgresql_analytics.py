@@ -9,7 +9,8 @@ async def get_postgresql_analytics(connection) -> Dict[str, Any]:
     try:
         # Current queries with timing and cost
         current_queries_sql = """
-            SELECT pid, usename, application_name, client_addr, 
+            SELECT pid, usename, application_name, 
+                   CAST(client_addr AS TEXT) as client_addr, 
                    state, query, query_start, state_change,
                    EXTRACT(EPOCH FROM (NOW() - query_start)) as duration,
                    CASE 
