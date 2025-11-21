@@ -13,5 +13,6 @@ This file tracks changes during development before they are added to CHANGELOG.m
 - CSV export now fully functional with custom delimiter and header options
 - Query page scrolling isolated to individual sections (Results, Messages, History tabs)
 - Scroll propagation prevented with overscroll-contain
+- Auto-reconnect on QueryPage load prevents "Connection not found" errors after page refresh
 
 ### Removed
