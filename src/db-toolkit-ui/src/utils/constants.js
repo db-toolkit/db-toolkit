@@ -21,10 +21,13 @@ export const CACHE_KEYS = {
 // IndexedDB configuration
 export const INDEXEDDB_CONFIG = {
   DB_NAME: 'db-toolkit-cache',
-  VERSION: 1,
+  VERSION: 2,
   STORES: {
     SCHEMA_ANALYSIS: 'schema-analysis',
-    TABLE_ANALYSIS: 'table-analysis'
+    TABLE_ANALYSIS: 'table-analysis',
+    QUERY_TABS: 'query-tabs',
+    SCHEMA_CACHE: 'schema-cache',
+    TABLE_INFO: 'table-info'
   },
   CACHE_DURATION: 24 * 60 * 60 * 1000 // 24 hours
 };

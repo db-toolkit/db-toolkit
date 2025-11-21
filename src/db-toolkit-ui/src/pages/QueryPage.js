@@ -12,6 +12,7 @@ import { QueryEditor } from '../components/query/QueryEditor';
 import { QueryResultsPanel } from '../components/query/QueryResultsPanel';
 import { CsvExportModal } from '../components/csv';
 import { AiAssistant } from '../components/query/AiAssistant';
+import { cacheService } from '../services/indexedDB';
 
 function QueryPage() {
   const { connectionId } = useParams();
@@ -30,24 +31,43 @@ function QueryPage() {
   const executionTime = activeTab?.executionTime || 0;
   const error = activeTab?.error || null;
 
-  // Load saved tabs from localStorage
+  // Load saved tabs from IndexedDB (with localStorage fallback)
   useEffect(() => {
-    const saved = localStorage.getItem(`query-tabs-${connectionId}`);
-    if (saved) {
+    const loadTabs = async () => {
       try {
-        const parsed = JSON.parse(saved);
-        setTabs(parsed.tabs);
-        setActiveTabId(parsed.activeTabId);
+        // Try IndexedDB first
+        const cached = await cacheService.getQueryTabs(connectionId);
+        if (cached) {
+          setTabs(cached.tabs);
+          setActiveTabId(cached.activeTabId);
+          return;
+        }
+
+        // Fallback to localStorage
+        const saved = localStorage.getItem(`query-tabs-${connectionId}`);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setTabs(parsed.tabs);
+          setActiveTabId(parsed.activeTabId);
+          // Migrate to IndexedDB
+          await cacheService.setQueryTabs(connectionId, parsed);
+          localStorage.removeItem(`query-tabs-${connectionId}`);
+        }
       } catch (err) {
         console.error('Failed to load saved tabs:', err);
       }
-    }
+    };
+    loadTabs();
   }, [connectionId]);
 
-  // Auto-save tabs to localStorage
+  // Auto-save tabs to IndexedDB
   useEffect(() => {
     const timer = setTimeout(() => {
-      localStorage.setItem(`query-tabs-${connectionId}`, JSON.stringify({ tabs, activeTabId }));
+      cacheService.setQueryTabs(connectionId, { tabs, activeTabId }).catch(err => {
+        console.error('Failed to save tabs:', err);
+        // Fallback to localStorage
+        localStorage.setItem(`query-tabs-${connectionId}`, JSON.stringify({ tabs, activeTabId }));
+      });
     }, 1000);
     return () => clearTimeout(timer);
   }, [tabs, activeTabId, connectionId]);

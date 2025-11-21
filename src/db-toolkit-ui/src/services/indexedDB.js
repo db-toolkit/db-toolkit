@@ -34,6 +34,21 @@ class IndexedDBService {
         if (!db.objectStoreNames.contains(INDEXEDDB_CONFIG.STORES.TABLE_ANALYSIS)) {
           db.createObjectStore(INDEXEDDB_CONFIG.STORES.TABLE_ANALYSIS, { keyPath: 'key' });
         }
+
+        // Create query tabs store
+        if (!db.objectStoreNames.contains(INDEXEDDB_CONFIG.STORES.QUERY_TABS)) {
+          db.createObjectStore(INDEXEDDB_CONFIG.STORES.QUERY_TABS, { keyPath: 'key' });
+        }
+
+        // Create schema cache store
+        if (!db.objectStoreNames.contains(INDEXEDDB_CONFIG.STORES.SCHEMA_CACHE)) {
+          db.createObjectStore(INDEXEDDB_CONFIG.STORES.SCHEMA_CACHE, { keyPath: 'key' });
+        }
+
+        // Create table info store
+        if (!db.objectStoreNames.contains(INDEXEDDB_CONFIG.STORES.TABLE_INFO)) {
+          db.createObjectStore(INDEXEDDB_CONFIG.STORES.TABLE_INFO, { keyPath: 'key' });
+        }
       };
     });
 
@@ -113,7 +128,10 @@ class IndexedDBService {
     await this.init();
     const stores = [
       INDEXEDDB_CONFIG.STORES.SCHEMA_ANALYSIS,
-      INDEXEDDB_CONFIG.STORES.TABLE_ANALYSIS
+      INDEXEDDB_CONFIG.STORES.TABLE_ANALYSIS,
+      INDEXEDDB_CONFIG.STORES.QUERY_TABS,
+      INDEXEDDB_CONFIG.STORES.SCHEMA_CACHE,
+      INDEXEDDB_CONFIG.STORES.TABLE_INFO
     ];
 
     for (const storeName of stores) {
@@ -135,6 +153,45 @@ class IndexedDBService {
 }
 
 export const indexedDBService = new IndexedDBService();
+
+// Helper methods for common operations
+export const cacheService = {
+  // Query tabs
+  async getQueryTabs(connectionId) {
+    const result = await indexedDBService.get(INDEXEDDB_CONFIG.STORES.QUERY_TABS, connectionId);
+    return result?.data || null;
+  },
+  async setQueryTabs(connectionId, tabs) {
+    return indexedDBService.set(INDEXEDDB_CONFIG.STORES.QUERY_TABS, connectionId, tabs);
+  },
+
+  // Schema cache
+  async getSchema(connectionId) {
+    const result = await indexedDBService.get(INDEXEDDB_CONFIG.STORES.SCHEMA_CACHE, connectionId);
+    return result?.data || null;
+  },
+  async setSchema(connectionId, schema) {
+    return indexedDBService.set(INDEXEDDB_CONFIG.STORES.SCHEMA_CACHE, connectionId, schema);
+  },
+
+  // Table info
+  async getTableInfo(connectionId, schema, table) {
+    const key = `${connectionId}_${schema}_${table}`;
+    const result = await indexedDBService.get(INDEXEDDB_CONFIG.STORES.TABLE_INFO, key);
+    return result?.data || null;
+  },
+  async setTableInfo(connectionId, schema, table, info) {
+    const key = `${connectionId}_${schema}_${table}`;
+    return indexedDBService.set(INDEXEDDB_CONFIG.STORES.TABLE_INFO, key, info);
+  },
+
+  // Clear connection data
+  async clearConnection(connectionId) {
+    await indexedDBService.delete(INDEXEDDB_CONFIG.STORES.QUERY_TABS, connectionId);
+    await indexedDBService.delete(INDEXEDDB_CONFIG.STORES.SCHEMA_CACHE, connectionId);
+    // Note: Table info uses composite keys, would need cursor to delete all
+  }
+};
 
 // Cleanup expired cache on app start
 if (typeof window !== 'undefined') {
