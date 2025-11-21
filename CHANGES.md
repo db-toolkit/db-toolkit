@@ -9,11 +9,10 @@ This file tracks changes during development before they are added to CHANGELOG.m
 
 ### Fixed
 - AI explanation and optimization results now display correctly in sidebar
-- Gemini API integration using settings instead of direct environment variables with fallback model support
 - CSV export now fully functional with custom delimiter and header options
 - Query page scrolling isolated to individual sections (Results, Messages, History tabs)
-- Scroll propagation prevented with overscroll-contain
 - Auto-reconnect on QueryPage load prevents "Connection not found" errors after page refresh
 - CSV export now correctly reads data from query results (handles both rows and data keys)
+- Loading spinners added to Dashboard and Analytics pages to prevent empty state flash
 
 ### Removed
