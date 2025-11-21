@@ -21,7 +21,7 @@ async def get_postgresql_analytics(connection) -> Dict[str, Any]:
                      ELSE 'OTHER'
                    END as query_type
             FROM pg_stat_activity
-            WHERE state != 'idle' AND query NOT LIKE '%pg_stat_activity%'
+            WHERE state NOT IN ('idle', '') AND query NOT LIKE '%pg_stat_activity%'
             ORDER BY query_start DESC
             LIMIT 50
         """
