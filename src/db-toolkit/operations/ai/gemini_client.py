@@ -41,7 +41,7 @@ class GeminiClient:
     def _get_next_key(self) -> str:
         """Rotate to next API key to distribute load."""
         if not self.api_keys:
-            raise ValueError("No Gemini API keys configured. Please set GEMINI_API_KEY_1, GEMINI_API_KEY_2, etc.")
+            raise ValueError("No Gemini API keys configured. Please set GEMINI_API_KEY or GEMINI_API_KEY_1")
         
         key = self.api_keys[self.current_key_index]
         self.current_key_index = (self.current_key_index + 1) % len(self.api_keys)
@@ -50,7 +50,7 @@ class GeminiClient:
     async def _make_request(self, prompt: str, max_retries: int = 3) -> str:
         """Make AI request with automatic key rotation and retry logic."""
         # Get configuration from environment
-        model_name = os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')
+        model_name = os.getenv('GEMINI_MODEL', 'gemini-1.5-flash')  # Changed to stable version
         temperature = float(os.getenv('GEMINI_TEMPERATURE', '0.3'))
         max_tokens = int(os.getenv('GEMINI_MAX_TOKENS', '2048'))
         
@@ -76,21 +76,17 @@ class GeminiClient:
                 except Exception as e:
                     last_error = e
                     error_msg = str(e).lower()
+                    # Log the actual error for debugging
+                    print(f"Gemini API Error: {str(e)}")
                     if "quota" in error_msg or "rate limit" in error_msg:
                         continue  # Try next key
                     else:
-                        # For non-rate-limit errors, retry with same key
-                        if attempt < max_retries - 1:
-                            await asyncio.sleep(1)
-                        break
-            
-            # If we tried all keys and got rate limits, wait before next attempt
-            if attempt < max_retries - 1:
-                await asyncio.sleep(2 ** attempt)  # Exponential backoff
+                        # For non-rate-limit errors, don't retry
+                        raise e
         
-        # Raise the actual last error instead of generic message
+        # Raise the actual last error with details
         if last_error:
-            raise last_error
+            raise Exception(f"Gemini API Error: {str(last_error)}")
         raise Exception("Request failed after all retries")
     
     def _build_context(self, db_type: str, connection_name: str = "", schema_context: Dict = None) -> str:
