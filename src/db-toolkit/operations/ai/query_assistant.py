@@ -223,18 +223,27 @@ class QueryAssistant:
             }
     
     def _format_schema(self, schema_context: Dict) -> str:
-        """Format schema context for prompt."""
+        """Format schema context for prompt (limit to prevent 413 errors)."""
         if not schema_context:
             return "No schema available"
         
         formatted = []
-        for table_name, table_info in schema_context.items():
-            if isinstance(table_info, dict) and 'columns' in table_info:
-                cols = ", ".join([f"{c['name']} ({c.get('type', 'unknown')})" 
-                                 for c in table_info['columns']])
-                formatted.append(f"Table: {table_name}\nColumns: {cols}")
+        max_tables = 20  # Limit to prevent payload too large
         
-        return "\n\n".join(formatted) if formatted else str(schema_context)
+        for idx, (table_name, table_info) in enumerate(schema_context.items()):
+            if idx >= max_tables:
+                formatted.append(f"... and {len(schema_context) - max_tables} more tables")
+                break
+            
+            if isinstance(table_info, dict) and 'columns' in table_info:
+                # Limit columns per table
+                cols = table_info['columns'][:10]  # Max 10 columns per table
+                col_str = ", ".join([f"{c['name']} ({c.get('type', 'unknown')})" for c in cols])
+                if len(table_info['columns']) > 10:
+                    col_str += f" ... +{len(table_info['columns']) - 10} more"
+                formatted.append(f"{table_name}: {col_str}")
+        
+        return "\n".join(formatted) if formatted else str(schema_context)
     
     def _extract_sql(self, response: str) -> str:
         """Extract SQL from AI response."""
