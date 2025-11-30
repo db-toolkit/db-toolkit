@@ -2,7 +2,9 @@
 
 from utils.logger import logger
 from typing import Dict, List, Any
-from .gemini_client import gemini_client
+from core.config import settings
+from .cloudflare_client import CloudflareAIClient
+from .prompts import SCHEMA_ANALYSIS_PROMPT, SCHEMA_RECOMMENDATIONS_PROMPT, SYSTEM_PROMPT
 
 
 class SchemaAnalyzer:
@@ -10,7 +12,16 @@ class SchemaAnalyzer:
 
     def __init__(self):
         """Initialize schema analyzer."""
-        self.client = gemini_client
+        if not settings.has_cloudflare_credentials:
+            raise ValueError("Cloudflare credentials not configured")
+        
+        self.client = CloudflareAIClient(
+            account_id=settings.cloudflare_account_id,
+            api_token=settings.cloudflare_api_token
+        )
+        self.model = settings.cloudflare_model
+        self.temperature = settings.ai_temperature
+        self.max_tokens = settings.ai_max_tokens
 
     async def analyze_table(
         self, 
@@ -20,19 +31,33 @@ class SchemaAnalyzer:
     ) -> Dict[str, Any]:
         """Analyze a database table and provide insights."""
         try:
-            result = await self.client.analyze_table(
-                table_name=table_name,
-                columns=columns,
-                db_type=db_type
+            # Format schema info
+            schema_info = f"Table: {table_name}\n"
+            schema_info += "Columns:\n"
+            for col in columns:
+                schema_info += f"  - {col.get('name')} ({col.get('type', 'unknown')})\n"
+            
+            prompt = SCHEMA_ANALYSIS_PROMPT.format(
+                db_type=db_type,
+                schema_info=schema_info
             )
+            
+            response = await self.client.generate(
+                prompt=prompt,
+                model=self.model,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                system_prompt=SYSTEM_PROMPT
+            )
+            
             return {
                 "success": True,
                 "table_name": table_name,
-                "summary": result.get("summary", ""),
+                "summary": response,
                 "purpose": "Data storage and retrieval",
-                "suggestions": result.get("suggestions", []),
-                "common_queries": result.get("common_queries", []),
-                "index_recommendations": result.get("index_recommendations", []),
+                "suggestions": [],
+                "common_queries": [],
+                "index_recommendations": [],
                 "relationship_suggestions": []
             }
         except Exception as e:

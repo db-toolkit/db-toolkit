@@ -2,7 +2,15 @@
 
 from utils.logger import logger
 from typing import Dict, List, Any, Optional
-from .gemini_client import gemini_client
+from core.config import settings
+from .cloudflare_client import CloudflareAIClient
+from .prompts import (
+    NL_TO_SQL_PROMPT,
+    QUERY_EXPLANATION_PROMPT,
+    QUERY_OPTIMIZATION_PROMPT,
+    QUERY_ERROR_FIX_PROMPT,
+    SYSTEM_PROMPT
+)
 
 
 class QueryAssistant:
@@ -10,7 +18,16 @@ class QueryAssistant:
 
     def __init__(self):
         """Initialize query assistant."""
-        self.client = gemini_client
+        if not settings.has_cloudflare_credentials:
+            raise ValueError("Cloudflare credentials not configured")
+        
+        self.client = CloudflareAIClient(
+            account_id=settings.cloudflare_account_id,
+            api_token=settings.cloudflare_api_token
+        )
+        self.model = settings.cloudflare_model
+        self.temperature = settings.ai_temperature
+        self.max_tokens = settings.ai_max_tokens
 
     async def generate_from_natural_language(
         self, 
@@ -20,15 +37,32 @@ class QueryAssistant:
     ) -> Dict[str, str]:
         """Convert natural language to SQL query."""
         try:
-            result = await self.client.generate_query(
-                natural_language=natural_language,
-                schema_context=schema_context,
-                db_type=db_type
+            # Format schema context
+            schema_str = self._format_schema(schema_context)
+            
+            # Build prompt
+            prompt = NL_TO_SQL_PROMPT.format(
+                db_type=db_type,
+                schema_context=schema_str,
+                user_request=natural_language
             )
+            
+            # Generate SQL
+            response = await self.client.generate(
+                prompt=prompt,
+                model=self.model,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                system_prompt=SYSTEM_PROMPT
+            )
+            
+            # Extract SQL from response
+            sql = self._extract_sql(response)
+            
             return {
                 "success": True,
-                "sql": result.get("sql", ""),
-                "explanation": result.get("explanation", ""),
+                "sql": sql,
+                "explanation": "Query generated from natural language",
                 "confidence": "high"
             }
         except Exception as e:
@@ -49,17 +83,29 @@ class QueryAssistant:
     ) -> Dict[str, Any]:
         """Analyze and optimize SQL query."""
         try:
-            result = await self.client.optimize_query(
-                query=query,
-                execution_plan=execution_plan,
+            schema_str = self._format_schema(schema_context) if schema_context else "N/A"
+            plan_str = str(execution_plan) if execution_plan else "N/A"
+            
+            prompt = QUERY_OPTIMIZATION_PROMPT.format(
                 db_type=db_type,
-                schema_context=schema_context
+                schema_context=schema_str,
+                query=query,
+                execution_plan=plan_str
             )
+            
+            response = await self.client.generate(
+                prompt=prompt,
+                model=self.model,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                system_prompt=SYSTEM_PROMPT
+            )
+            
             return {
                 "success": True,
-                "suggestions": result.get("suggestions", []),
-                "optimized_query": result.get("optimized_query"),
-                "performance_assessment": result.get("performance_assessment", "Unknown"),
+                "suggestions": [response],
+                "optimized_query": self._extract_sql(response),
+                "performance_assessment": "Analyzed",
                 "improvements": []
             }
         except Exception as e:
@@ -78,14 +124,25 @@ class QueryAssistant:
     ) -> Dict[str, str]:
         """Explain what a SQL query does."""
         try:
-            result = await self.client.explain_query(
-                query=query,
+            schema_str = self._format_schema(schema_context) if schema_context else "N/A"
+            
+            prompt = QUERY_EXPLANATION_PROMPT.format(
                 db_type=db_type,
-                schema_context=schema_context
+                schema_context=schema_str,
+                query=query
             )
+            
+            response = await self.client.generate(
+                prompt=prompt,
+                model=self.model,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                system_prompt=SYSTEM_PROMPT
+            )
+            
             return {
                 "success": True,
-                "explanation": result.get("explanation", ""),
+                "explanation": response,
                 "complexity": "medium"
             }
         except Exception as e:
@@ -105,16 +162,27 @@ class QueryAssistant:
     ) -> Dict[str, str]:
         """Fix SQL query errors."""
         try:
-            result = await self.client.fix_error(
-                query=query,
-                error=error_message,
+            schema_str = self._format_schema(schema_context) if schema_context else "N/A"
+            
+            prompt = QUERY_ERROR_FIX_PROMPT.format(
                 db_type=db_type,
-                schema_context=schema_context
+                schema_context=schema_str,
+                query=query,
+                error_message=error_message
             )
+            
+            response = await self.client.generate(
+                prompt=prompt,
+                model=self.model,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                system_prompt=SYSTEM_PROMPT
+            )
+            
             return {
                 "success": True,
-                "explanation": result.get("explanation", ""),
-                "fixed_query": result.get("fixed_query", ""),
+                "explanation": response,
+                "fixed_query": self._extract_sql(response),
                 "error_type": "syntax"
             }
         except Exception as e:
@@ -153,6 +221,48 @@ class QueryAssistant:
                 "error": str(e),
                 "suggestions": []
             }
+    
+    def _format_schema(self, schema_context: Dict) -> str:
+        """Format schema context for prompt."""
+        if not schema_context:
+            return "No schema available"
+        
+        formatted = []
+        for table_name, table_info in schema_context.items():
+            if isinstance(table_info, dict) and 'columns' in table_info:
+                cols = ", ".join([f"{c['name']} ({c.get('type', 'unknown')})" 
+                                 for c in table_info['columns']])
+                formatted.append(f"Table: {table_name}\nColumns: {cols}")
+        
+        return "\n\n".join(formatted) if formatted else str(schema_context)
+    
+    def _extract_sql(self, response: str) -> str:
+        """Extract SQL from AI response."""
+        # Remove markdown code blocks
+        if "```sql" in response:
+            start = response.find("```sql") + 6
+            end = response.find("```", start)
+            return response[start:end].strip()
+        elif "```" in response:
+            start = response.find("```") + 3
+            end = response.find("```", start)
+            return response[start:end].strip()
+        
+        # Look for SQL keywords
+        lines = response.split('\n')
+        sql_lines = []
+        in_sql = False
+        
+        for line in lines:
+            line_upper = line.strip().upper()
+            if line_upper.startswith(('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'WITH', 'CREATE', 'ALTER', 'DROP')):
+                in_sql = True
+            if in_sql:
+                sql_lines.append(line)
+                if line.strip().endswith(';'):
+                    break
+        
+        return '\n'.join(sql_lines).strip() if sql_lines else response.strip()
 
 
 # Global instance
