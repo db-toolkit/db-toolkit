@@ -10,6 +10,7 @@ import ReactFlow, {
   useEdgesState,
   addEdge
 } from 'reactflow';
+import Split from 'react-split';
 import 'reactflow/dist/style.css';
 import { X } from 'lucide-react';
 import { Button } from '../common/Button';
@@ -79,11 +80,23 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
         tableName: table.name,
         columns: table.columns,
         selectedColumns: selectedColumns.map(c => `${c.table}.${c.name}`),
-        onColumnToggle: handleColumnToggle
+        onColumnToggle: handleColumnToggle,
+        onRemove: handleRemoveTable
       }
     };
     setNodes(nds => [...nds, newNode]);
   }, [selectedColumns, setNodes]);
+
+  // Remove table from canvas
+  const handleRemoveTable = useCallback((tableName) => {
+    setNodes(nds => nds.filter(n => n.data.tableName !== tableName));
+    setEdges(eds => eds.filter(e => {
+      const sourceNode = nodes.find(n => n.id === e.source);
+      const targetNode = nodes.find(n => n.id === e.target);
+      return sourceNode?.data.tableName !== tableName && targetNode?.data.tableName !== tableName;
+    }));
+    setSelectedColumns(cols => cols.filter(c => c.table !== tableName));
+  }, [setNodes, setEdges, nodes]);
 
   // Toggle column selection
   const handleColumnToggle = useCallback((tableName, column) => {
@@ -110,10 +123,11 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
       ...node,
       data: {
         ...node.data,
-        selectedColumns: selectedColumns.map(c => `${c.table}.${c.name}`)
+        selectedColumns: selectedColumns.map(c => `${c.table}.${c.name}`),
+        onRemove: handleRemoveTable
       }
     })));
-  }, [selectedColumns, setNodes]);
+  }, [selectedColumns, setNodes, handleRemoveTable]);
 
   // Handle edge connection
   const onConnect = useCallback((params) => {
@@ -204,32 +218,40 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
 
         {/* Canvas */}
         <div className="flex-1 flex flex-col">
-          <div className="flex-1">
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              nodeTypes={nodeTypes}
-              fitView
-              minZoom={0.2}
-              maxZoom={1.5}
-            >
-              <Background />
-              <Controls />
-              <MiniMap />
-            </ReactFlow>
-          </div>
+          <Split
+            direction="vertical"
+            sizes={[70, 30]}
+            minSize={[300, 150]}
+            gutterSize={8}
+            className="flex flex-col h-full"
+          >
+            <div className="overflow-hidden">
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                nodeTypes={nodeTypes}
+                fitView
+                minZoom={0.2}
+                maxZoom={1.5}
+              >
+                <Background />
+                <Controls />
+                <MiniMap />
+              </ReactFlow>
+            </div>
 
-          {/* SQL Preview */}
-          <div className="h-48">
-            <SQLPreview 
-              sql={sql} 
-              onExecute={handleExecute}
-              isExecuting={isExecuting}
-            />
-          </div>
+            {/* SQL Preview */}
+            <div className="overflow-hidden">
+              <SQLPreview 
+                sql={sql} 
+                onExecute={handleExecute}
+                isExecuting={isExecuting}
+              />
+            </div>
+          </Split>
         </div>
 
         {/* Right Sidebar - Column & Filter Config */}

@@ -3,19 +3,31 @@
  */
 import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
-import { Table, Check } from 'lucide-react';
+import { Table, Check, X } from 'lucide-react';
 
 function QueryTableNode({ data, selected }) {
-  const { tableName, columns = [], selectedColumns = [], onColumnToggle } = data;
+  const { tableName, columns = [], selectedColumns = [], onColumnToggle, onRemove } = data;
 
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg min-w-[280px] border-2 ${
       selected ? 'border-blue-500' : 'border-gray-300 dark:border-gray-600'
     }`}>
       {/* Header */}
-      <div className="bg-blue-600 dark:bg-blue-700 text-white px-4 py-3 rounded-t-lg flex items-center gap-2">
-        <Table size={18} />
-        <span className="font-semibold">{tableName}</span>
+      <div className="bg-blue-600 dark:bg-blue-700 text-white px-4 py-3 rounded-t-lg flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Table size={18} />
+          <span className="font-semibold">{tableName}</span>
+        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove?.(tableName);
+          }}
+          className="p-1 hover:bg-blue-500 dark:hover:bg-blue-600 rounded transition"
+          title="Remove table"
+        >
+          <X size={16} />
+        </button>
       </div>
 
       {/* Columns */}
