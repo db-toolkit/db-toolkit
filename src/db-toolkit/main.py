@@ -47,7 +47,7 @@ from ws.analytics import websocket_analytics
 app = FastAPI(
     title="DB Toolkit API",
     description="Database management toolkit API",
-    version="0.5.2",
+    version="0.1.0",
     swagger_ui_parameters={"defaultModelsExpandDepth": -1},
     lifespan=lifespan,
 )
