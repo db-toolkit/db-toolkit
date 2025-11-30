@@ -6,6 +6,7 @@ import { Button } from '../common/Button';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useSettingsContext } from '../../contexts/SettingsContext';
 import { registerSqlSnippets } from './sqlSnippets';
+import { createSQLCompletionProvider } from '../../utils/monacoCompletions';
 import './QueryEditor.css';
 
 export function QueryEditor({ query, onChange, onExecute, loading, schema, error }) {
@@ -44,63 +45,26 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
       }
     );
 
-    // Register autocomplete
-    monaco.languages.registerCompletionItemProvider('sql', {
-      triggerCharacters: ['.', ' '],
-      provideCompletionItems: (model, position) => {
-        const word = model.getWordUntilPosition(position);
-        const range = {
-          startLineNumber: position.lineNumber,
-          endLineNumber: position.lineNumber,
-          startColumn: word.startColumn,
-          endColumn: word.endColumn,
-        };
+    // Clear editor: Ctrl+K
+    editor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK,
+      () => {
+        editor.setValue('');
+      }
+    );
 
-        const suggestions = [];
+    // Toggle comment: Ctrl+/
+    editor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.Slash,
+      () => {
+        editor.trigger('keyboard', 'editor.action.commentLine');
+      }
+    );
 
-        // Get current schema from closure
-        if (schema?.schemas) {
-          Object.entries(schema.schemas).forEach(([schemaName, schemaData]) => {
-            if (schemaData.tables) {
-              Object.entries(schemaData.tables).forEach(([tableName, tableData]) => {
-                suggestions.push({
-                  label: tableName,
-                  kind: monaco.languages.CompletionItemKind.Class,
-                  detail: `Table in ${schemaName}`,
-                  insertText: tableName,
-                  range,
-                  sortText: `1_${tableName}`,
-                });
-
-                suggestions.push({
-                  label: `${schemaName}.${tableName}`,
-                  kind: monaco.languages.CompletionItemKind.Class,
-                  detail: 'Qualified table name',
-                  insertText: `${schemaName}.${tableName}`,
-                  range,
-                  sortText: `2_${schemaName}.${tableName}`,
-                });
-
-                if (tableData.columns) {
-                  tableData.columns.forEach(column => {
-                    suggestions.push({
-                      label: column.column_name,
-                      kind: monaco.languages.CompletionItemKind.Field,
-                      detail: `${column.data_type} - ${schemaName}.${tableName}`,
-                      insertText: column.column_name,
-                      range,
-                      sortText: `3_${column.column_name}`,
-                    });
-                  });
-                }
-              });
-            }
-          });
-        }
-
-        return { suggestions };
-      },
-    });
+    // Register schema-aware autocomplete
+    const getSchema = () => Promise.resolve(schema || { databases: [] });
+    const completionProvider = createSQLCompletionProvider(getSchema, monaco);
+    monaco.languages.registerCompletionItemProvider('sql', completionProvider);
   };
 
   // Highlight errors in editor
