@@ -31,7 +31,11 @@ export function detectRelationships(schema) {
 
   // Detect relationships
   allTables.forEach((table, tableName) => {
-    table.columns?.forEach(column => {
+    if (!table.columns || !Array.isArray(table.columns)) return;
+    
+    table.columns.forEach(column => {
+      if (!column || !column.name) return;
+      
       const sourceId = `${table.schemaName}.${tableName}`;
       
       // Detect foreign keys by naming convention or constraints
@@ -47,7 +51,7 @@ export function detectRelationships(schema) {
         });
       }
       // Fallback: detect by naming convention (e.g., user_id -> users.id)
-      else if (column.name.endsWith('_id')) {
+      else if (typeof column.name === 'string' && column.name.endsWith('_id')) {
         const targetTable = column.name.replace('_id', 's');
         if (allTables.has(targetTable)) {
           const target = allTables.get(targetTable);
