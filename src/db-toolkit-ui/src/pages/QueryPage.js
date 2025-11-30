@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Download, Plus, X, Bot, Loader2 } from 'lucide-react';
+import { Download, Plus, X, Bot, Loader2, Workflow } from 'lucide-react';
 import Split from 'react-split';
 import { useQuery, useSchema } from '../hooks';
 import { useSettingsContext } from '../contexts/SettingsContext';
@@ -12,6 +12,7 @@ import { QueryEditor } from '../components/query/QueryEditor';
 import { QueryResultsPanel } from '../components/query/QueryResultsPanel';
 import { CsvExportModal } from '../components/csv';
 import { AiAssistant } from '../components/query/AiAssistant';
+import { QueryBuilder } from '../components/query-builder/QueryBuilder';
 import { cacheService } from '../services/indexedDB';
 
 function QueryPage() {
@@ -20,6 +21,7 @@ function QueryPage() {
   const [activeTabId, setActiveTabId] = useState(1);
   const [showExport, setShowExport] = useState(false);
   const [showAiAssistant, setShowAiAssistant] = useState(false);
+  const [showQueryBuilder, setShowQueryBuilder] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
   const { loading, executeQuery } = useQuery(connectionId);
   const { schema, fetchSchemaTree } = useSchema(connectionId);
@@ -173,6 +175,14 @@ function QueryPage() {
         </div>
         <div className="flex gap-2 ml-4">
           <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setShowQueryBuilder(true)}
+          >
+            <Workflow size={16} className="mr-2" />
+            Visual Builder
+          </Button>
+          <Button
             variant={showAiAssistant ? "primary" : "secondary"}
             size="sm"
             onClick={() => setShowAiAssistant(!showAiAssistant)}
@@ -296,6 +306,19 @@ function QueryPage() {
         query={query}
         result={result}
       />
+
+      {showQueryBuilder && (
+        <QueryBuilder
+          schema={schema}
+          onClose={() => setShowQueryBuilder(false)}
+          onExecuteQuery={async (sql) => {
+            setQuery(sql);
+            setShowQueryBuilder(false);
+            // Execute after a brief delay to allow UI to update
+            setTimeout(() => handleExecute(), 100);
+          }}
+        />
+      )}
     </div>
   );
 }
