@@ -20,10 +20,10 @@ export function detectRelationships(schema) {
       });
     });
   } else if (schema.schemas) {
-    Object.entries(schema.schemas).forEach(([schemaName, tables]) => {
-      if (Array.isArray(tables)) {
-        tables.forEach(table => {
-          allTables.set(table.name, { ...table, schemaName });
+    Object.entries(schema.schemas).forEach(([schemaName, schemaData]) => {
+      if (schemaData.tables) {
+        Object.entries(schemaData.tables).forEach(([tableName, table]) => {
+          allTables.set(tableName, { ...table, name: tableName, schemaName });
         });
       }
     });
@@ -94,16 +94,16 @@ export function schemaToNodes(schema) {
       });
     });
   } else if (schema.schemas) {
-    // Structure: { schemas: { schemaName: [table1, table2, ...] } }
-    Object.entries(schema.schemas).forEach(([schemaName, tables]) => {
-      if (Array.isArray(tables)) {
-        tables.forEach((table) => {
+    // Structure: { schemas: { schemaName: { tables: { tableName: {...} } } } }
+    Object.entries(schema.schemas).forEach(([schemaName, schemaData]) => {
+      if (schemaData.tables) {
+        Object.entries(schemaData.tables).forEach(([tableName, table]) => {
           nodes.push({
-            id: `${schemaName}.${table.name}`,
+            id: `${schemaName}.${tableName}`,
             type: 'tableNode',
             position: { x: 0, y: 0 },
             data: {
-              label: table.name,
+              label: tableName,
               columns: table.columns || [],
               schema: schemaName
             }
