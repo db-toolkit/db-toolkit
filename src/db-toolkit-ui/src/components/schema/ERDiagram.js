@@ -26,6 +26,12 @@ const nodeTypes = {
   tableNode: TableNode,
 };
 
+const defaultEdgeOptions = {
+  type: 'smoothstep',
+  animated: false,
+  style: { strokeWidth: 2 },
+};
+
 export function ERDiagram({ schema, onClose }) {
   // Generate nodes and edges from schema
   const initialNodes = useMemo(() => schemaToNodes(schema), [schema]);
@@ -145,9 +151,12 @@ export function ERDiagram({ schema, onClose }) {
           onNodeClick={onNodeClick}
           onPaneClick={onPaneClick}
           nodeTypes={nodeTypes}
+          defaultEdgeOptions={defaultEdgeOptions}
           fitView
+          fitViewOptions={{ padding: 0.2 }}
           minZoom={0.1}
           maxZoom={2}
+          attributionPosition="bottom-left"
         >
           <Background color="#94a3b8" gap={16} />
           <Controls />

@@ -8,39 +8,58 @@ import dagre from 'dagre';
  */
 export function detectRelationships(schema) {
   const relationships = [];
+  const allTables = new Map();
 
-  if (!schema?.databases) return relationships;
+  if (!schema) return relationships;
 
-  schema.databases.forEach(database => {
-    database.tables?.forEach(table => {
-      table.columns?.forEach(column => {
-        // Detect foreign keys by naming convention or constraints
-        if (column.foreign_key) {
+  // Collect all tables first
+  if (schema.databases) {
+    schema.databases.forEach(database => {
+      database.tables?.forEach(table => {
+        allTables.set(table.name, { ...table, schemaName: database.name });
+      });
+    });
+  } else if (schema.schemas) {
+    Object.entries(schema.schemas).forEach(([schemaName, schemaData]) => {
+      schemaData.tables?.forEach(table => {
+        allTables.set(table.name, { ...table, schemaName });
+      });
+    });
+  }
+
+  // Detect relationships
+  allTables.forEach((table, tableName) => {
+    table.columns?.forEach(column => {
+      const sourceId = `${table.schemaName}.${tableName}`;
+      
+      // Detect foreign keys by naming convention or constraints
+      if (column.foreign_key) {
+        const targetId = `${table.schemaName}.${column.foreign_key.table}`;
+        relationships.push({
+          id: `${sourceId}-${column.name}`,
+          source: sourceId,
+          target: targetId,
+          sourceColumn: column.name,
+          targetColumn: column.foreign_key.column,
+          type: 'foreignKey'
+        });
+      }
+      // Fallback: detect by naming convention (e.g., user_id -> users.id)
+      else if (column.name.endsWith('_id')) {
+        const targetTable = column.name.replace('_id', 's');
+        if (allTables.has(targetTable)) {
+          const target = allTables.get(targetTable);
+          const targetId = `${target.schemaName}.${targetTable}`;
           relationships.push({
-            id: `${table.name}-${column.name}`,
-            source: table.name,
-            target: column.foreign_key.table,
+            id: `${sourceId}-${column.name}`,
+            source: sourceId,
+            target: targetId,
             sourceColumn: column.name,
-            targetColumn: column.foreign_key.column,
-            type: 'foreignKey'
+            targetColumn: 'id',
+            type: 'inferred'
           });
         }
-        // Fallback: detect by naming convention (e.g., user_id -> users.id)
-        else if (column.name.endsWith('_id')) {
-          const targetTable = column.name.replace('_id', 's'); // Simple pluralization
-          const tableExists = database.tables?.some(t => t.name === targetTable);
-          if (tableExists) {
-            relationships.push({
-              id: `${table.name}-${column.name}`,
-              source: table.name,
-              target: targetTable,
-              sourceColumn: column.name,
-              targetColumn: 'id',
-              type: 'inferred'
-            });
-          }
-        }
-      });
+      }
     });
   });
 
@@ -53,22 +72,42 @@ export function detectRelationships(schema) {
 export function schemaToNodes(schema) {
   const nodes = [];
 
-  if (!schema?.databases) return nodes;
+  if (!schema) return nodes;
 
-  schema.databases.forEach(database => {
-    database.tables?.forEach((table, index) => {
-      nodes.push({
-        id: table.name,
-        type: 'tableNode',
-        position: { x: 0, y: 0 }, // Will be calculated by layout
-        data: {
-          label: table.name,
-          columns: table.columns || [],
-          schema: database.name
-        }
+  // Handle different schema structures
+  if (schema.databases) {
+    // Structure: { databases: [{ name, tables: [...] }] }
+    schema.databases.forEach(database => {
+      database.tables?.forEach((table) => {
+        nodes.push({
+          id: `${database.name}.${table.name}`,
+          type: 'tableNode',
+          position: { x: 0, y: 0 },
+          data: {
+            label: table.name,
+            columns: table.columns || [],
+            schema: database.name
+          }
+        });
       });
     });
-  });
+  } else if (schema.schemas) {
+    // Structure: { schemas: { schemaName: { tables: [...] } } }
+    Object.entries(schema.schemas).forEach(([schemaName, schemaData]) => {
+      schemaData.tables?.forEach((table) => {
+        nodes.push({
+          id: `${schemaName}.${table.name}`,
+          type: 'tableNode',
+          position: { x: 0, y: 0 },
+          data: {
+            label: table.name,
+            columns: table.columns || [],
+            schema: schemaName
+          }
+        });
+      });
+    });
+  }
 
   return nodes;
 }
