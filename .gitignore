@@ -19,6 +19,7 @@ wheels/
 .amazonq/
 IMPLEMENTATION_PLAN.md
 MIGRATION.md
+AUTO_DOCUMENTATION.md
 
 # Frontend (Node.js)
 node_modules/
