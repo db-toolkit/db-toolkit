@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Database, Home, Table, HardDrive, Menu, X, BookOpen, FolderGit2, BarChart3 } from 'lucide-react';
+import { Database, Home, Table, HardDrive, Menu, X, BookOpen, FolderGit2, BarChart3, Code } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 
 function Sidebar() {
@@ -10,6 +10,7 @@ function Sidebar() {
   const navItems = [
     { path: '/', icon: Home, label: 'Overview' },
     { path: '/connections', icon: Database, label: 'Connections' },
+    { path: '/query-editor', icon: Code, label: 'Query Editor' },
     { path: '/data-explorer', icon: Table, label: 'Data Explorer' },
     { path: '/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/migrations', icon: FolderGit2, label: 'Migrations' },

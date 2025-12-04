@@ -11,6 +11,7 @@ const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const ConnectionsPage = lazy(() => import('./pages/ConnectionsPage'));
 const SchemaPage = lazy(() => import('./pages/SchemaPage'));
 const QueryPage = lazy(() => import('./pages/QueryPage'));
+const QueryEditorSelectPage = lazy(() => import('./pages/QueryEditorSelectPage'));
 const DataExplorerPage = lazy(() => import('./pages/DataExplorerPage'));
 const MigrationsPage = lazy(() => import('./pages/MigrationsPage'));
 const BackupsPage = lazy(() => import('./pages/BackupsPage'));
@@ -51,6 +52,7 @@ function AppContent() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/connections" element={<ConnectionsPage />} />
           <Route path="/schema/:connectionId" element={<SchemaPage />} />
+          <Route path="/query-editor" element={<QueryEditorSelectPage />} />
           <Route path="/query/:connectionId" element={<QueryPage />} />
           <Route path="/data-explorer" element={<DataExplorerPage />} />
           <Route path="/migrations" element={<MigrationsPage />} />
