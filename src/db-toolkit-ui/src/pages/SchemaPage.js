@@ -147,19 +147,21 @@ function SchemaPage() {
           )}
         </div>
 
-        <div className="lg:col-span-2">
-          {selectedTable ? (
-            <TableDetails
-              connectionId={connectionId}
-              schemaName={selectedTable.schema}
-              tableName={selectedTable.table}
-            />
-          ) : (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center text-gray-500 dark:text-gray-400">
-              <p>Select a table to view details</p>
-            </div>
-          )}
-        </div>
+        {schema && !schema.error && (
+          <div className="lg:col-span-2">
+            {selectedTable ? (
+              <TableDetails
+                connectionId={connectionId}
+                schemaName={selectedTable.schema}
+                tableName={selectedTable.table}
+              />
+            ) : (
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center text-gray-500 dark:text-gray-400">
+                <p>Select a table to view details</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {selectedTable && (
