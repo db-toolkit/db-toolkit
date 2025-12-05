@@ -13,8 +13,6 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Download, Minimize2, ArrowDown, ArrowRight, ArrowUp, ArrowLeft, Search, RotateCcw } from 'lucide-react';
-import { toPng } from 'html-to-image';
-import { getNodesBounds, getViewportForBounds } from 'reactflow';
 import TableNode from './TableNode';
 import { 
   schemaToNodes, 
@@ -38,7 +36,7 @@ const defaultEdgeOptions = {
 export function ERDiagram({ schema, onClose }) {
   const [layoutDirection, setLayoutDirection] = useState('LR');
   const [searchQuery, setSearchQuery] = useState('');
-  const { fitView } = useReactFlow();
+  const { fitView, getViewport } = useReactFlow();
 
   // Generate nodes and edges from schema
   const initialNodes = useMemo(() => schemaToNodes(schema), [schema]);
@@ -134,42 +132,41 @@ export function ERDiagram({ schema, onClose }) {
     fitView({ padding: 0.2, duration: 300 });
   }, [onPaneClick, fitView]);
 
-  // Export diagram as PNG
+  // Export diagram as PNG (current viewport only)
   const exportToPng = useCallback(() => {
-    const nodesBounds = getNodesBounds(nodes);
-    const viewport = getViewportForBounds(
-      nodesBounds,
-      1200,
-      800,
-      0.5,
-      2,
-      0.1
-    );
+    const viewport = getViewport();
+    const flowElement = document.querySelector('.react-flow__renderer');
+    
+    if (!flowElement) {
+      alert('Unable to export. Please try browser screenshot instead.');
+      return;
+    }
 
-    const element = document.querySelector('.react-flow__viewport');
-    if (!element) return;
+    // Get visible area dimensions
+    const width = window.innerWidth;
+    const height = window.innerHeight - 56; // Subtract header height
 
-    toPng(element, {
-      backgroundColor: '#ffffff',
-      width: 1200,
-      height: 800,
-      style: {
-        width: '1200px',
-        height: '800px',
-        transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
-      },
-    })
-      .then((dataUrl) => {
-        const link = document.createElement('a');
-        link.download = `er-diagram-${Date.now()}.png`;
-        link.href = dataUrl;
-        link.click();
+    // Create image from current view
+    import('html-to-image').then(({ toPng }) => {
+      toPng(flowElement, {
+        backgroundColor: '#ffffff',
+        width,
+        height,
+        pixelRatio: 2,
+        cacheBust: true,
       })
-      .catch((err) => {
-        console.error('Failed to export diagram:', err);
-        alert('Export failed. Try with fewer tables or use browser screenshot.');
-      });
-  }, [nodes]);
+        .then((dataUrl) => {
+          const link = document.createElement('a');
+          link.download = `er-diagram-${Date.now()}.png`;
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((err) => {
+          console.error('Export failed:', err);
+          alert('Export failed. Use browser screenshot: Ctrl+Shift+S (Windows) or Cmd+Shift+4 (Mac)');
+        });
+    });
+  }, [getViewport]);
 
   return (
     <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900">
