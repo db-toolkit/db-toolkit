@@ -3,8 +3,20 @@ import { Table, MessageSquare, History, Clock } from 'lucide-react';
 import { EditableTable } from '../data/EditableTable';
 import { QueryHistory } from './QueryHistory';
 
-export function QueryResultsPanel({ connectionId, result, executionTime, onSelectQuery, onRefresh }) {
+export function QueryResultsPanel({ connectionId, result, executionTime, onSelectQuery, onRefresh, currentQuery }) {
   const [activeTab, setActiveTab] = useState('results');
+  
+  // Extract table name from query
+  const extractTableInfo = (query) => {
+    if (!query) return { table: null, schema: 'public' };
+    const match = query.match(/FROM\s+(?:(\w+)\.)?(\w+)/i);
+    if (match) {
+      return { schema: match[1] || 'public', table: match[2] };
+    }
+    return { table: null, schema: 'public' };
+  };
+  
+  const { schema, table } = extractTableInfo(currentQuery);
 
   const tabs = [
     { id: 'results', label: 'Results', icon: Table },
@@ -50,6 +62,8 @@ export function QueryResultsPanel({ connectionId, result, executionTime, onSelec
                   connectionId={connectionId}
                   result={result}
                   onRefresh={onRefresh}
+                  tableName={table}
+                  schemaName={schema}
                 />
               )
             ) : (

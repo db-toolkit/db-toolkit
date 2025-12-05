@@ -249,6 +249,7 @@ function QueryPage() {
                     executionTime={executionTime}
                     onSelectQuery={setQuery}
                     onRefresh={handleExecute}
+                    currentQuery={query}
                   />
                 </div>
               </Split>
@@ -302,6 +303,7 @@ function QueryPage() {
                   executionTime={executionTime}
                   onSelectQuery={setQuery}
                   onRefresh={handleExecute}
+                  currentQuery={query}
                 />
               </div>
             </Split>
