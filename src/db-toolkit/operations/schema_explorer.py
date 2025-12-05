@@ -19,9 +19,12 @@ class SchemaExplorer:
         """Get complete schema tree for connection."""
         cache_key = f"{connection.id}_schema"
         
+        logger.info(f"Getting schema tree for connection '{connection.name}' (use_cache={use_cache})")
+        
         if use_cache:
             cached = schema_cache.get(cache_key)
             if cached:
+                logger.info(f"Returning cached schema for '{connection.name}'")
                 return cached
         
         try:
@@ -42,10 +45,11 @@ class SchemaExplorer:
             }
             
             schemas = await connector.get_schemas()
+            logger.info(f"Found {len(schemas)} schemas: {schemas}")
             
             for schema_name in schemas:
                 tables = await connector.get_tables(schema_name)
-                logger.info(f"Schema '{schema_name}' has tables: {tables}")
+                logger.info(f"Schema '{schema_name}' has {len(tables)} tables: {tables}")
                 schema_tree["schemas"][schema_name] = {
                     "tables": {},
                     "table_count": len(tables)
@@ -66,7 +70,7 @@ class SchemaExplorer:
             return schema_tree
             
         except Exception as e:
-            logger.error(f"Failed to get schema tree for '{connection.name}': {str(e)}")
+            logger.error(f"Failed to get schema tree for '{connection.name}': {str(e)}", exc_info=True)
             return {"error": str(e), "success": False}
     
     async def get_table_info(self, connection: DatabaseConnection, schema: str, table: str) -> Dict[str, Any]:
