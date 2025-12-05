@@ -5,7 +5,7 @@ const path = require('path');
 const os = require('os');
 
 const GITHUB_REPO = 'Adelodunpeter25/db-toolkit';
-const CURRENT_VERSION = '0.5.1';
+const CURRENT_VERSION = '0.1.0';
 
 function compareVersions(current, latest) {
   const c = current.replace('v', '').split('.').map(Number);
@@ -24,8 +24,7 @@ function fetchLatestRelease() {
       hostname: 'api.github.com',
       path: `/repos/${GITHUB_REPO}/releases/latest`,
       headers: { 
-        'User-Agent': 'DB-Toolkit',
-        'Authorization': 'token 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'
+        'User-Agent': 'DB-Toolkit'
       }
     };
 
@@ -63,8 +62,7 @@ function downloadFile(url, destPath, progressCallback) {
     
     https.get(url, { 
       headers: { 
-        'User-Agent': 'DB-Toolkit',
-        'Authorization': 'token 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'
+        'User-Agent': 'DB-Toolkit'
       } 
     }, (response) => {
       if (response.statusCode === 302 || response.statusCode === 301) {
