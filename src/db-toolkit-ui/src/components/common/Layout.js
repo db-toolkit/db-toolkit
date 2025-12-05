@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Split from 'react-split';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Settings } from 'lucide-react';
 import Sidebar from './Sidebar';
@@ -16,6 +17,10 @@ function Layout({ children }) {
   const [showTerminal, setShowTerminal] = useState(false);
   const [connections, setConnections] = useState([]);
   const [queries, setQueries] = useState([]);
+  const [sidebarSize, setSidebarSize] = useState(() => {
+    const saved = localStorage.getItem('sidebar-width');
+    return saved ? parseInt(saved) : 256;
+  });
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -36,10 +41,24 @@ function Layout({ children }) {
     setQueries(savedQueries);
   }, []);
 
+  const handleSidebarResize = (sizes) => {
+    localStorage.setItem('sidebar-width', sizes[0]);
+  };
+
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gray-100 dark:bg-gray-900">
+      <Split
+        sizes={[sidebarSize, window.innerWidth - sidebarSize]}
+        minSize={[200, 600]}
+        maxSize={[400, Infinity]}
+        gutterSize={4}
+        onDragEnd={handleSidebarResize}
+        className="flex h-full"
+      >
+        <div className="h-full">
+          <Sidebar />
+        </div>
+        <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-end items-center gap-2">
           <NotificationCenter />
           <Tooltip text="Application settings">
@@ -56,7 +75,8 @@ function Layout({ children }) {
           {children}
         </main>
         <StatusBar onTerminalClick={() => setShowTerminal(!showTerminal)} />
-      </div>
+        </div>
+      </Split>
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <TerminalPanel isOpen={showTerminal} onClose={() => setShowTerminal(false)} darkMode={theme === 'dark'} />
       <CommandPalette 
