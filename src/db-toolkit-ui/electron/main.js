@@ -4,7 +4,7 @@ const os = require('os');
 const fs = require('fs').promises;
 const { exec } = require('child_process');
 const { createMenu, updateRecentConnections } = require('./menu');
-const { startBackend, stopBackend } = require('./backend');
+const { startBackend, stopBackend, getBackendPort } = require('./backend');
 
 // Set app name before anything else
 app.name = 'DB Toolkit';
@@ -151,12 +151,15 @@ ipcMain.handle('get-system-metrics', async () => {
   });
 });
 
-app.whenReady().then(() => {
-  startBackend();
-  setTimeout(() => {
+app.whenReady().then(async () => {
+  try {
+    await startBackend();
     const mainWindow = createWindow();
     createMenu(mainWindow);
-  }, 2000);
+  } catch (err) {
+    console.error('Failed to start backend:', err);
+    app.quit();
+  }
 });
 
 app.on('window-all-closed', () => {
@@ -178,6 +181,15 @@ ipcMain.on('update-recent-connections', (event, connections) => {
   const mainWindow = BrowserWindow.getFocusedWindow();
   if (mainWindow) {
     updateRecentConnections(connections, mainWindow);
+  }
+});
+
+ipcMain.handle('get-backend-port', () => {
+  const portFile = path.join(app.getPath('userData'), 'backend-port.txt');
+  try {
+    return parseInt(fs.readFileSync(portFile, 'utf-8'));
+  } catch {
+    return 8000;
   }
 });
 

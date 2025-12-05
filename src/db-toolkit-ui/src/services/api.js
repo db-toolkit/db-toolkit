@@ -3,7 +3,15 @@ import { localStorageService } from '../utils/localStorage';
 import { CACHE_TTL, CACHE_KEYS } from '../utils/constants';
 import { cacheService } from './indexedDB';
 
-const API_BASE_URL = 'http://localhost:8001/api/v1';
+let API_BASE_URL = 'http://localhost:8000/api/v1';
+
+// Get backend port from Electron
+if (window.electron?.getBackendPort) {
+  window.electron.getBackendPort().then(port => {
+    API_BASE_URL = `http://localhost:${port}/api/v1`;
+    api.defaults.baseURL = API_BASE_URL;
+  });
+}
 
 const api = axios.create({
   baseURL: API_BASE_URL,
