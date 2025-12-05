@@ -1,14 +1,9 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const path = require('path');
 const os = require('os');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const { exec } = require('child_process');
-const { createMenu, updateRecentConnections } = require('./menu');
-const { startBackend, stopBackend, getBackendPort } = require('./backend');
-
-// Set app name before anything else
-app.name = 'DB Toolkit';
 
 function createWindow() {
   const iconPath = path.join(__dirname, '../build/icons/icon.png');
@@ -153,6 +148,9 @@ ipcMain.handle('get-system-metrics', async () => {
 });
 
 app.whenReady().then(async () => {
+  const { createMenu, updateRecentConnections } = require('./menu');
+  const { startBackend, stopBackend } = require('./backend');
+  
   try {
     await startBackend(app);
     const mainWindow = createWindow();
@@ -164,6 +162,7 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
+  const { stopBackend } = require('./backend');
   stopBackend();
   if (process.platform !== 'darwin') {
     app.quit();
@@ -171,6 +170,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+  const { stopBackend } = require('./backend');
   stopBackend();
 });
 
@@ -179,6 +179,7 @@ ipcMain.on('theme-changed', (event, theme) => {
 });
 
 ipcMain.on('update-recent-connections', (event, connections) => {
+  const { updateRecentConnections } = require('./menu');
   const mainWindow = BrowserWindow.getFocusedWindow();
   if (mainWindow) {
     updateRecentConnections(connections, mainWindow);

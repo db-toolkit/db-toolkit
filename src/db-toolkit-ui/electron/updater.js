@@ -1,4 +1,4 @@
-const { dialog, shell, app, BrowserWindow } = require('electron');
+const { dialog, shell, BrowserWindow } = require('electron');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
@@ -156,6 +156,7 @@ async function downloadUpdate(release) {
     
     if (response.response === 0) {
       shell.openPath(downloadPath);
+      const { app } = require('electron');
       app.quit();
     } else {
       shell.showItemInFolder(downloadPath);
