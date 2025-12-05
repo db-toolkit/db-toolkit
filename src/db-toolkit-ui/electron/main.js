@@ -3,7 +3,7 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs').promises;
 const { exec } = require('child_process');
-const { createMenu } = require('./menu');
+const { createMenu, updateRecentConnections } = require('./menu');
 const { startBackend, stopBackend } = require('./backend');
 
 // Set app name before anything else
@@ -168,6 +168,17 @@ app.on('window-all-closed', () => {
 
 app.on('before-quit', () => {
   stopBackend();
+});
+
+ipcMain.on('theme-changed', (event, theme) => {
+  // Theme changed - menu will update on next createMenu call
+});
+
+ipcMain.on('update-recent-connections', (event, connections) => {
+  const mainWindow = BrowserWindow.getFocusedWindow();
+  if (mainWindow) {
+    updateRecentConnections(connections, mainWindow);
+  }
 });
 
 app.on('activate', () => {

@@ -250,15 +250,4 @@ function updateRecentConnections(connections, mainWindow) {
   createMenu(mainWindow);
 }
 
-ipcMain.on('theme-changed', (event, theme) => {
-  currentTheme = theme;
-});
-
-ipcMain.on('update-recent-connections', (event, connections) => {
-  const mainWindow = require('electron').BrowserWindow.getFocusedWindow();
-  if (mainWindow) {
-    updateRecentConnections(connections, mainWindow);
-  }
-});
-
 module.exports = { createMenu, updateThemeMenu, updateRecentConnections };
