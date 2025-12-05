@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route, useNavigate } from 'react-router-d
 import Layout from './components/common/Layout';
 import SplashScreen from './components/common/SplashScreen';
 import { Spinner } from './components/common/Spinner';
+import { useMenuActions } from './hooks/useMenuActions';
 import './styles/App.css';
 import './styles/split.css';
 
@@ -20,6 +21,7 @@ const DocumentationPage = lazy(() => import('./pages/DocumentationPage'));
 
 function AppContent() {
   const navigate = useNavigate();
+  useMenuActions();
 
   useEffect(() => {
     const sessionState = JSON.parse(localStorage.getItem('session-state') || '{}');

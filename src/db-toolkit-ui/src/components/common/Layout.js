@@ -34,6 +34,20 @@ function Layout({ children }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Handle menu actions
+  useEffect(() => {
+    const handleToggleTerminal = () => setShowTerminal(prev => !prev);
+    const handleCommandPalette = () => setShowCommandPalette(true);
+
+    window.addEventListener('menu:toggle-terminal', handleToggleTerminal);
+    window.addEventListener('menu:command-palette', handleCommandPalette);
+
+    return () => {
+      window.removeEventListener('menu:toggle-terminal', handleToggleTerminal);
+      window.removeEventListener('menu:command-palette', handleCommandPalette);
+    };
+  }, []);
+
   useEffect(() => {
     const savedConnections = JSON.parse(localStorage.getItem('db-connections') || '[]');
     const savedQueries = JSON.parse(localStorage.getItem('query-tabs') || '[]');
