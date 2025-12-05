@@ -114,7 +114,7 @@ function createMenu(mainWindow) {
         },
         { type: 'separator' },
         {
-          label: 'Dark Mode',
+          label: 'Toggle Dark Mode',
           accelerator: 'CmdOrCtrl+Shift+D',
           click: () => mainWindow.webContents.send('menu-action', 'toggle-theme')
         },
