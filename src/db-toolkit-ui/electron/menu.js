@@ -208,7 +208,7 @@ function createMenu(mainWindow) {
         {
           label: 'Documentation',
           accelerator: 'F1',
-          click: () => mainWindow.webContents.send('menu-action', 'open-docs')
+          click: () => shell.openExternal('https://github.com/yourusername/db-toolkit')
         },
         {
           label: 'Keyboard Shortcuts',
@@ -222,7 +222,7 @@ function createMenu(mainWindow) {
         { type: 'separator' },
         {
           label: 'Check for Updates',
-          click: checkForUpdates
+          click: () => mainWindow.webContents.send('menu-action', 'check-updates')
         }
       ]
     }

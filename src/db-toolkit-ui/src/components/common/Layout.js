@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Split from 'react-split';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Settings } from 'lucide-react';
+import { Settings, HelpCircle } from 'lucide-react';
 import Sidebar from './Sidebar';
 import StatusBar from './StatusBar';
 import CommandPalette from './CommandPalette';
@@ -9,6 +9,7 @@ import { NotificationCenter } from './NotificationCenter';
 import { SettingsModal } from '../settings/SettingsModal';
 import { KeyboardShortcutsModal } from './KeyboardShortcutsModal';
 import { ReportIssueModal } from './ReportIssueModal';
+import { HelpMenu } from './HelpMenu';
 import { Tooltip } from './Tooltip';
 import TerminalPanel from '../terminal/TerminalPanel';
 
@@ -20,6 +21,7 @@ function Layout({ children }) {
   const [showSidebar, setShowSidebar] = useState(true);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
   const [showReportIssue, setShowReportIssue] = useState(false);
+  const [showHelpMenu, setShowHelpMenu] = useState(false);
   const [connections, setConnections] = useState([]);
   const [queries, setQueries] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(() => {
@@ -47,6 +49,8 @@ function Layout({ children }) {
     const handleKeyboardShortcuts = () => setShowKeyboardShortcuts(true);
     const handleReportIssue = () => setShowReportIssue(true);
     const handleFind = () => setShowCommandPalette(true);
+    const handleOpenDocs = () => window.open('https://github.com/yourusername/db-toolkit', '_blank');
+    const handleCheckUpdates = () => window.electron?.checkForUpdates?.();
 
     window.addEventListener('menu:toggle-sidebar', handleToggleSidebar);
     window.addEventListener('menu:toggle-terminal', handleToggleTerminal);
@@ -54,6 +58,8 @@ function Layout({ children }) {
     window.addEventListener('menu:keyboard-shortcuts', handleKeyboardShortcuts);
     window.addEventListener('menu:report-issue', handleReportIssue);
     window.addEventListener('menu:find', handleFind);
+    window.addEventListener('menu:open-docs', handleOpenDocs);
+    window.addEventListener('menu:check-updates', handleCheckUpdates);
 
     return () => {
       window.removeEventListener('menu:toggle-sidebar', handleToggleSidebar);
@@ -62,6 +68,8 @@ function Layout({ children }) {
       window.removeEventListener('menu:keyboard-shortcuts', handleKeyboardShortcuts);
       window.removeEventListener('menu:report-issue', handleReportIssue);
       window.removeEventListener('menu:find', handleFind);
+      window.removeEventListener('menu:open-docs', handleOpenDocs);
+      window.removeEventListener('menu:check-updates', handleCheckUpdates);
     };
   }, []);
 
@@ -89,6 +97,27 @@ function Layout({ children }) {
           <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-end items-center gap-2">
           <NotificationCenter />
+          <div className="relative">
+            <Tooltip text="Help">
+              <button
+                onClick={() => setShowHelpMenu(!showHelpMenu)}
+                className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+              >
+                <HelpCircle size={20} />
+                <span className="hidden sm:inline text-sm font-medium">Help</span>
+              </button>
+            </Tooltip>
+            <HelpMenu 
+              isOpen={showHelpMenu} 
+              onClose={() => setShowHelpMenu(false)}
+              onAction={(action) => {
+                if (action === 'docs') window.open('https://github.com/yourusername/db-toolkit', '_blank');
+                if (action === 'shortcuts') setShowKeyboardShortcuts(true);
+                if (action === 'report') setShowReportIssue(true);
+                if (action === 'updates') window.electron?.checkForUpdates?.();
+              }}
+            />
+          </div>
           <Tooltip text="Application settings">
             <button
               onClick={() => setShowSettings(true)}
@@ -110,6 +139,27 @@ function Layout({ children }) {
           <div className="flex-1 flex flex-col overflow-hidden">
           <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-end items-center gap-2">
             <NotificationCenter />
+            <div className="relative">
+              <Tooltip text="Help">
+                <button
+                  onClick={() => setShowHelpMenu(!showHelpMenu)}
+                  className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+                >
+                  <HelpCircle size={20} />
+                  <span className="hidden sm:inline text-sm font-medium">Help</span>
+                </button>
+              </Tooltip>
+              <HelpMenu 
+                isOpen={showHelpMenu} 
+                onClose={() => setShowHelpMenu(false)}
+                onAction={(action) => {
+                  if (action === 'docs') window.open('https://github.com/yourusername/db-toolkit', '_blank');
+                  if (action === 'shortcuts') setShowKeyboardShortcuts(true);
+                  if (action === 'report') setShowReportIssue(true);
+                  if (action === 'updates') window.electron?.checkForUpdates?.();
+                }}
+              />
+            </div>
             <Tooltip text="Application settings">
               <button
                 onClick={() => setShowSettings(true)}

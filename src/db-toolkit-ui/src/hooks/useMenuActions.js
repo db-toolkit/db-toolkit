@@ -87,13 +87,16 @@ export function useMenuActions() {
 
         // Help Menu
         case 'open-docs':
-          navigate('/docs');
+          window.dispatchEvent(new CustomEvent('menu:open-docs'));
           break;
         case 'keyboard-shortcuts':
           window.dispatchEvent(new CustomEvent('menu:keyboard-shortcuts'));
           break;
         case 'report-issue':
           window.dispatchEvent(new CustomEvent('menu:report-issue'));
+          break;
+        case 'check-updates':
+          window.dispatchEvent(new CustomEvent('menu:check-updates'));
           break;
 
         default:
