@@ -8,12 +8,15 @@ export function QueryResultsPanel({ connectionId, result, executionTime, onSelec
   
   // Extract table name from query
   const extractTableInfo = (query) => {
-    if (!query) return { table: null, schema: 'public' };
-    const match = query.match(/FROM\s+(?:(\w+)\.)?(\w+)/i);
+    if (!query) return { table: 'table_name', schema: 'public' };
+    // Match: FROM schema.table or FROM table or FROM "schema"."table"
+    const match = query.match(/FROM\s+(?:([\w"]+)\.)?([\w"]+)/i);
     if (match) {
-      return { schema: match[1] || 'public', table: match[2] };
+      const schema = match[1] ? match[1].replace(/"/g, '') : 'public';
+      const table = match[2].replace(/"/g, '');
+      return { schema, table };
     }
-    return { table: null, schema: 'public' };
+    return { table: 'table_name', schema: 'public' };
   };
   
   const { schema, table } = extractTableInfo(currentQuery);
