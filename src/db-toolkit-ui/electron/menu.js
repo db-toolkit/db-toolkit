@@ -227,9 +227,7 @@ function createMenu(mainWindow) {
         },
         {
           label: 'Report Issue',
-          click: () => {
-            shell.openExternal('https://github.com/yourusername/db-toolkit/issues');
-          }
+          click: () => mainWindow.webContents.send('menu-action', 'report-issue')
         },
         { type: 'separator' },
         {

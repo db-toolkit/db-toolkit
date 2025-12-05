@@ -31,7 +31,7 @@ export function useMenuActions() {
 
         // Edit Menu
         case 'find':
-          window.dispatchEvent(new CustomEvent('menu:find'));
+          window.dispatchEvent(new CustomEvent('menu:command-palette'));
           break;
 
         // View Menu
@@ -91,6 +91,9 @@ export function useMenuActions() {
           break;
         case 'keyboard-shortcuts':
           window.dispatchEvent(new CustomEvent('menu:keyboard-shortcuts'));
+          break;
+        case 'report-issue':
+          window.dispatchEvent(new CustomEvent('menu:report-issue'));
           break;
 
         default:

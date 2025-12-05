@@ -7,6 +7,8 @@ import StatusBar from './StatusBar';
 import CommandPalette from './CommandPalette';
 import { NotificationCenter } from './NotificationCenter';
 import { SettingsModal } from '../settings/SettingsModal';
+import { KeyboardShortcutsModal } from './KeyboardShortcutsModal';
+import { ReportIssueModal } from './ReportIssueModal';
 import { Tooltip } from './Tooltip';
 import TerminalPanel from '../terminal/TerminalPanel';
 
@@ -16,6 +18,8 @@ function Layout({ children }) {
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showTerminal, setShowTerminal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [showReportIssue, setShowReportIssue] = useState(false);
   const [connections, setConnections] = useState([]);
   const [queries, setQueries] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(() => {
@@ -40,15 +44,24 @@ function Layout({ children }) {
     const handleToggleSidebar = () => setShowSidebar(prev => !prev);
     const handleToggleTerminal = () => setShowTerminal(prev => !prev);
     const handleCommandPalette = () => setShowCommandPalette(true);
+    const handleKeyboardShortcuts = () => setShowKeyboardShortcuts(true);
+    const handleReportIssue = () => setShowReportIssue(true);
+    const handleFind = () => setShowCommandPalette(true);
 
     window.addEventListener('menu:toggle-sidebar', handleToggleSidebar);
     window.addEventListener('menu:toggle-terminal', handleToggleTerminal);
     window.addEventListener('menu:command-palette', handleCommandPalette);
+    window.addEventListener('menu:keyboard-shortcuts', handleKeyboardShortcuts);
+    window.addEventListener('menu:report-issue', handleReportIssue);
+    window.addEventListener('menu:find', handleFind);
 
     return () => {
       window.removeEventListener('menu:toggle-sidebar', handleToggleSidebar);
       window.removeEventListener('menu:toggle-terminal', handleToggleTerminal);
       window.removeEventListener('menu:command-palette', handleCommandPalette);
+      window.removeEventListener('menu:keyboard-shortcuts', handleKeyboardShortcuts);
+      window.removeEventListener('menu:report-issue', handleReportIssue);
+      window.removeEventListener('menu:find', handleFind);
     };
   }, []);
 
@@ -115,6 +128,8 @@ function Layout({ children }) {
         </div>
       )}
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <KeyboardShortcutsModal isOpen={showKeyboardShortcuts} onClose={() => setShowKeyboardShortcuts(false)} />
+      <ReportIssueModal isOpen={showReportIssue} onClose={() => setShowReportIssue(false)} />
       <TerminalPanel isOpen={showTerminal} onClose={() => setShowTerminal(false)} darkMode={theme === 'dark'} />
       <CommandPalette 
         isOpen={showCommandPalette} 
