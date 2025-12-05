@@ -23,8 +23,17 @@ function Sidebar() {
     if (path === '/') {
       return currentPath === '/' || currentPath === '';
     }
-    // Special case: /query-editor should also match /query/:connectionId
+    // Special cases for pages with dynamic routes
     if (path === '/query-editor' && currentPath.startsWith('/query/')) {
+      return true;
+    }
+    if (path === '/connections' && currentPath.startsWith('/schema/')) {
+      return true;
+    }
+    if (path === '/data-explorer' && currentPath.startsWith('/data/')) {
+      return true;
+    }
+    if (path === '/analytics' && currentPath.startsWith('/analytics/')) {
       return true;
     }
     return currentPath.startsWith(path);
