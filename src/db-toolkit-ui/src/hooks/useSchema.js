@@ -8,7 +8,7 @@ export function useSchema(connectionId) {
   const [error, setError] = useState(null);
   const { dedupedRequest } = useRequestDeduplication();
 
-  const fetchSchemaTree = useCallback(async (useCache = true) => {
+  const fetchSchemaTree = useCallback(async (useCache = true, retries = 2) => {
     if (!connectionId) return;
     
     const requestKey = `schema_${connectionId}_${useCache}`;
@@ -22,6 +22,12 @@ export function useSchema(connectionId) {
       setSchema(response.data);
       return response.data;
     } catch (err) {
+      // Retry on connection errors
+      if (retries > 0 && err.message && err.message.includes('connection')) {
+        console.log(`Retrying schema fetch (${retries} retries left)...`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return fetchSchemaTree(false, retries - 1);
+      }
       setError(err.message);
       throw err;
     } finally {
