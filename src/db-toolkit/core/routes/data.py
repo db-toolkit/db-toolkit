@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException
 from core.storage import ConnectionStorage
 from core.schemas import UpdateRowRequest, InsertRowRequest, DeleteRowRequest
 from operations.data_editor import DataEditor
+from utils.logger import logger
 
 router = APIRouter()
 storage = ConnectionStorage()
@@ -14,6 +15,8 @@ editor = DataEditor()
 async def update_row(connection_id: str, request: UpdateRowRequest):
     """Update a table row."""
     from operations.operation_lock import operation_lock
+    
+    logger.info(f"Update row request - table: {request.table}, schema: {request.schema_name}, pk: {request.primary_key}, changes: {request.changes}")
 
     connection = await storage.get_connection(connection_id)
     if not connection:
