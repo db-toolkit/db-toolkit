@@ -18,6 +18,9 @@ export function useMenuActions() {
         case 'connect-recent':
           navigate(`/query/${data}`);
           break;
+        case 'preferences':
+          window.dispatchEvent(new CustomEvent('menu:preferences'));
+          break;
         case 'new-query-tab':
           // Handled by QueryPage
           window.dispatchEvent(new CustomEvent('menu:new-query-tab'));

@@ -65,6 +65,12 @@ function createMenu(mainWindow) {
                 click: () => mainWindow.webContents.send('menu-action', 'connect-recent', conn.id)
               }))
             : [{ label: 'No recent connections', enabled: false }]
+        },
+        { type: 'separator' },
+        {
+          label: 'Preferences',
+          accelerator: 'CmdOrCtrl+,',
+          click: () => mainWindow.webContents.send('menu-action', 'preferences')
         }
       ]
     },

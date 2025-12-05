@@ -47,6 +47,7 @@ function Layout({ children }) {
     const handleKeyboardShortcuts = () => setShowKeyboardShortcuts(true);
     const handleReportIssue = () => setShowReportIssue(true);
     const handleFind = () => setShowCommandPalette(true);
+    const handlePreferences = () => setShowSettings(true);
 
     window.addEventListener('menu:toggle-sidebar', handleToggleSidebar);
     window.addEventListener('menu:toggle-terminal', handleToggleTerminal);
@@ -54,6 +55,7 @@ function Layout({ children }) {
     window.addEventListener('menu:keyboard-shortcuts', handleKeyboardShortcuts);
     window.addEventListener('menu:report-issue', handleReportIssue);
     window.addEventListener('menu:find', handleFind);
+    window.addEventListener('menu:preferences', handlePreferences);
 
     return () => {
       window.removeEventListener('menu:toggle-sidebar', handleToggleSidebar);
@@ -62,6 +64,7 @@ function Layout({ children }) {
       window.removeEventListener('menu:keyboard-shortcuts', handleKeyboardShortcuts);
       window.removeEventListener('menu:report-issue', handleReportIssue);
       window.removeEventListener('menu:find', handleFind);
+      window.removeEventListener('menu:preferences', handlePreferences);
     };
   }, []);
 
