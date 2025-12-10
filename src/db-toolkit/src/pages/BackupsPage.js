@@ -144,12 +144,12 @@ function BackupsPage() {
     }
   };
 
-  const filteredBackups = localBackups.filter(backup => 
+  const filteredBackups = (localBackups || []).filter(backup => 
     backup.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
     backup.backup_type.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
-  const filteredSchedules = schedules.filter(schedule => 
+  const filteredSchedules = (schedules || []).filter(schedule => 
     schedule.name.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
