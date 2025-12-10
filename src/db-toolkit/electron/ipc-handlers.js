@@ -72,6 +72,14 @@ function registerFileHandlers() {
       throw new Error('Failed to open folder');
     }
   });
+
+  ipcMain.handle('shell:showItemInFolder', async (event, filePath) => {
+    try {
+      shell.showItemInFolder(filePath);
+    } catch (error) {
+      throw new Error('Failed to show item in folder');
+    }
+  });
 }
 
 function registerSystemHandlers() {

@@ -53,8 +53,8 @@ export function useBackups(connectionId = null) {
     try {
       const result = await ipc.invoke('backup:download', backupId);
       if (result.success && result.filePath) {
-        // Use Electron's shell to show the file in finder/explorer
-        await window.electron.shell.showItemInFolder(result.filePath);
+        // Use IPC to show file in folder
+        await ipc.invoke('shell:showItemInFolder', result.filePath);
         return true;
       }
       throw new Error(result.error || 'Download failed');
