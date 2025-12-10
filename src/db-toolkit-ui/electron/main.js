@@ -179,9 +179,13 @@ app.whenReady().then(async () => {
   const { createMenu, updateRecentConnections } = require('./menu');
   const { sessionManager } = require('./backend/utils/session-manager');
   const { connectionManager } = require('./backend/utils/connection-manager');
+  const { startBackgroundTasks } = require('./backend/operations/tasks');
   
   const mainWindow = createWindow();
   createMenu(mainWindow, !app.isPackaged);
+  
+  // Start background tasks
+  startBackgroundTasks();
   
   // Restore previous session
   try {

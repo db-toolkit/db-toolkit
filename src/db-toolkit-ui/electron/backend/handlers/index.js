@@ -11,6 +11,7 @@ const { registerExportHandlers } = require('./export');
 const { registerDataExplorerHandlers } = require('./data-explorer');
 const { registerSessionHandlers } = require('./session');
 const { registerAnalyticsHandlers } = require('./analytics');
+const { registerBackupHandlers } = require('./backup');
 
 function registerAllHandlers() {
   registerConnectionHandlers();
@@ -22,6 +23,7 @@ function registerAllHandlers() {
   registerDataExplorerHandlers();
   registerSessionHandlers();
   registerAnalyticsHandlers();
+  registerBackupHandlers();
   console.log('All IPC handlers registered');
 }
 
