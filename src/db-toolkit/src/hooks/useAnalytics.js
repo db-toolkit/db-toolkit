@@ -1,10 +1,10 @@
 /**
- * Hook for real-time analytics via WebSocket
+ * Hook for real-time analytics via IPC
  */
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../contexts/ToastContext';
-import { WS_ENDPOINTS } from '../services/websocket';
+
 const ipc = {
   invoke: (channel, ...args) => window.electron.ipcRenderer.invoke(channel, ...args)
 };
@@ -14,109 +14,64 @@ export function useAnalytics(connectionId) {
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([]);
   const [connectionLost, setConnectionLost] = useState(false);
-  const wsRef = useRef(null);
-  const reconnectTimeoutRef = useRef(null);
-  const retryCountRef = useRef(0);
-  const maxRetries = 5;
+  const intervalRef = useRef(null);
   const toast = useToast();
   const navigate = useNavigate();
 
-  const connect = () => {
+  const fetchAnalytics = async () => {
     if (!connectionId) {
       setLoading(false);
       return;
     }
 
-    setLoading(true);
-    const ws = new WebSocket(WS_ENDPOINTS.ANALYTICS);
-    wsRef.current = ws;
-
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ connection_id: connectionId }));
-      retryCountRef.current = 0;
-    };
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+    try {
+      const result = await ipc.invoke('analytics:get', connectionId);
       
-      if (data.error) {
-        if (data.error.includes('Connection not found') || data.error.includes('Connection not active')) {
+      if (!result.success) {
+        if (result.error?.includes('Connection not found') || result.error?.includes('Connection not active')) {
           setConnectionLost(true);
           toast.error('Database connection lost. Redirecting to connections...');
           setTimeout(() => navigate('/connections'), 2000);
           return;
         }
-        // Ignore "operation in progress" errors during initial load
-        if (data.error.includes('operation is in progress')) {
-          return;
-        }
-        toast.error(data.error);
+        toast.error(result.error || 'Failed to fetch analytics');
         setLoading(false);
         return;
       }
 
-      if (data.success) {
-        setAnalytics(data);
-        setHistory(prev => [...prev.slice(-19), {
-          timestamp: new Date(),
-          connections: data.active_connections
-        }]);
-        setLoading(false);
-        setConnectionLost(false);
-      }
-    };
-
-    ws.onerror = () => {
+      setAnalytics(result.data);
+      setHistory(prev => [...prev.slice(-19), {
+        timestamp: new Date(),
+        connections: result.data?.active_connections || 0
+      }]);
       setLoading(false);
-    };
-
-    ws.onclose = (event) => {
+      setConnectionLost(false);
+    } catch (error) {
       setLoading(false);
-      
-      // Don't reconnect if connection was lost or component unmounted
-      if (connectionLost || event.code === 1000) {
-        return;
-      }
-      
-      if (retryCountRef.current < maxRetries) {
-        const delay = Math.min(1000 * Math.pow(2, retryCountRef.current), 10000);
-        retryCountRef.current++;
-        
-        reconnectTimeoutRef.current = setTimeout(() => {
-          connect();
-        }, delay);
-      } else {
-        toast.error('Connection lost. Redirecting to connections...');
-        setTimeout(() => navigate('/connections'), 2000);
-      }
-    };
+      toast.error('Failed to fetch analytics');
+    }
   };
 
   useEffect(() => {
-    connect();
+    if (!connectionId) {
+      setLoading(false);
+      return;
+    }
+
+    // Initial fetch
+    fetchAnalytics();
+
+    // Set up polling for real-time updates
+    intervalRef.current = setInterval(fetchAnalytics, 5000);
 
     return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-      if (wsRef.current) {
-        wsRef.current.close(1000, 'Component unmounted');
-        wsRef.current = null;
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
       }
     };
   }, [connectionId]);
 
-  // Cleanup on page unload
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (wsRef.current) {
-        wsRef.current.close(1000, 'Page unload');
-      }
-    };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, []);
 
   const killQuery = async (pid) => {
     try {
@@ -156,7 +111,7 @@ export function useAnalytics(connectionId) {
   const getSlowQueries = async (hours = 24) => {
     try {
       const result = await ipc.invoke('analytics:slow-queries', connectionId, hours);
-      return result.slow_queries || [];
+      return result.data || [];
     } catch (err) {
       return [];
     }
@@ -165,7 +120,7 @@ export function useAnalytics(connectionId) {
   const getTableStats = async () => {
     try {
       const result = await ipc.invoke('analytics:table-stats', connectionId);
-      return result.table_stats || [];
+      return result.data || [];
     } catch (err) {
       return [];
     }
@@ -174,7 +129,7 @@ export function useAnalytics(connectionId) {
   const getPoolStats = async () => {
     try {
       const result = await ipc.invoke('analytics:get', connectionId);
-      return result.pool_stats || null;
+      return result.data?.pool_stats || null;
     } catch (err) {
       return null;
     }
