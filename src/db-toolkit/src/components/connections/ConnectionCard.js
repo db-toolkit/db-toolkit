@@ -15,11 +15,9 @@ export function ConnectionCard({ connection, onConnect, onDelete, onEdit, isActi
             />
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400">{connection.db_type}</p>
-          {connection.host && (
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              {connection.host}:{connection.port}
-            </p>
-          )}
+          <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+            {connection.db_type === 'sqlite' ? connection.database : `${connection.host}:${connection.port}`}
+          </p>
         </div>
       </div>
       <div className="flex gap-2">

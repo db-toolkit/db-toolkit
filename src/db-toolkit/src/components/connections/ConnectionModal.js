@@ -301,6 +301,7 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
             )}
 
             <Input
+          key={`database-${formData.db_type}`}
           label="Database"
           value={formData.database}
           onChange={(e) => handleChange('database', e.target.value)}
