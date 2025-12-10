@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Database, FileText, HardDrive, Plus, ArrowRight, Activity } from 'lucide-react';
 import { useConnections } from '../hooks';
 import { Button } from '../components/common/Button';
-import api from '../services/api';
+const ipc = {
+  invoke: (channel, ...args) => window.electron.ipcRenderer.invoke(channel, ...args)
+};
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -17,8 +19,8 @@ export default function DashboardPage() {
       
       let backupCount = 0;
       try {
-        const response = await api.get('/backup-schedules');
-        backupCount = response.data.schedules?.length || 0;
+        const result = await ipc.invoke('backup:schedule:list');
+        backupCount = result?.schedules?.length || 0;
       } catch (err) {
         console.error('Failed to fetch backup schedules:', err);
       }
