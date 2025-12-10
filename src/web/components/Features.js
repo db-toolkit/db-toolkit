@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Database, Zap, Shield, Code, Lock, Layers } from 'lucide-react';
+import { Database, Zap, Shield, Code, Lock, BarChart3 } from 'lucide-react';
 import { fadeInUp, staggerContainer } from '@/utils/motion';
 import { iconGradients } from '@/utils/gradients';
 
@@ -38,9 +38,9 @@ export default function Features() {
       color: 'red'
     },
     {
-      icon: Layers,
-      title: 'Migration Ready',
-      description: 'Built-in database migration tools with real-time output streaming',
+      icon: BarChart3,
+      title: 'Real-time Analytics',
+      description: 'Monitor database performance with live metrics and query insights',
       color: 'indigo'
     }
   ];
