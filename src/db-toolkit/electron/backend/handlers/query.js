@@ -43,7 +43,7 @@ function registerQueryHandlers() {
         result.error
       );
 
-      return result;
+      return { data: result };
     } catch (error) {
       logger.error('Query execution error:', error);
       throw error;
