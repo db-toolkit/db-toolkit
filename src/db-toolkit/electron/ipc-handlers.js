@@ -2,7 +2,7 @@
  * Additional IPC handlers for file operations and system metrics.
  */
 
-const { ipcMain, shell, dialog, BrowserWindow } = require('electron');
+const { ipcMain, shell, dialog, BrowserWindow, app } = require('electron');
 const path = require('path');
 const fs = require('fs').promises;
 const os = require('os');
