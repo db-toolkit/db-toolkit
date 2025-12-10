@@ -67,8 +67,8 @@ export default function About() {
                 <Heart className="w-8 h-8 text-red-600 dark:text-red-400" />
               </div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Built with Love</h3>
-            <p className="text-gray-600 dark:text-gray-300">Crafted with care using modern technologies</p>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Feature Packed</h3>
+            <p className="text-gray-600 dark:text-gray-300">Query editor, backups, migrations, and real-time analytics</p>
           </motion.div>
         </motion.div>
 
