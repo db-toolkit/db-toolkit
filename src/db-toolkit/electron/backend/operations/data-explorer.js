@@ -51,6 +51,7 @@ class DataExplorer {
 
       query += ` LIMIT ${limit} OFFSET ${offset}`;
 
+      console.log('Data explorer query:', query);
       const result = await connector.executeQuery(query);
       const rows = result.data || [];
       const columns = result.columns || [];

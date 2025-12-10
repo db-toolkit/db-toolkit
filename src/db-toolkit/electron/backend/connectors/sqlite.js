@@ -68,6 +68,7 @@ class SQLiteConnector extends BaseConnector {
 
   async executeQuery(query) {
     try {
+      console.log('SQLite executing query:', query);
       const stmt = this.connection.prepare(query);
       const isSelect = query.trim().toUpperCase().startsWith('SELECT');
       
@@ -94,6 +95,7 @@ class SQLiteConnector extends BaseConnector {
         };
       }
     } catch (error) {
+      console.log('SQLite query failed:', query);
       logger.error(`SQLite query error: ${error.message}`);
       return { success: false, error: error.message };
     }
