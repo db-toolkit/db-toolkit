@@ -1,85 +1,59 @@
-import axios from 'axios';
 import { localStorageService } from '../utils/localStorage';
 import { CACHE_TTL, CACHE_KEYS } from '../utils/constants';
 import { cacheService } from './indexedDB';
 
-let API_BASE_URL = 'http://localhost:8000/api/v1';
-
-// Get backend port from Electron
-if (window.electron?.getBackendPort) {
-  window.electron.getBackendPort().then(port => {
-    API_BASE_URL = `http://localhost:${port}/api/v1`;
-    api.defaults.baseURL = API_BASE_URL;
-  });
-}
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// IPC API wrapper
+const ipc = {
+  invoke: (channel, ...args) => window.electron.ipcRenderer.invoke(channel, ...args)
+};
 
 export const connectionsAPI = {
   getAll: async () => {
-    // Check cache first
     const cached = localStorageService.get(CACHE_KEYS.CONNECTIONS);
     if (cached) {
       return { data: cached };
     }
     
-    // Fetch from API
-    const response = await api.get('/connections');
-    
-    // Cache the result
-    localStorageService.set(CACHE_KEYS.CONNECTIONS, response.data, CACHE_TTL.CONNECTIONS);
-    
-    return response;
+    const data = await ipc.invoke('connections:get-all');
+    localStorageService.set(CACHE_KEYS.CONNECTIONS, data, CACHE_TTL.CONNECTIONS);
+    return { data };
   },
   create: async (data) => {
-    const response = await api.post('/connections', data);
-    // Clear connections cache
+    const result = await ipc.invoke('connections:create', data);
     localStorageService.remove(CACHE_KEYS.CONNECTIONS);
-    return response;
+    return { data: result };
   },
   update: async (id, data) => {
-    const response = await api.put(`/connections/${id}`, data);
-    // Clear connections cache
+    const result = await ipc.invoke('connections:update', id, data);
     localStorageService.remove(CACHE_KEYS.CONNECTIONS);
-    return response;
+    return { data: result };
   },
   delete: async (id) => {
-    const response = await api.delete(`/connections/${id}`);
-    // Clear connections cache and connection-specific cache
+    const result = await ipc.invoke('connections:delete', id);
     localStorageService.remove(CACHE_KEYS.CONNECTIONS);
     localStorageService.clearConnection(id);
-    return response;
+    return { data: result };
   },
-  test: (id) => api.post(`/connections/${id}/test`),
-  connect: (id) => api.post(`/connections/${id}/connect`),
+  test: (id) => ipc.invoke('connections:test', id),
+  connect: (id) => ipc.invoke('connections:connect', id),
   disconnect: async (id) => {
-    const response = await api.post(`/connections/${id}/disconnect`);
-    // Clear connection-specific cache
+    const result = await ipc.invoke('connections:disconnect', id);
     localStorageService.clearConnection(id);
-    return response;
+    return { data: result };
   },
 };
 
 export const schemaAPI = {
   getTree: async (connectionId, useCache = true) => {
-    // Check cache first
     if (useCache) {
       try {
-        // Try IndexedDB first
         const cached = await cacheService.getSchema(connectionId);
         if (cached) {
           return { data: cached };
         }
 
-        // Fallback to localStorage
         const localCached = localStorageService.getForConnection(connectionId, CACHE_KEYS.SCHEMA);
         if (localCached) {
-          // Migrate to IndexedDB
           await cacheService.setSchema(connectionId, localCached);
           return { data: localCached };
         }
@@ -88,41 +62,34 @@ export const schemaAPI = {
       }
     }
     
-    // Fetch from API
-    const response = await api.get(`/connections/${connectionId}/schema`);
+    const data = await ipc.invoke('schema:get-tree', connectionId);
     
-    // Cache the result in IndexedDB
     try {
-      await cacheService.setSchema(connectionId, response.data);
+      await cacheService.setSchema(connectionId, data);
     } catch (err) {
       console.error('Cache write error:', err);
-      // Fallback to localStorage
       localStorageService.setForConnection(
         connectionId,
         CACHE_KEYS.SCHEMA,
-        response.data,
+        data,
         CACHE_TTL.SCHEMA
       );
     }
     
-    return response;
+    return { data };
   },
   
   getTableInfo: async (connectionId, schema, table) => {
     const cacheKey = `${CACHE_KEYS.TABLE_INFO}_${schema}_${table}`;
     
-    // Check cache first
     try {
-      // Try IndexedDB first
       const cached = await cacheService.getTableInfo(connectionId, schema, table);
       if (cached) {
         return { data: cached };
       }
 
-      // Fallback to localStorage
       const localCached = localStorageService.getForConnection(connectionId, cacheKey);
       if (localCached) {
-        // Migrate to IndexedDB
         await cacheService.setTableInfo(connectionId, schema, table, localCached);
         return { data: localCached };
       }
@@ -130,97 +97,90 @@ export const schemaAPI = {
       console.error('Cache read error:', err);
     }
     
-    // Fetch from API
-    const response = await api.get(`/connections/${connectionId}/schema/${schema}/tables/${table}`);
+    const data = await ipc.invoke('schema:get-table-info', connectionId, schema, table);
     
-    // Cache the result in IndexedDB
     try {
-      await cacheService.setTableInfo(connectionId, schema, table, response.data);
+      await cacheService.setTableInfo(connectionId, schema, table, data);
     } catch (err) {
       console.error('Cache write error:', err);
-      // Fallback to localStorage
       localStorageService.setForConnection(
         connectionId,
         cacheKey,
-        response.data,
+        data,
         CACHE_TTL.TABLE_INFO
       );
     }
     
-    return response;
+    return { data };
   },
   
   refresh: async (connectionId) => {
-    // Clear cache for this connection (both IndexedDB and localStorage)
     try {
       await cacheService.clearConnection(connectionId);
     } catch (err) {
       console.error('IndexedDB clear error:', err);
     }
     localStorageService.clearConnection(connectionId);
-    return api.post(`/connections/${connectionId}/schema/refresh`);
+    return ipc.invoke('schema:refresh', connectionId);
   },
 };
 
 export const queryAPI = {
-  execute: (connectionId, data) => api.post(`/connections/${connectionId}/query`, data),
-  explain: (connectionId, data) => api.post(`/connections/${connectionId}/query/explain`, data),
-  getHistory: (connectionId) => api.get(`/connections/${connectionId}/query/history`),
-  clearHistory: (connectionId) => api.delete(`/connections/${connectionId}/query/history`),
+  execute: (connectionId, data) => ipc.invoke('query:execute', connectionId, data),
+  explain: (connectionId, data) => ipc.invoke('query:explain', connectionId, data),
+  getHistory: (connectionId) => ipc.invoke('query:get-history', connectionId),
+  clearHistory: (connectionId) => ipc.invoke('query:clear-history', connectionId),
 };
 
 export const dataAPI = {
-  updateRow: (connectionId, data) => api.put(`/connections/${connectionId}/data/row`, data),
-  insertRow: (connectionId, data) => api.post(`/connections/${connectionId}/data/row`, data),
-  deleteRow: (connectionId, data) => api.delete(`/connections/${connectionId}/data/row`, { data }),
+  updateRow: (connectionId, data) => ipc.invoke('data:update-row', connectionId, data),
+  insertRow: (connectionId, data) => ipc.invoke('data:insert-row', connectionId, data),
+  deleteRow: (connectionId, data) => ipc.invoke('data:delete-row', connectionId, data),
 };
 
 export const csvAPI = {
-  export: (data) => api.post('/csv/export', data),
-  validate: (data) => api.post('/csv/validate', data),
-  import: (data) => api.post('/csv/import', data),
+  export: (data) => ipc.invoke('export:csv', data),
+  validate: (data) => ipc.invoke('export:validate-csv', data),
+  import: (data) => ipc.invoke('export:import-csv', data),
 };
 
 export const sessionAPI = {
-  getState: () => api.get('/session/state'),
-  save: (lastActive) => api.post('/session/save', { last_active: lastActive }),
-  restore: () => api.post('/session/restore'),
-  clear: () => api.delete('/session/clear'),
+  getState: () => ipc.invoke('session:get-state'),
+  save: (lastActive) => ipc.invoke('session:save', lastActive),
+  restore: () => ipc.invoke('session:restore'),
+  clear: () => ipc.invoke('session:clear'),
 };
 
 export const settingsAPI = {
-  get: () => api.get('/settings'),
-  update: (data) => api.put('/settings', data),
-  reset: () => api.post('/settings/reset'),
+  get: () => ipc.invoke('settings:get'),
+  update: (data) => ipc.invoke('settings:update', data),
+  reset: () => ipc.invoke('settings:reset'),
 };
 
 export const migratorAPI = {
-  execute: (command) => api.post('/execute', { command }),
-  getVersion: () => api.get('/version'),
+  execute: (command) => ipc.invoke('migrator:execute', command),
+  getVersion: () => ipc.invoke('migrator:get-version'),
 };
 
 export const issuesAPI = {
-  create: (data) => api.post('/issues', data),
-  getAll: () => api.get('/issues'),
-  getById: (id) => api.get(`/issues/${id}`),
-  updateStatus: (id, status) => api.patch(`/issues/${id}/status`, { status }),
-  delete: (id) => api.delete(`/issues/${id}`)
+  create: (data) => ipc.invoke('issues:create', data),
+  getAll: () => ipc.invoke('issues:get-all'),
+  getById: (id) => ipc.invoke('issues:get-by-id', id),
+  updateStatus: (id, status) => ipc.invoke('issues:update-status', id, status),
+  delete: (id) => ipc.invoke('issues:delete', id)
 };
 
 export const schemaAiAPI = {
   analyzeSchema: async (connectionId, schemaName) => {
-    // Get schema info first
-    const schemaResponse = await api.get(`/connections/${connectionId}/schema`);
-    const schemaData = schemaResponse.data;
+    const schemaData = await ipc.invoke('schema:get-tree', connectionId);
     
-    // Get first table from schema to analyze
     if (schemaData.schemas && schemaData.schemas[schemaName]) {
       const tables = schemaData.schemas[schemaName].tables;
       if (tables && Object.keys(tables).length > 0) {
         const firstTableName = Object.keys(tables)[0];
         const firstTable = tables[firstTableName];
         
-        return api.post(`/ai/schema/analyze`, { 
+        return ipc.invoke('ai:analyze-schema', {
           connection_id: connectionId, 
           table_name: firstTableName,
           columns: firstTable.columns || []
@@ -230,11 +190,11 @@ export const schemaAiAPI = {
     throw new Error('No tables found in schema');
   },
   analyzeTable: (connectionId, tableName, columns) => 
-    api.post(`/ai/schema/analyze`, { 
+    ipc.invoke('ai:analyze-table', {
       connection_id: connectionId, 
       table_name: tableName,
       columns: columns || []
     }),
 };
 
-export default api;
+export default { invoke: ipc.invoke };

@@ -28,7 +28,7 @@
     "@xterm/xterm": "^5.5.0",
     "archiver": "^7.0.1",
     "axios": "^1.13.2",
-    "better-sqlite3": "^11.7.0",
+    "better-sqlite3": "^12.5.0",
     "dagre": "^0.8.5",
     "framer-motion": "^12.23.24",
     "html-to-image": "^1.11.13",
