@@ -246,15 +246,26 @@ let _queryAssistant = null;
 function getQueryAssistant() {
   if (_queryAssistant === null) {
     try {
+      const { logger } = require('../../utils/logger');
+      
+      // Load .env file
+      require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+      
       const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
       const apiToken = process.env.CLOUDFLARE_API_TOKEN;
       
+      logger.info(`AI Config check - AccountID: ${accountId ? 'present' : 'missing'}, Token: ${apiToken ? 'present' : 'missing'}`);
+      
       if (!accountId || !apiToken) {
+        logger.warn('Cloudflare AI credentials not configured');
         return null;
       }
       
       _queryAssistant = new QueryAssistant(accountId, apiToken);
+      logger.info('Query assistant initialized successfully');
     } catch (error) {
+      const { logger } = require('../../utils/logger');
+      logger.error('Failed to initialize query assistant:', error);
       return null;
     }
   }

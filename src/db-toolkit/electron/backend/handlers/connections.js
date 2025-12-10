@@ -81,6 +81,8 @@ function registerConnectionHandlers() {
   // Test connection
   ipcMain.handle('connections:test', async (event, request) => {
     try {
+      logger.info(`Testing connection to ${request.db_type} database: ${request.host}:${request.port}/${request.database}`);
+      
       const connector = ConnectorFactory.createConnector(request.db_type);
       const result = await connector.testConnection({
         host: request.host,
@@ -89,8 +91,11 @@ function registerConnectionHandlers() {
         username: request.username,
         password: request.password,
       });
+      
+      logger.info(`Connection test result: ${result.success ? 'SUCCESS' : 'FAILED'} - ${result.message}`);
       return { data: result };
     } catch (error) {
+      logger.error(`Connection test failed: ${error.message}`, error);
       return { data: { success: false, message: error.message } };
     }
   });
