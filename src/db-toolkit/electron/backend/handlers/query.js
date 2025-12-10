@@ -59,7 +59,7 @@ function registerQueryHandlers() {
       }
 
       const queries = await queryHistory.getHistory(connectionId, limit);
-      return { success: true, history: queries, count: queries.length };
+      return { data: { success: true, history: queries, count: queries.length } };
     } catch (error) {
       logger.error('Failed to get query history:', error);
       throw error;
@@ -76,8 +76,10 @@ function registerQueryHandlers() {
 
       const success = await queryHistory.clearHistory(connectionId);
       return {
-        success,
-        message: success ? 'History cleared' : 'No history found',
+        data: {
+          success,
+          message: success ? 'History cleared' : 'No history found',
+        }
       };
     } catch (error) {
       logger.error('Failed to clear query history:', error);
@@ -94,7 +96,7 @@ function registerQueryHandlers() {
       }
 
       const results = await queryHistory.searchHistory(connectionId, searchTerm);
-      return { success: true, results, count: results.length };
+      return { data: { success: true, results, count: results.length } };
     } catch (error) {
       logger.error('Failed to search query history:', error);
       throw error;
@@ -108,9 +110,11 @@ function registerQueryHandlers() {
       const removed = await queryHistory.cleanupOldHistory(retentionDays);
       logger.info(`Removed ${removed} old queries from history`);
       return {
-        success: true,
-        removed_count: removed,
-        message: `Removed ${removed} old queries`,
+        data: {
+          success: true,
+          removed_count: removed,
+          message: `Removed ${removed} old queries`,
+        }
       };
     } catch (error) {
       logger.error('Failed to cleanup query history:', error);
