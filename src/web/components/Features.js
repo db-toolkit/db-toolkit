@@ -111,7 +111,7 @@ export default function Features() {
 
           {/* Feature Preview - Right Side (Hidden on Mobile) */}
           <div className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-24 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl">
+            <div className="sticky top-24 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl p-4">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeFeature}
@@ -119,13 +119,13 @@ export default function Features() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="relative w-full h-[600px]"
+                  className="relative w-full h-[550px]"
                 >
                   <Image
                     src={features[activeFeature].image}
                     alt={features[activeFeature].title}
                     fill
-                    className="object-contain"
+                    className="object-contain object-top"
                     priority
                   />
                 </motion.div>
