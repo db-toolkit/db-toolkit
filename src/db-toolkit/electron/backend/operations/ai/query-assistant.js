@@ -248,8 +248,8 @@ function getQueryAssistant() {
     try {
       const { logger } = require('../../utils/logger');
       
-      // Load .env file
-      require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+      // Load .env file from project root
+      require('dotenv').config({ path: require('path').join(__dirname, '../../../../../.env') });
       
       const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
       const apiToken = process.env.CLOUDFLARE_API_TOKEN;
