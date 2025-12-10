@@ -3,14 +3,14 @@
  */
 
 const { ipcMain } = require('electron');
-const { getConnection } = require('../utils/connection-manager');
+const { connectionManager } = require('../utils/connection-manager');
 const { getConnectionById } = require('../utils/connection-storage');
 const { AnalyticsManager } = require('../operations/analytics-manager');
 
 function registerAnalyticsHandlers() {
   ipcMain.handle('analytics:get', async (event, connectionId) => {
     try {
-      const connection = getConnection(connectionId);
+      const connection = await connectionManager.getConnector(connectionId);
       if (!connection) {
         return { success: false, error: 'Connection not found' };
       }
@@ -25,7 +25,7 @@ function registerAnalyticsHandlers() {
 
   ipcMain.handle('analytics:historical', async (event, connectionId, hours = 3) => {
     try {
-      const connection = getConnection(connectionId);
+      const connection = await connectionManager.getConnector(connectionId);
       if (!connection) {
         return { success: false, error: 'Connection not found' };
       }
@@ -39,7 +39,7 @@ function registerAnalyticsHandlers() {
 
   ipcMain.handle('analytics:slow-queries', async (event, connectionId, hours = 24) => {
     try {
-      const connection = getConnection(connectionId);
+      const connection = await connectionManager.getConnector(connectionId);
       if (!connection) {
         return { success: false, error: 'Connection not found' };
       }
@@ -53,7 +53,7 @@ function registerAnalyticsHandlers() {
 
   ipcMain.handle('analytics:table-stats', async (event, connectionId) => {
     try {
-      const connection = getConnection(connectionId);
+      const connection = await connectionManager.getConnector(connectionId);
       if (!connection) {
         return { success: false, error: 'Connection not found' };
       }
@@ -68,7 +68,7 @@ function registerAnalyticsHandlers() {
 
   ipcMain.handle('analytics:export-pdf', async (event, connectionId) => {
     try {
-      const connection = getConnection(connectionId);
+      const connection = await connectionManager.getConnector(connectionId);
       if (!connection) {
         return { success: false, error: 'Connection not found' };
       }
@@ -84,7 +84,7 @@ function registerAnalyticsHandlers() {
 
   ipcMain.handle('analytics:query-plan', async (event, connectionId, query) => {
     try {
-      const connection = getConnection(connectionId);
+      const connection = await connectionManager.getConnector(connectionId);
       if (!connection) {
         return { success: false, error: 'Connection not found' };
       }
@@ -99,7 +99,7 @@ function registerAnalyticsHandlers() {
 
   ipcMain.handle('analytics:kill-query', async (event, connectionId, pid) => {
     try {
-      const connection = getConnection(connectionId);
+      const connection = await connectionManager.getConnector(connectionId);
       if (!connection) {
         return { success: false, error: 'Connection not found' };
       }
