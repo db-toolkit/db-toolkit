@@ -130,6 +130,7 @@ export const queryAPI = {
   explain: (connectionId, data) => ipc.invoke('query:explain', connectionId, data),
   getHistory: (connectionId) => ipc.invoke('query:getHistory', connectionId),
   clearHistory: (connectionId) => ipc.invoke('query:clearHistory', connectionId),
+  deleteQuery: (connectionId, index) => ipc.invoke('query:deleteQuery', connectionId, index),
 };
 
 export const dataAPI = {

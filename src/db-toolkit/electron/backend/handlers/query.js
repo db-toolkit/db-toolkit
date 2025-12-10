@@ -87,6 +87,27 @@ function registerQueryHandlers() {
     }
   });
 
+  // Delete single query from history
+  ipcMain.handle('query:deleteQuery', async (event, connectionId, index) => {
+    try {
+      const connection = await connectionStorage.getConnection(connectionId);
+      if (!connection) {
+        throw new Error('Connection not found');
+      }
+
+      const success = await queryHistory.deleteQuery(connectionId, index);
+      return {
+        data: {
+          success,
+          message: success ? 'Query deleted' : 'Query not found',
+        }
+      };
+    } catch (error) {
+      logger.error('Failed to delete query:', error);
+      throw error;
+    }
+  });
+
   // Search query history
   ipcMain.handle('query:searchHistory', async (event, connectionId, searchTerm) => {
     try {

@@ -56,6 +56,16 @@ class QueryHistory {
     return false;
   }
 
+  async deleteQuery(connectionId, index) {
+    const history = await this.loadHistory();
+    if (history[connectionId] && history[connectionId][index]) {
+      history[connectionId].splice(index, 1);
+      await this.saveHistory(history);
+      return true;
+    }
+    return false;
+  }
+
   async searchHistory(connectionId, searchTerm) {
     const history = await this.getHistory(connectionId);
     const term = searchTerm.toLowerCase();

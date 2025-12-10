@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
-import { Clock, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Clock, Trash2, X } from 'lucide-react';
 import { useQuery } from '../../hooks';
 import { Button } from '../common/Button';
+import { queryAPI } from '../../services/api';
 
 export function QueryHistory({ connectionId, onSelectQuery }) {
   const { history, fetchHistory, clearHistory } = useQuery(connectionId);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
   useEffect(() => {
     fetchHistory();
@@ -13,6 +15,16 @@ export function QueryHistory({ connectionId, onSelectQuery }) {
   const handleClear = async () => {
     if (window.confirm('Clear all query history?')) {
       await clearHistory();
+    }
+  };
+
+  const handleDeleteQuery = async (index, e) => {
+    e.stopPropagation();
+    try {
+      await queryAPI.deleteQuery(connectionId, index);
+      await fetchHistory();
+    } catch (error) {
+      console.error('Failed to delete query:', error);
     }
   };
 
@@ -38,19 +50,30 @@ export function QueryHistory({ connectionId, onSelectQuery }) {
             <div
               key={idx}
               onClick={() => onSelectQuery(item.query)}
-              className="p-3 border border-gray-200 dark:border-gray-700 rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+              onMouseEnter={() => setHoveredIndex(idx)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              className="relative p-3 border border-gray-200 dark:border-gray-700 rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer group"
             >
-              <p className="text-sm font-mono text-gray-900 dark:text-gray-100 truncate">{item.query}</p>
+              <p className="text-sm font-mono text-gray-900 dark:text-gray-100 truncate pr-8">{item.query}</p>
               <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                <span>{new Date(item.timestamp).toLocaleString()}</span>
+                <span>{new Date(item.timestamp * 1000).toLocaleString()}</span>
                 {item.success ? (
                   <span className="text-green-600 dark:text-green-400">{item.row_count} rows</span>
                 ) : (
                   <span className="text-red-600 dark:text-red-400">Failed</span>
                 )}
               </div>
+              {hoveredIndex === idx && (
+                <button
+                  onClick={(e) => handleDeleteQuery(idx, e)}
+                  className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Delete query"
+                >
+                  <X size={14} />
+                </button>
+              )}
             </div>
-          ))}
+          ))
         </div>
       )}
     </div>
