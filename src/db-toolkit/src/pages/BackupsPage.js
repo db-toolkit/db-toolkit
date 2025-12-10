@@ -173,7 +173,7 @@ function BackupsPage() {
         </div>
       </div>
 
-      {(backups.length > 0 || schedules.length > 0) && (
+      {((backups || []).length > 0 || (schedules || []).length > 0) && (
         <div className="mb-6">
           <div className="relative max-w-md">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -215,7 +215,7 @@ function BackupsPage() {
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
           <p>No backups found matching "{searchQuery}"</p>
         </div>
-      ) : activeTab === 'backups' && localBackups.length === 0 ? (
+      ) : activeTab === 'backups' && (localBackups || []).length === 0 ? (
         <EmptyState
           icon={Database}
           title="No backups yet"
@@ -242,7 +242,7 @@ function BackupsPage() {
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
           <p>No schedules found matching "{searchQuery}"</p>
         </div>
-      ) : schedules.length === 0 ? (
+      ) : (schedules || []).length === 0 ? (
         <EmptyState
           icon={Clock}
           title="No schedules yet"
