@@ -32,7 +32,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                className="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-teal-400 transition"
               >
                 {link.label}
               </Link>
@@ -85,7 +85,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition py-2"
+                  className="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-teal-400 transition py-2"
                 >
                   {link.label}
                 </Link>
