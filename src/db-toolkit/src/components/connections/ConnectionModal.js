@@ -284,18 +284,20 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
             </div>
 
             {formData.db_type !== 'sqlite' && (
-          <>
-            <Input
-              label="Host"
-              value={formData.host}
-              onChange={(e) => handleChange('host', e.target.value)}
-            />
-            <Input
-              label="Port"
-              type="number"
-              value={formData.port}
-              onChange={(e) => handleChange('port', parseInt(e.target.value))}
-            />
+              <>
+                <Input
+                  label="Host"
+                  value={formData.host}
+                  onChange={(e) => handleChange('host', e.target.value)}
+                  required
+                />
+                <Input
+                  label="Port"
+                  type="number"
+                  value={formData.port}
+                  onChange={(e) => handleChange('port', parseInt(e.target.value))}
+                  required
+                />
               </>
             )}
 
@@ -339,7 +341,6 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
               </div>
             ) : (
               <Input
-                key={`database-${formData.db_type}`}
                 label="Database"
                 value={formData.database}
                 onChange={(e) => handleChange('database', e.target.value)}
@@ -353,6 +354,7 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
                   label="Username"
                   value={formData.username}
                   onChange={(e) => handleChange('username', e.target.value)}
+                  required
                 />
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
