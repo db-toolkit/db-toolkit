@@ -105,7 +105,7 @@ export default function Features() {
 
           {/* Feature Preview - Right Side (Hidden on Mobile) */}
           <div className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-24 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-2xl p-6">
+            <div className="sticky top-24 bg-white/40 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl border border-white/20 dark:border-gray-700/30 shadow-2xl p-4">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeFeature}
