@@ -1,5 +1,5 @@
 /**
- * Production-ready query execution engine.
+ * Query execution engine.
  */
 
 const { connectionManager } = require('../utils/connection-manager');
