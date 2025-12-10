@@ -1,51 +1,52 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Database, Zap, Shield, Code, Lock, BarChart3 } from 'lucide-react';
-import { fadeInUp, staggerContainer } from '@/utils/motion';
-import { iconGradients } from '@/utils/gradients';
+import { fadeInUp } from '@/utils/motion';
+import Image from 'next/image';
 
 export default function Features() {
+  const [activeFeature, setActiveFeature] = useState(0);
+
   const features = [
     {
-      icon: Zap,
-      title: 'Lightning Fast',
-      description: 'Optimized query execution with Monaco editor and intelligent autocomplete',
-      color: 'orange'
+      icon: Code,
+      title: 'Query Editor',
+      description: 'Monaco editor with syntax highlighting, autocomplete, and query formatting',
+      image: '/features/editor.png'
     },
     {
       icon: Database,
-      title: 'Multi-Database',
-      description: 'PostgreSQL, MySQL, SQLite, and MongoDB support in one unified interface',
-      color: 'indigo'
+      title: 'Multi-Database Support',
+      description: 'PostgreSQL, MySQL, SQLite, and MongoDB in one unified interface',
+      image: '/features/placeholder.png'
+    },
+    {
+      icon: Zap,
+      title: 'Data Explorer',
+      description: 'Browse, edit, and manage table data with inline editing and pagination',
+      image: '/features/data.png'
     },
     {
       icon: Shield,
-      title: 'Secure by Design',
-      description: 'Encrypted credentials and parameterized queries for maximum security',
-      color: 'purple'
-    },
-    {
-      icon: Code,
-      title: 'Developer Friendly',
-      description: 'Syntax highlighting, code completion, and query formatting built-in',
-      color: 'orange'
+      title: 'Schema Browser',
+      description: 'Visual tree view of databases, tables, columns, and relationships',
+      image: '/features/placeholder.png'
     },
     {
       icon: Lock,
-      title: 'Data Protection',
-      description: 'Automated backups with scheduling and retention policies',
-      color: 'red'
+      title: 'Automated Backups',
+      description: 'Schedule backups with retention policies and one-click restore',
+      image: '/features/backup.png'
     },
     {
       icon: BarChart3,
       title: 'Real-time Analytics',
-      description: 'Monitor database performance with live metrics and query insights',
-      color: 'indigo'
+      description: 'Monitor performance with live metrics and query execution insights',
+      image: '/features/analytics.png'
     }
   ];
-
-  const colorClasses = iconGradients;
 
   return (
     <section className="py-20 bg-white dark:bg-gray-900">
@@ -59,29 +60,79 @@ export default function Features() {
           </p>
         </motion.div>
 
-        <motion.div {...staggerContainer} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              {...fadeInUp(0.2 + index * 0.1)}
-              whileHover={{ scale: 1.05, y: -5 }}
-              className="group relative bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-all duration-300"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"
-                   style={{ backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))` }}
-              />
-              <div className="inline-flex p-4 rounded-xl bg-gray-900 dark:bg-white mb-6 shadow-lg">
-                <feature.icon className="w-8 h-8 text-white dark:text-gray-900" strokeWidth={2} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                {feature.description}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
+        <div className="grid lg:grid-cols-5 gap-8 max-w-7xl mx-auto">
+          {/* Feature Buttons - Left Side */}
+          <div className="lg:col-span-2 space-y-3">
+            {features.map((feature, index) => (
+              <motion.button
+                key={feature.title}
+                onClick={() => setActiveFeature(index)}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className={`w-full text-left p-6 rounded-xl border-2 transition-all duration-300 ${
+                  activeFeature === index
+                    ? 'bg-gradient-to-r from-cyan-50 to-teal-50 dark:from-gray-800 dark:to-gray-800 border-cyan-500 dark:border-teal-500 shadow-lg'
+                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md'
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={`p-3 rounded-lg ${
+                    activeFeature === index
+                      ? 'bg-cyan-100 dark:bg-cyan-900/30'
+                      : 'bg-gray-100 dark:bg-gray-700'
+                  }`}>
+                    <feature.icon className={`w-6 h-6 ${
+                      activeFeature === index
+                        ? 'text-cyan-600 dark:text-cyan-400'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className={`text-lg font-semibold mb-1 ${
+                      activeFeature === index
+                        ? 'text-gray-900 dark:text-white'
+                        : 'text-gray-700 dark:text-gray-300'
+                    }`}>
+                      {feature.title}
+                    </h3>
+                    <p className={`text-sm ${
+                      activeFeature === index
+                        ? 'text-gray-600 dark:text-gray-300'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {feature.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Feature Preview - Right Side (Hidden on Mobile) */}
+          <div className="hidden lg:block lg:col-span-3">
+            <div className="sticky top-24 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeFeature}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="relative aspect-video"
+                >
+                  <Image
+                    src={features[activeFeature].image}
+                    alt={features[activeFeature].title}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
