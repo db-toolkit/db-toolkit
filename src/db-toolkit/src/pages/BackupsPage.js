@@ -49,8 +49,8 @@ function BackupsPage() {
 
   const fetchSchedules = async () => {
     try {
-      const response = await api.get('/backup-schedules');
-      setSchedules(response.data.schedules);
+      const response = await api.invoke('backup:schedule:list');
+      setSchedules(response.schedules || []);
     } catch (err) {
       console.error('Failed to fetch schedules:', err);
     }
@@ -68,7 +68,7 @@ function BackupsPage() {
 
   const handleCreateSchedule = async (data) => {
     try {
-      await api.post('/backup-schedules', data);
+      await api.invoke('backup:schedule:create', data);
       await fetchSchedules();
       toast.success('Schedule created successfully');
       setShowScheduleModal(false);
@@ -79,7 +79,7 @@ function BackupsPage() {
 
   const handleToggleSchedule = async (scheduleId, enabled) => {
     try {
-      await api.put(`/backup-schedules/${scheduleId}`, { enabled });
+      await api.invoke('backup:schedule:update', scheduleId, { enabled });
       await fetchSchedules();
       toast.success(enabled ? 'Schedule enabled' : 'Schedule disabled');
     } catch (err) {
@@ -91,7 +91,7 @@ function BackupsPage() {
     if (!window.confirm('Delete this schedule?')) return;
     
     try {
-      await api.delete(`/backup-schedules/${scheduleId}`);
+      await api.invoke('backup:schedule:delete', scheduleId);
       await fetchSchedules();
       toast.success('Schedule deleted');
     } catch (err) {
@@ -101,8 +101,8 @@ function BackupsPage() {
 
   const handleVerify = async (backupId) => {
     try {
-      const response = await api.post(`/backups/${backupId}/verify`);
-      if (response.data.success) {
+      const response = await api.invoke('backup:verify', backupId);
+      if (response.success) {
         toast.success('Backup verified successfully');
         await fetchBackups();
       } else {

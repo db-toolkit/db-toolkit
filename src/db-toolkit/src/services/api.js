@@ -137,6 +137,9 @@ export const dataAPI = {
   updateRow: (connectionId, data) => ipc.invoke('data:updateRow', connectionId, data),
   insertRow: (connectionId, data) => ipc.invoke('data:insertRow', connectionId, data),
   deleteRow: (connectionId, data) => ipc.invoke('data:deleteRow', connectionId, data),
+  browse: (connectionId, data) => ipc.invoke('dataExplorer:browse', connectionId, data),
+  count: (connectionId, schemaName, tableName) => ipc.invoke('dataExplorer:count', connectionId, schemaName, tableName),
+  cell: (connectionId, data) => ipc.invoke('dataExplorer:cell', connectionId, data),
 };
 
 export const csvAPI = {
@@ -198,4 +201,34 @@ export const schemaAiAPI = {
     }),
 };
 
-export default { invoke: ipc.invoke };
+// Legacy API object for backward compatibility
+const api = {
+  invoke: ipc.invoke,
+  post: async (url, data) => {
+    if (url.includes('/data/browse')) {
+      const connectionId = url.split('/')[2];
+      const result = await ipc.invoke('dataExplorer:browse', connectionId, data);
+      return { data: result };
+    }
+    throw new Error(`Unsupported API call: ${url}`);
+  },
+  get: async (url, options) => {
+    if (url.includes('/data/count')) {
+      const connectionId = url.split('/')[2];
+      const { schema_name, table_name } = options.params;
+      const result = await ipc.invoke('dataExplorer:count', connectionId, schema_name, table_name);
+      return { data: result };
+    }
+    throw new Error(`Unsupported API call: ${url}`);
+  },
+  put: async (url, data) => {
+    if (url.includes('/data/row')) {
+      const connectionId = url.split('/')[2];
+      const result = await ipc.invoke('data:updateRow', connectionId, data);
+      return { data: result };
+    }
+    throw new Error(`Unsupported API call: ${url}`);
+  }
+};
+
+export default api;
