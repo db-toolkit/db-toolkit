@@ -17,12 +17,6 @@ export default function Features() {
       image: '/features/editor.png'
     },
     {
-      icon: Database,
-      title: 'Multi-Database Support',
-      description: 'PostgreSQL, MySQL, SQLite, and MongoDB in one unified interface',
-      image: '/features/placeholder.png'
-    },
-    {
       icon: Zap,
       title: 'Data Explorer',
       description: 'Browse, edit, and manage table data with inline editing and pagination',
@@ -111,7 +105,7 @@ export default function Features() {
 
           {/* Feature Preview - Right Side (Hidden on Mobile) */}
           <div className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-24 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl p-4">
+            <div className="sticky top-24 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-2xl p-6">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeFeature}
@@ -119,13 +113,14 @@ export default function Features() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="relative w-full h-[550px]"
+                  className="relative w-full h-auto"
                 >
                   <Image
                     src={features[activeFeature].image}
                     alt={features[activeFeature].title}
-                    fill
-                    className="object-contain object-top"
+                    width={1200}
+                    height={800}
+                    className="w-full h-auto rounded-lg"
                     priority
                   />
                 </motion.div>
