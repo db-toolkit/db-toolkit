@@ -29,37 +29,36 @@ export default function Contact() {
             </h2>
             
             <motion.div {...staggerContainer} className="space-y-4">
-              <motion.div {...fadeInUp(0.4)} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex items-start gap-4">
+              <motion.div {...fadeInUp(0.4)} whileHover={{ scale: 1.05, y: -5 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex items-start gap-4 transition-all duration-300 hover:shadow-xl">
                 <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                   <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Email</h3>
-                  <a href="mailto:adelodunpeter24@gmail.com" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+                  <a href="mailto:adelodunpeter24@gmail.com" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-teal-400">
                     adelodunpeter24@gmail.com
                   </a>
                 </div>
               </motion.div>
 
-              <motion.div {...fadeInUp(0.5)} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex items-start gap-4">
+              <motion.div {...fadeInUp(0.5)} whileHover={{ scale: 1.05, y: -5 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex items-start gap-4 transition-all duration-300 hover:shadow-xl">
                 <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
                   <Github className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1">GitHub</h3>
-                  <a href="https://github.com/db-toolkit/db-toolkit" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-                    github.com/db-toolkit/db-toolkit
+                  <a href="https://github.com/db-toolkit/db-toolkit" target="_blank" rel="noopener noreferrer" className="font-semibold text-gray-900 dark:text-white hover:text-emerald-600 dark:hover:text-teal-400">
+                    GitHub
                   </a>
                 </div>
               </motion.div>
 
-              <motion.div {...fadeInUp(0.6)} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex items-start gap-4">
+              <motion.div {...fadeInUp(0.6)} whileHover={{ scale: 1.05, y: -5 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex items-start gap-4 transition-all duration-300 hover:shadow-xl">
                 <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
                   <MessageSquare className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Issues & Support</h3>
-                  <a href="https://github.com/db-toolkit/db-toolkit/issues" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+                  <a href="https://github.com/db-toolkit/db-toolkit/issues" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-teal-400">
                     Report an issue on GitHub
                   </a>
                 </div>
