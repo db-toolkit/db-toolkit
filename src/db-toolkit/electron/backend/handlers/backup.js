@@ -130,6 +130,10 @@ function registerBackupHandlers() {
 
   ipcMain.handle('backup:download', async (event, backupId) => {
     const { logger } = require('../utils/logger');
+    const fs = require('fs').promises;
+    const path = require('path');
+    const os = require('os');
+    
     try {
       logger.info(`Download backup request: ${backupId}`);
       const backup = await backupStorage.getBackup(backupId);
@@ -137,8 +141,15 @@ function registerBackupHandlers() {
         logger.error(`Backup not found: ${backupId}`);
         return { success: false, error: 'Backup not found' };
       }
-      logger.info(`Backup found, file path: ${backup.file_path}`);
-      return { success: true, filePath: backup.file_path };
+      
+      const downloadsPath = path.join(os.homedir(), 'Downloads');
+      const fileName = path.basename(backup.file_path);
+      const downloadPath = path.join(downloadsPath, fileName);
+      
+      await fs.copyFile(backup.file_path, downloadPath);
+      logger.info(`Backup copied to Downloads: ${downloadPath}`);
+      
+      return { success: true, filePath: downloadPath };
     } catch (error) {
       logger.error(`Download backup failed: ${error.message}`, error);
       return { success: false, error: error.message };
