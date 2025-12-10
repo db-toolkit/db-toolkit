@@ -5,6 +5,7 @@
 const { ipcMain } = require('electron');
 const { connectionStorage } = require('../utils/connection-storage');
 const { dataExplorer } = require('../operations/data-explorer');
+const { logger } = require('../utils/logger.js');
 
 function registerDataExplorerHandlers() {
   // Browse table data
@@ -26,7 +27,7 @@ function registerDataExplorerHandlers() {
         request.filters
       );
     } catch (error) {
-      console.error('Browse data error:', error);
+      logger.error('Browse data error:', error);
       throw error;
     }
   });
@@ -42,7 +43,7 @@ function registerDataExplorerHandlers() {
       const count = await dataExplorer.getRowCount(connection, schemaName, tableName);
       return { success: true, count };
     } catch (error) {
-      console.error('Get row count error:', error);
+      logger.error('Get row count error:', error);
       throw error;
     }
   });
@@ -57,7 +58,7 @@ function registerDataExplorerHandlers() {
 
       return await dataExplorer.getTableRelationships(connection, schemaName, tableName);
     } catch (error) {
-      console.error('Get relationships error:', error);
+      logger.error('Get relationships error:', error);
       throw error;
     }
   });
@@ -78,7 +79,7 @@ function registerDataExplorerHandlers() {
         request.row_identifier
       );
     } catch (error) {
-      console.error('Get cell data error:', error);
+      logger.error('Get cell data error:', error);
       throw error;
     }
   });

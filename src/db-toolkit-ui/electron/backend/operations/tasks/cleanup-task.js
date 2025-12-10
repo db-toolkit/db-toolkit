@@ -6,6 +6,7 @@ const { scheduler } = require('./scheduler');
 const { cleanupOldHistory } = require('../query-history');
 const { cleanupExpired } = require('../../utils/cache');
 const { getSettings } = require('../../utils/settings-storage');
+const { logger } = require('../../utils/logger.js');
 
 async function cleanupOldHistoryTask() {
   const baseInterval = 4 * 60 * 60 * 1000; // 4 hours
@@ -27,10 +28,10 @@ async function cleanupOldHistoryTask() {
       scheduler.recordTaskExecution('history_cleanup', duration, removedHistory + removedCache);
       
       if (removedHistory > 0 || removedCache > 0) {
-        console.log(`Cleaned up ${removedHistory} history entries, ${removedCache} expired cache entries`);
+        logger.info(`Cleaned up ${removedHistory} history entries, ${removedCache} expired cache entries`);
       }
     } catch (error) {
-      console.error('Error in history cleanup task:', error);
+      logger.error('Error in history cleanup task:', error);
       await new Promise(resolve => setTimeout(resolve, 60000));
     }
   }

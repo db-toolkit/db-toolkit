@@ -6,6 +6,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
 const { QUERY_DEFAULTS } = require('../utils/constants');
+const { logger } = require('../utils/logger.js');
 
 class QueryHistory {
   constructor(storagePath = null, maxHistory = QUERY_DEFAULTS.MAX_HISTORY) {
@@ -88,7 +89,7 @@ class QueryHistory {
       if (error.code === 'ENOENT') {
         return {};
       }
-      console.error('Failed to load query history:', error);
+      logger.error('Failed to load query history:', error);
       return {};
     }
   }
@@ -98,7 +99,7 @@ class QueryHistory {
       await this.ensureStorageDir();
       await fs.writeFile(this.storagePath, JSON.stringify(history, null, 2), 'utf-8');
     } catch (error) {
-      console.error('Failed to save query history:', error);
+      logger.error('Failed to save query history:', error);
     }
   }
 }

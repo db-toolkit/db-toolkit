@@ -5,6 +5,7 @@
 const { ipcMain } = require('electron');
 const { connectionManager } = require('../utils/connection-manager');
 const { sessionManager } = require('../utils/session-manager');
+const { logger } = require('../utils/logger.js');
 
 function registerSessionHandlers() {
   // Get session state
@@ -32,7 +33,7 @@ function registerSessionHandlers() {
         total_connections: connections.length,
       };
     } catch (error) {
-      console.error('Get session state error:', error);
+      logger.error('Get session state error:', error);
       throw error;
     }
   });
@@ -42,7 +43,7 @@ function registerSessionHandlers() {
     try {
       return await connectionManager.getConnectionStatus(connectionId);
     } catch (error) {
-      console.error('Get connection status error:', error);
+      logger.error('Get connection status error:', error);
       throw error;
     }
   });
@@ -55,7 +56,7 @@ function registerSessionHandlers() {
 
       return { success, saved_connections: activeIds.length };
     } catch (error) {
-      console.error('Save session error:', error);
+      logger.error('Save session error:', error);
       throw error;
     }
   });
@@ -75,7 +76,7 @@ function registerSessionHandlers() {
 
       return { success: restored > 0, restored_connections: restored };
     } catch (error) {
-      console.error('Restore session error:', error);
+      logger.error('Restore session error:', error);
       throw error;
     }
   });
@@ -86,7 +87,7 @@ function registerSessionHandlers() {
       const success = await sessionManager.clearSession();
       return { success };
     } catch (error) {
-      console.error('Clear session error:', error);
+      logger.error('Clear session error:', error);
       throw error;
     }
   });
@@ -102,7 +103,7 @@ function registerSessionHandlers() {
         settings: sessionData.settings || {},
       };
     } catch (error) {
-      console.error('Get session settings error:', error);
+      logger.error('Get session settings error:', error);
       throw error;
     }
   });

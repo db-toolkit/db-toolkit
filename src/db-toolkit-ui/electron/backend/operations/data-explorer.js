@@ -3,6 +3,7 @@
  */
 
 const { connectionManager } = require('../utils/connection-manager');
+const { logger } = require('../utils/logger.js');
 
 class DataExplorer {
   async browseData(connection, schemaName, tableName, limit = 100, offset = 0, sortColumn = null, sortOrder = 'ASC', filters = null) {
@@ -60,7 +61,7 @@ class DataExplorer {
         offset,
       };
     } catch (error) {
-      console.error(`Failed to browse data for '${connection.name}.${schemaName}.${tableName}':`, error);
+      logger.error(`Failed to browse data for '${connection.name}.${schemaName}.${tableName}':`, error);
       return { success: false, error: error.message };
     }
   }
@@ -80,7 +81,7 @@ class DataExplorer {
       }
       return 0;
     } catch (error) {
-      console.error(`Failed to get row count for '${connection.name}.${schemaName}.${tableName}':`, error);
+      logger.error(`Failed to get row count for '${connection.name}.${schemaName}.${tableName}':`, error);
       return 0;
     }
   }
@@ -112,7 +113,7 @@ class DataExplorer {
       const result = await connector.executeQuery(query);
       return { success: true, relationships: result.data || [] };
     } catch (error) {
-      console.error(`Failed to get table relationships for '${connection.name}.${schemaName}.${tableName}':`, error);
+      logger.error(`Failed to get table relationships for '${connection.name}.${schemaName}.${tableName}':`, error);
       return { success: false, error: error.message };
     }
   }
@@ -134,7 +135,7 @@ class DataExplorer {
       }
       return { success: false, error: 'No data found' };
     } catch (error) {
-      console.error(`Failed to get cell data for '${connection.name}.${schemaName}.${tableName}.${columnName}':`, error);
+      logger.error(`Failed to get cell data for '${connection.name}.${schemaName}.${tableName}.${columnName}':`, error);
       return { success: false, error: error.message };
     }
   }

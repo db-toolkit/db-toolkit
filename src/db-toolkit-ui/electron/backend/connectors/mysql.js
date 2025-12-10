@@ -4,6 +4,7 @@
 
 const mysql = require('mysql2/promise');
 const BaseConnector = require('./base');
+const { logger } = require('../utils/logger');
 
 class MySQLConnector extends BaseConnector {
   async connect(config) {
@@ -16,9 +17,11 @@ class MySQLConnector extends BaseConnector {
         database: config.database,
       });
       this.isConnected = true;
+      logger.info('MySQL connection established');
       return true;
     } catch (error) {
       this.isConnected = false;
+      logger.error(`MySQL connection failed: ${error.message}`);
       return false;
     }
   }
@@ -27,10 +30,12 @@ class MySQLConnector extends BaseConnector {
     try {
       if (this.connection) {
         await this.connection.end();
+        logger.info('MySQL connection closed');
       }
       this.isConnected = false;
       return true;
     } catch (error) {
+      logger.error(`Error closing MySQL connection: ${error.message}`);
       return false;
     }
   }
@@ -94,6 +99,7 @@ class MySQLConnector extends BaseConnector {
       }
       return { success: true, columns: [], data: [], row_count: 0 };
     } catch (error) {
+      logger.error(`MySQL query error: ${error.message}`);
       return { success: false, error: error.message };
     }
   }

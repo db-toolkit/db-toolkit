@@ -4,6 +4,7 @@
 
 const { Pool } = require('pg');
 const BaseConnector = require('./base');
+const { logger } = require('../utils/logger');
 
 class PostgreSQLConnector extends BaseConnector {
   async connect(config) {
@@ -17,9 +18,11 @@ class PostgreSQLConnector extends BaseConnector {
       });
       await this.connection.query('SELECT 1');
       this.isConnected = true;
+      logger.info('PostgreSQL connection established');
       return true;
     } catch (error) {
       this.isConnected = false;
+      logger.error(`PostgreSQL connection failed: ${error.message}`);
       return false;
     }
   }
@@ -28,10 +31,12 @@ class PostgreSQLConnector extends BaseConnector {
     try {
       if (this.connection) {
         await this.connection.end();
+        logger.info('PostgreSQL connection closed');
       }
       this.isConnected = false;
       return true;
     } catch (error) {
+      logger.error(`Error closing PostgreSQL connection: ${error.message}`);
       return false;
     }
   }
@@ -101,6 +106,7 @@ class PostgreSQLConnector extends BaseConnector {
       }
       return { success: true, columns: [], data: [], row_count: 0 };
     } catch (error) {
+      logger.error(`PostgreSQL query error: ${error.message}`);
       return { success: false, error: error.message };
     }
   }

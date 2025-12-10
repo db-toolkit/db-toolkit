@@ -16,6 +16,7 @@ const { registerAnalyticsStreamHandlers } = require('./analytics-stream');
 const { registerIssuesHandlers } = require('./issues');
 const { registerAIHandlers } = require('./ai');
 const { registerMigratorHandlers } = require('./migrator');
+const { logger } = require('../utils/logger.js');
 
 function registerAllHandlers() {
   registerConnectionHandlers();
@@ -32,7 +33,7 @@ function registerAllHandlers() {
   registerIssuesHandlers();
   registerAIHandlers();
   registerMigratorHandlers();
-  console.log('All IPC handlers registered');
+  logger.info('All IPC handlers registered');
 }
 
 module.exports = { registerAllHandlers };

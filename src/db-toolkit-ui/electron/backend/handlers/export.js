@@ -6,6 +6,7 @@ const { ipcMain, dialog } = require('electron');
 const fs = require('fs').promises;
 const { connectionManager } = require('../utils/connection-manager');
 const { CSVHandler } = require('../operations/csv-handler');
+const { logger } = require('../utils/logger.js');
 
 function registerExportHandlers() {
   // Export to CSV
@@ -29,7 +30,7 @@ function registerExportHandlers() {
 
       return { csv_content: csvContent, row_count: rowCount };
     } catch (error) {
-      console.error('CSV export error:', error);
+      logger.error('CSV export error:', error);
       throw error;
     }
   });
@@ -54,7 +55,7 @@ function registerExportHandlers() {
 
       return { json_content: jsonContent, row_count: rowCount };
     } catch (error) {
-      console.error('JSON export error:', error);
+      logger.error('JSON export error:', error);
       throw error;
     }
   });
@@ -74,7 +75,7 @@ function registerExportHandlers() {
       await fs.writeFile(filePath, csvContent, 'utf-8');
       return { success: true, path: filePath };
     } catch (error) {
-      console.error('Save CSV error:', error);
+      logger.error('Save CSV error:', error);
       throw error;
     }
   });
@@ -94,7 +95,7 @@ function registerExportHandlers() {
       await fs.writeFile(filePath, jsonContent, 'utf-8');
       return { success: true, path: filePath };
     } catch (error) {
-      console.error('Save JSON error:', error);
+      logger.error('Save JSON error:', error);
       throw error;
     }
   });
@@ -109,7 +110,7 @@ function registerExportHandlers() {
         errors,
       };
     } catch (error) {
-      console.error('CSV validation error:', error);
+      logger.error('CSV validation error:', error);
       throw error;
     }
   });
@@ -147,7 +148,7 @@ function registerExportHandlers() {
 
       return result;
     } catch (error) {
-      console.error('CSV import error:', error);
+      logger.error('CSV import error:', error);
       throw error;
     }
   });

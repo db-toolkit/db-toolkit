@@ -4,15 +4,18 @@
 
 const Database = require('better-sqlite3');
 const BaseConnector = require('./base');
+const { logger } = require('../utils/logger');
 
 class SQLiteConnector extends BaseConnector {
   async connect(config) {
     try {
       this.connection = new Database(config.database);
       this.isConnected = true;
+      logger.info('SQLite connection established');
       return true;
     } catch (error) {
       this.isConnected = false;
+      logger.error(`SQLite connection failed: ${error.message}`);
       return false;
     }
   }
@@ -21,10 +24,12 @@ class SQLiteConnector extends BaseConnector {
     try {
       if (this.connection) {
         this.connection.close();
+        logger.info('SQLite connection closed');
       }
       this.isConnected = false;
       return true;
     } catch (error) {
+      logger.error(`Error closing SQLite connection: ${error.message}`);
       return false;
     }
   }
@@ -89,6 +94,7 @@ class SQLiteConnector extends BaseConnector {
         };
       }
     } catch (error) {
+      logger.error(`SQLite query error: ${error.message}`);
       return { success: false, error: error.message };
     }
   }

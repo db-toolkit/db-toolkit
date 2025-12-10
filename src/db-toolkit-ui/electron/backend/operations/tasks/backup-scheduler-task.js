@@ -7,6 +7,7 @@ const backupStorage = require('../../utils/backup-storage');
 const { getAllConnections, getConnectionById } = require('../../utils/connection-storage');
 const { BackupManager } = require('../backup-manager');
 const { getConnection } = require('../../utils/connection-manager');
+const { logger } = require('../../utils/logger.js');
 
 async function backupSchedulerTask() {
   const backupManager = new BackupManager();
@@ -52,7 +53,7 @@ async function backupSchedulerTask() {
             const connection = getConnection(schedule.connection_id);
             
             if (config && connection) {
-              console.log(`Running scheduled backup for '${config.name}'`);
+              logger.info(`Running scheduled backup for '${config.name}'`);
               await backupManager.createBackup(
                 connection,
                 config,
@@ -79,7 +80,7 @@ async function backupSchedulerTask() {
       
       await new Promise(resolve => setTimeout(resolve, interval));
     } catch (error) {
-      console.error('Error in backup scheduler:', error);
+      logger.error('Error in backup scheduler:', error);
       await new Promise(resolve => setTimeout(resolve, 300000));
     }
   }

@@ -2,6 +2,8 @@
  * Base database connector interface.
  */
 
+const { logger } = require('../utils/logger');
+
 class BaseConnector {
   constructor() {
     this.connection = null;

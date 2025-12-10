@@ -5,11 +5,12 @@
 const { cleanupOldHistoryTask } = require('./cleanup-task');
 const { backupSchedulerTask } = require('./backup-scheduler-task');
 const { scheduler } = require('./scheduler');
+const { logger } = require('../../utils/logger.js');
 
 function startBackgroundTasks() {
-  cleanupOldHistoryTask().catch(err => console.error('Cleanup task error:', err));
-  backupSchedulerTask().catch(err => console.error('Backup scheduler error:', err));
-  console.log('Background tasks started');
+  cleanupOldHistoryTask().catch(err => logger.error('Cleanup task error:', err));
+  backupSchedulerTask().catch(err => logger.error('Backup scheduler error:', err));
+  logger.info('Background tasks started');
 }
 
 function recordQueryActivity() {

@@ -3,6 +3,7 @@
  */
 
 const { connectionManager } = require('../utils/connection-manager');
+const { logger } = require('../utils/logger.js');
 
 class CSVHandler {
   static async exportToCSV(connector, table, schema = null, query = null, delimiter = ',', includeHeaders = true) {
@@ -107,7 +108,7 @@ class CSVHandler {
         }
       }
     } catch (error) {
-      console.error('CSV validation error:', error);
+      logger.error('CSV validation error:', error);
       errors.push(`Validation error: ${error.message}`);
     }
 
@@ -141,7 +142,7 @@ class CSVHandler {
             errors.push(`Row ${i + batch.indexOf(row) + 1}: ${result.error}`);
           }
         } catch (error) {
-          console.error(`CSV import row ${i + batch.indexOf(row) + 1} failed:`, error);
+          logger.error(`CSV import row ${i + batch.indexOf(row) + 1} failed:`, error);
           failed++;
           errors.push(`Row ${i + batch.indexOf(row) + 1}: ${error.message}`);
         }

@@ -5,17 +5,18 @@
 const { connectionManager } = require('../utils/connection-manager');
 const { schemaCache } = require('../utils/cache');
 const { CACHE_TTL } = require('../utils/constants');
+const { logger } = require('../utils/logger.js');
 
 class SchemaExplorer {
   async getSchemaTree(connection, useCache = true) {
     const cacheKey = `${connection.id}_schema`;
 
-    console.log(`Getting schema tree for connection '${connection.name}' (use_cache=${useCache})`);
+    logger.info(`Getting schema tree for connection '${connection.name}' (use_cache=${useCache})`);
 
     if (useCache) {
       const cached = schemaCache.get(cacheKey);
       if (cached) {
-        console.log(`Returning cached schema for '${connection.name}'`);
+        logger.info(`Returning cached schema for '${connection.name}'`);
         return cached;
       }
     }
@@ -40,11 +41,11 @@ class SchemaExplorer {
       };
 
       const schemas = await connector.getSchemas();
-      console.log(`Found ${schemas.length} schemas:`, schemas);
+      logger.info(`Found ${schemas.length} schemas:`, schemas);
 
       for (const schemaName of schemas) {
         const tables = await connector.getTables(schemaName);
-        console.log(`Schema '${schemaName}' has ${tables.length} tables:`, tables);
+        logger.info(`Schema '${schemaName}' has ${tables.length} tables:`, tables);
         schemaTree.schemas[schemaName] = {
           tables: {},
           table_count: tables.length,
@@ -62,7 +63,7 @@ class SchemaExplorer {
       schemaCache.set(cacheKey, schemaTree, CACHE_TTL.SCHEMA_TREE);
       return schemaTree;
     } catch (error) {
-      console.error(`Failed to get schema tree for '${connection.name}':`, error);
+      logger.error(`Failed to get schema tree for '${connection.name}':`, error);
       return { error: error.message, success: false };
     }
   }
@@ -101,7 +102,7 @@ class SchemaExplorer {
       schemaCache.set(cacheKey, tableInfo, CACHE_TTL.TABLE_INFO);
       return tableInfo;
     } catch (error) {
-      console.error(`Failed to get table info for '${connection.name}.${schema}.${table}':`, error);
+      logger.error(`Failed to get table info for '${connection.name}.${schema}.${table}':`, error);
       return { success: false, error: error.message };
     }
   }

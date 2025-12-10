@@ -5,12 +5,13 @@
 const { ipcMain } = require('electron');
 const { connectionStorage } = require('../utils/connection-storage');
 const { dataEditor } = require('../operations/data-editor');
+const { logger } = require('../utils/logger.js');
 
 function registerDataHandlers() {
   // Update row
   ipcMain.handle('data:updateRow', async (event, connectionId, request) => {
     try {
-      console.log(`Update row request - table: ${request.table}, schema: ${request.schema_name}, pk:`, request.primary_key);
+      logger.info(`Update row request - table: ${request.table}, schema: ${request.schema_name}, pk:`, request.primary_key);
 
       const connection = await connectionStorage.getConnection(connectionId);
       if (!connection) {
@@ -31,7 +32,7 @@ function registerDataHandlers() {
 
       return result;
     } catch (error) {
-      console.error('Update row error:', error);
+      logger.error('Update row error:', error);
       throw error;
     }
   });
@@ -57,7 +58,7 @@ function registerDataHandlers() {
 
       return result;
     } catch (error) {
-      console.error('Insert row error:', error);
+      logger.error('Insert row error:', error);
       throw error;
     }
   });
@@ -83,7 +84,7 @@ function registerDataHandlers() {
 
       return result;
     } catch (error) {
-      console.error('Delete row error:', error);
+      logger.error('Delete row error:', error);
       throw error;
     }
   });

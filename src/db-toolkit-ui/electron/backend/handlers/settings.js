@@ -4,6 +4,7 @@
 
 const { ipcMain } = require('electron');
 const { settingsStorage } = require('../utils/settings-storage');
+const { logger } = require('../utils/logger.js');
 
 function registerSettingsHandlers() {
   // Get settings
@@ -11,7 +12,7 @@ function registerSettingsHandlers() {
     try {
       return await settingsStorage.getSettings();
     } catch (error) {
-      console.error('Failed to get settings:', error);
+      logger.error('Failed to get settings:', error);
       throw error;
     }
   });
@@ -24,7 +25,7 @@ function registerSettingsHandlers() {
       );
       return await settingsStorage.updateSettings(filtered);
     } catch (error) {
-      console.error('Failed to update settings:', error);
+      logger.error('Failed to update settings:', error);
       throw error;
     }
   });
@@ -34,7 +35,7 @@ function registerSettingsHandlers() {
     try {
       return await settingsStorage.resetSettings();
     } catch (error) {
-      console.error('Failed to reset settings:', error);
+      logger.error('Failed to reset settings:', error);
       throw error;
     }
   });

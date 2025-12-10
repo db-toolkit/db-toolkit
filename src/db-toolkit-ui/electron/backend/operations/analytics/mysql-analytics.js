@@ -1,3 +1,4 @@
+const { logger } = require('../../utils/logger.js');
 /**
  * MySQL-specific analytics operations.
  */
@@ -90,7 +91,7 @@ async function getMySQLAnalytics(connection) {
       timestamp: new Date().toISOString(),
     };
   } catch (error) {
-    console.error('MySQL analytics error:', error);
+    logger.error('MySQL analytics error:', error);
     return { success: false, error: error.message };
   }
 }

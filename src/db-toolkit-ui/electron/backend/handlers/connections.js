@@ -6,6 +6,7 @@ const { ipcMain } = require('electron');
 const { connectionStorage } = require('../utils/connection-storage');
 const { connectionManager } = require('../utils/connection-manager');
 const { ConnectorFactory } = require('../connectors');
+const { logger } = require('../utils/logger.js');
 
 function registerConnectionHandlers() {
   // Get all connections
@@ -13,7 +14,7 @@ function registerConnectionHandlers() {
     try {
       return await connectionStorage.getAllConnections();
     } catch (error) {
-      console.error('Failed to get connections:', error);
+      logger.error('Failed to get connections:', error);
       throw error;
     }
   });
@@ -21,7 +22,7 @@ function registerConnectionHandlers() {
   // Create connection
   ipcMain.handle('connections:create', async (event, request) => {
     try {
-      console.log(`Creating connection '${request.name}' (${request.db_type})`);
+      logger.info(`Creating connection '${request.name}' (${request.db_type})`);
       return await connectionStorage.addConnection(
         request.name,
         request.db_type,
@@ -34,7 +35,7 @@ function registerConnectionHandlers() {
         }
       );
     } catch (error) {
-      console.error(`Failed to create connection '${request.name}':`, error);
+      logger.error(`Failed to create connection '${request.name}':`, error);
       throw error;
     }
   });
@@ -57,7 +58,7 @@ function registerConnectionHandlers() {
         password: request.password,
       });
     } catch (error) {
-      console.error('Failed to update connection:', error);
+      logger.error('Failed to update connection:', error);
       throw error;
     }
   });
@@ -65,14 +66,14 @@ function registerConnectionHandlers() {
   // Delete connection
   ipcMain.handle('connections:delete', async (event, connectionId) => {
     try {
-      console.log(`Deleting connection '${connectionId}'`);
+      logger.info(`Deleting connection '${connectionId}'`);
       const success = await connectionStorage.removeConnection(connectionId);
       if (!success) {
         throw new Error('Connection not found');
       }
       return { success: true };
     } catch (error) {
-      console.error('Failed to delete connection:', error);
+      logger.error('Failed to delete connection:', error);
       throw error;
     }
   });
@@ -102,18 +103,18 @@ function registerConnectionHandlers() {
         throw new Error('Connection not found');
       }
 
-      console.log(`Connecting to database '${connection.name}'`);
+      logger.info(`Connecting to database '${connection.name}'`);
       const success = await connectionManager.connect(connection);
 
       if (success) {
-        console.log(`Successfully connected to '${connection.name}'`);
+        logger.info(`Successfully connected to '${connection.name}'`);
         return { success: true, message: 'Connected successfully' };
       } else {
-        console.error(`Failed to connect to '${connection.name}'`);
+        logger.error(`Failed to connect to '${connection.name}'`);
         throw new Error('Failed to connect. Please check your credentials and database server.');
       }
     } catch (error) {
-      console.error('Connection error:', error);
+      logger.error('Connection error:', error);
       throw error;
     }
   });
@@ -127,7 +128,7 @@ function registerConnectionHandlers() {
         message: success ? 'Disconnected' : 'Not connected',
       };
     } catch (error) {
-      console.error('Disconnect error:', error);
+      logger.error('Disconnect error:', error);
       throw error;
     }
   });
@@ -137,7 +138,7 @@ function registerConnectionHandlers() {
     try {
       return await connectionManager.getConnectionStatus(connectionId);
     } catch (error) {
-      console.error('Failed to get connection status:', error);
+      logger.error('Failed to get connection status:', error);
       throw error;
     }
   });

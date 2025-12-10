@@ -1,3 +1,4 @@
+const { logger } = require('../../utils/logger.js');
 /**
  * PostgreSQL-specific analytics operations.
  */
@@ -97,7 +98,7 @@ async function getPostgreSQLAnalytics(connector) {
       timestamp: new Date().toISOString(),
     };
   } catch (error) {
-    console.error('PostgreSQL analytics error:', error);
+    logger.error('PostgreSQL analytics error:', error);
     return { success: false, error: error.message };
   }
 }

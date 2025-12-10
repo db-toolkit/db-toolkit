@@ -4,6 +4,7 @@
 
 const { MongoClient } = require('mongodb');
 const BaseConnector = require('./base');
+const { logger } = require('../utils/logger');
 
 class MongoDBConnector extends BaseConnector {
   async connect(config) {
@@ -13,9 +14,11 @@ class MongoDBConnector extends BaseConnector {
       await this.connection.connect();
       await this.connection.db('admin').command({ ping: 1 });
       this.isConnected = true;
+      logger.info('MongoDB connection established');
       return true;
     } catch (error) {
       this.isConnected = false;
+      logger.error(`MongoDB connection failed: ${error.message}`);
       return false;
     }
   }
@@ -24,10 +27,12 @@ class MongoDBConnector extends BaseConnector {
     try {
       if (this.connection) {
         await this.connection.close();
+        logger.info('MongoDB connection closed');
       }
       this.isConnected = false;
       return true;
     } catch (error) {
+      logger.error(`Error closing MongoDB connection: ${error.message}`);
       return false;
     }
   }
@@ -120,6 +125,7 @@ class MongoDBConnector extends BaseConnector {
       
       return { success: true, columns: [], data: [], row_count: 0 };
     } catch (error) {
+      logger.error(`MongoDB query error: ${error.message}`);
       return { success: false, error: error.message };
     }
   }

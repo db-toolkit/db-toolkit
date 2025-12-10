@@ -4,6 +4,7 @@
 
 const { ConnectorFactory } = require('../connectors');
 const { settingsStorage } = require('./settings-storage');
+const { logger } = require('./logger');
 
 class ConnectionManager {
   constructor() {
@@ -12,7 +13,7 @@ class ConnectionManager {
   }
 
   async connect(connection, timeout = null) {
-    console.log(`Connecting to '${connection.name}' (${connection.db_type})`);
+    logger.info(`Connecting to '${connection.name}' (${connection.db_type})`);
     
     try {
       if (timeout === null) {
@@ -32,20 +33,20 @@ class ConnectionManager {
       if (success) {
         this.activeConnections.set(connection.id, connector);
         this.connectionMetadata.set(connection.id, connection);
-        console.log(`Successfully connected to '${connection.name}'`);
+        logger.info(`Successfully connected to '${connection.name}'`);
         return true;
       }
       
-      console.error(`Failed to connect to '${connection.name}'`);
+      logger.error(`Failed to connect to '${connection.name}'`);
       return false;
     } catch (error) {
-      console.error(`Connection error for '${connection.name}':`, error.message);
+      logger.error(`Connection error for '${connection.name}': ${error.message}`);
       return false;
     }
   }
 
   async disconnect(connectionId) {
-    console.log(`Disconnecting from connection '${connectionId}'`);
+    logger.info(`Disconnecting from connection '${connectionId}'`);
     
     const connector = this.activeConnections.get(connectionId);
     if (connector) {

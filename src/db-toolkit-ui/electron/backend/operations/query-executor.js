@@ -4,6 +4,7 @@
 
 const { connectionManager } = require('../utils/connection-manager');
 const { QUERY_DEFAULTS } = require('../utils/constants');
+const { logger } = require('../utils/logger.js');
 
 class QueryExecutor {
   constructor(defaultTimeout = QUERY_DEFAULTS.TIMEOUT, defaultLimit = QUERY_DEFAULTS.LIMIT) {
@@ -88,7 +89,7 @@ class QueryExecutor {
       }
     } catch (error) {
       const executionTime = (Date.now() - startTime) / 1000;
-      console.error(`Query execution failed on '${connection.name}':`, error);
+      logger.error(`Query execution failed on '${connection.name}':`, error);
       return {
         success: false,
         error: error.message,

@@ -3,6 +3,7 @@
  */
 
 const { ConnectorFactory } = require('../connectors');
+const { logger } = require('../utils/logger.js');
 
 class DataEditor {
   async updateRow(connection, table, schemaName, primaryKey, changes) {
@@ -28,7 +29,7 @@ class DataEditor {
       await connector.disconnect();
       return result;
     } catch (error) {
-      console.error(`Update row failed on '${connection.name}.${table}':`, error);
+      logger.error(`Update row failed on '${connection.name}.${table}':`, error);
       return { success: false, error: error.message };
     }
   }
@@ -52,7 +53,7 @@ class DataEditor {
       await connector.disconnect();
       return result;
     } catch (error) {
-      console.error(`Insert row failed on '${connection.name}.${table}':`, error);
+      logger.error(`Insert row failed on '${connection.name}.${table}':`, error);
       return { success: false, error: error.message };
     }
   }
@@ -76,7 +77,7 @@ class DataEditor {
       await connector.disconnect();
       return result;
     } catch (error) {
-      console.error(`Delete row failed on '${connection.name}.${table}':`, error);
+      logger.error(`Delete row failed on '${connection.name}.${table}':`, error);
       return { success: false, error: error.message };
     }
   }

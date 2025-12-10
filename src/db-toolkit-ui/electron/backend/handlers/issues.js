@@ -7,6 +7,7 @@ const { Resend } = require('resend');
 const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
+const { logger } = require('../utils/logger.js');
 
 const issuesDb = [];
 
@@ -24,7 +25,7 @@ function registerIssuesHandlers() {
       };
       
       issuesDb.push(newIssue);
-      console.log(`Issue created: ${newIssue.id} - ${issue.title}`);
+      logger.info(`Issue created: ${newIssue.id} - ${issue.title}`);
       
       await sendIssueEmail(newIssue);
       
@@ -61,7 +62,7 @@ async function sendIssueEmail(issue) {
   const issueEmail = process.env.ISSUE_EMAIL || 'your-email@example.com';
   
   if (!resendApiKey) {
-    console.warn('RESEND_API_KEY not set, skipping email');
+    logger.warn('RESEND_API_KEY not set, skipping email');
     return;
   }
   
@@ -104,9 +105,9 @@ async function sendIssueEmail(issue) {
       html
     });
     
-    console.log(`Issue email sent for ${issue.id}`);
+    logger.info(`Issue email sent for ${issue.id}`);
   } catch (error) {
-    console.error('Email sending failed:', error);
+    logger.error('Email sending failed:', error);
   }
 }
 

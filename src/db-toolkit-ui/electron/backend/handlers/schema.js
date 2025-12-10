@@ -5,6 +5,7 @@
 const { ipcMain } = require('electron');
 const { connectionStorage } = require('../utils/connection-storage');
 const { schemaExplorer } = require('../operations/schema-explorer');
+const { logger } = require('../utils/logger.js');
 
 function registerSchemaHandlers() {
   // Get schema tree
@@ -17,7 +18,7 @@ function registerSchemaHandlers() {
 
       return await schemaExplorer.getSchemaTree(connection, useCache);
     } catch (error) {
-      console.error('Failed to get schema tree:', error);
+      logger.error('Failed to get schema tree:', error);
       throw error;
     }
   });
@@ -32,7 +33,7 @@ function registerSchemaHandlers() {
 
       return await schemaExplorer.getTableInfo(connection, schemaName, tableName);
     } catch (error) {
-      console.error('Failed to get table info:', error);
+      logger.error('Failed to get table info:', error);
       throw error;
     }
   });
@@ -48,7 +49,7 @@ function registerSchemaHandlers() {
       await schemaExplorer.refreshSchema(connectionId);
       return { success: true, message: 'Schema cache refreshed' };
     } catch (error) {
-      console.error('Failed to refresh schema:', error);
+      logger.error('Failed to refresh schema:', error);
       throw error;
     }
   });
@@ -59,7 +60,7 @@ function registerSchemaHandlers() {
       const keys = schemaExplorer.getCachedSchemas();
       return { cached_schemas: keys };
     } catch (error) {
-      console.error('Failed to get cached schemas:', error);
+      logger.error('Failed to get cached schemas:', error);
       throw error;
     }
   });

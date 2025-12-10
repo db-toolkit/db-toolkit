@@ -6,6 +6,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
 const { connectionStorage } = require('./connection-storage');
+const { logger } = require('logger.js');
 
 class SessionManager {
   constructor() {
@@ -29,7 +30,7 @@ class SessionManager {
       await fs.writeFile(this.sessionFile, JSON.stringify(sessionData, null, 2), 'utf-8');
       return true;
     } catch (error) {
-      console.error('Failed to save session:', error);
+      logger.error('Failed to save session:', error);
       return false;
     }
   }
@@ -40,7 +41,7 @@ class SessionManager {
       return JSON.parse(data);
     } catch (error) {
       if (error.code !== 'ENOENT') {
-        console.error('Failed to load session:', error);
+        logger.error('Failed to load session:', error);
       }
       return { active_connection_ids: [], last_active_connection: null, settings: {} };
     }
@@ -52,7 +53,7 @@ class SessionManager {
       return true;
     } catch (error) {
       if (error.code !== 'ENOENT') {
-        console.error('Failed to clear session:', error);
+        logger.error('Failed to clear session:', error);
         return false;
       }
       return true;

@@ -6,6 +6,7 @@ const { ipcMain } = require('electron');
 const { connectionStorage } = require('../utils/connection-storage');
 const { queryExecutor } = require('../operations/query-executor');
 const { queryHistory } = require('../operations/query-history');
+const { logger } = require('../utils/logger.js');
 
 function registerQueryHandlers() {
   // Execute query
@@ -16,7 +17,7 @@ function registerQueryHandlers() {
         throw new Error('Connection not found');
       }
 
-      console.log(`Executing query on '${connection.name}': ${request.query.substring(0, 100)}...`);
+      logger.info(`Executing query on '${connection.name}': ${request.query.substring(0, 100)}...`);
 
       const result = await queryExecutor.executeQuery(
         connection,
@@ -27,9 +28,9 @@ function registerQueryHandlers() {
       );
 
       if (result.success) {
-        console.log(`Query executed successfully (${result.total_rows} rows, ${result.execution_time}s)`);
+        logger.info(`Query executed successfully (${result.total_rows} rows, ${result.execution_time}s)`);
       } else {
-        console.error(`Query failed: ${result.error}`);
+        logger.error(`Query failed: ${result.error}`);
       }
 
       // Save to history
@@ -44,7 +45,7 @@ function registerQueryHandlers() {
 
       return result;
     } catch (error) {
-      console.error('Query execution error:', error);
+      logger.error('Query execution error:', error);
       throw error;
     }
   });
@@ -60,7 +61,7 @@ function registerQueryHandlers() {
       const queries = await queryHistory.getHistory(connectionId, limit);
       return { success: true, history: queries, count: queries.length };
     } catch (error) {
-      console.error('Failed to get query history:', error);
+      logger.error('Failed to get query history:', error);
       throw error;
     }
   });
@@ -79,7 +80,7 @@ function registerQueryHandlers() {
         message: success ? 'History cleared' : 'No history found',
       };
     } catch (error) {
-      console.error('Failed to clear query history:', error);
+      logger.error('Failed to clear query history:', error);
       throw error;
     }
   });
@@ -95,7 +96,7 @@ function registerQueryHandlers() {
       const results = await queryHistory.searchHistory(connectionId, searchTerm);
       return { success: true, results, count: results.length };
     } catch (error) {
-      console.error('Failed to search query history:', error);
+      logger.error('Failed to search query history:', error);
       throw error;
     }
   });
@@ -103,16 +104,16 @@ function registerQueryHandlers() {
   // Cleanup old query history
   ipcMain.handle('query:cleanupHistory', async (event, retentionDays = 30) => {
     try {
-      console.log(`Cleaning up query history older than ${retentionDays} days`);
+      logger.info(`Cleaning up query history older than ${retentionDays} days`);
       const removed = await queryHistory.cleanupOldHistory(retentionDays);
-      console.log(`Removed ${removed} old queries from history`);
+      logger.info(`Removed ${removed} old queries from history`);
       return {
         success: true,
         removed_count: removed,
         message: `Removed ${removed} old queries`,
       };
     } catch (error) {
-      console.error('Failed to cleanup query history:', error);
+      logger.error('Failed to cleanup query history:', error);
       throw error;
     }
   });
