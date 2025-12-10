@@ -20,13 +20,24 @@ class DataExplorer {
     }
 
     try {
-      let query = `SELECT * FROM "${schemaName}"."${tableName}"`;
+      const dbType = connection.db_type;
+      let query;
+      
+      if (dbType === 'sqlite') {
+        query = `SELECT * FROM "${tableName}"`;
+      } else {
+        query = `SELECT * FROM "${schemaName}"."${tableName}"`;
+      }
 
       if (filters && Object.keys(filters).length > 0) {
         const conditions = [];
         for (const [column, value] of Object.entries(filters)) {
           if (value) {
-            conditions.push(`"${column}" ILIKE '%${value}%'`);
+            if (dbType === 'sqlite') {
+              conditions.push(`"${column}" LIKE '%${value}%'`);
+            } else {
+              conditions.push(`"${column}" ILIKE '%${value}%'`);
+            }
           }
         }
         if (conditions.length > 0) {
@@ -73,7 +84,15 @@ class DataExplorer {
     }
 
     try {
-      const query = `SELECT COUNT(*) FROM "${schemaName}"."${tableName}"`;
+      const dbType = connection.db_type;
+      let query;
+      
+      if (dbType === 'sqlite') {
+        query = `SELECT COUNT(*) FROM "${tableName}"`;
+      } else {
+        query = `SELECT COUNT(*) FROM "${schemaName}"."${tableName}"`;
+      }
+      
       const result = await connector.executeQuery(query);
 
       if (result.success && result.data && result.data.length > 0) {
@@ -125,9 +144,16 @@ class DataExplorer {
     }
 
     try {
+      const dbType = connection.db_type;
       const conditions = Object.entries(rowIdentifier).map(([k, v]) => `"${k}" = '${v}'`);
       const whereClause = conditions.join(' AND ');
-      const query = `SELECT "${columnName}" FROM "${schemaName}"."${tableName}" WHERE ${whereClause} LIMIT 1`;
+      
+      let query;
+      if (dbType === 'sqlite') {
+        query = `SELECT "${columnName}" FROM "${tableName}" WHERE ${whereClause} LIMIT 1`;
+      } else {
+        query = `SELECT "${columnName}" FROM "${schemaName}"."${tableName}" WHERE ${whereClause} LIMIT 1`;
+      }
 
       const result = await connector.executeQuery(query);
       if (result.success && result.data && result.data.length > 0) {

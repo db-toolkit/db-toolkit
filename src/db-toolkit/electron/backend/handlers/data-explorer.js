@@ -4,6 +4,7 @@
 
 const { ipcMain } = require('electron');
 const { connectionStorage } = require('../utils/connection-storage');
+const { connectionManager } = require('../utils/connection-manager');
 const { dataExplorer } = require('../operations/data-explorer');
 const { logger } = require('../utils/logger.js');
 
@@ -16,7 +17,7 @@ function registerDataExplorerHandlers() {
         throw new Error('Connection not found');
       }
 
-      return await dataExplorer.browseData(
+      const result = await dataExplorer.browseData(
         connection,
         request.schema_name,
         request.table_name,
@@ -26,6 +27,7 @@ function registerDataExplorerHandlers() {
         request.sort_order || 'ASC',
         request.filters
       );
+      return { data: result };
     } catch (error) {
       logger.error('Browse data error:', error);
       throw error;
@@ -41,7 +43,7 @@ function registerDataExplorerHandlers() {
       }
 
       const count = await dataExplorer.getRowCount(connection, schemaName, tableName);
-      return { success: true, count };
+      return { data: { success: true, count } };
     } catch (error) {
       logger.error('Get row count error:', error);
       throw error;
@@ -56,7 +58,8 @@ function registerDataExplorerHandlers() {
         throw new Error('Connection not found');
       }
 
-      return await dataExplorer.getTableRelationships(connection, schemaName, tableName);
+      const result = await dataExplorer.getTableRelationships(connection, schemaName, tableName);
+      return { data: result };
     } catch (error) {
       logger.error('Get relationships error:', error);
       throw error;
@@ -71,13 +74,14 @@ function registerDataExplorerHandlers() {
         throw new Error('Connection not found');
       }
 
-      return await dataExplorer.getCellData(
+      const result = await dataExplorer.getCellData(
         connection,
         request.schema_name,
         request.table_name,
         request.column_name,
         request.row_identifier
       );
+      return { data: result };
     } catch (error) {
       logger.error('Get cell data error:', error);
       throw error;
