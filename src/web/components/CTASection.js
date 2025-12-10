@@ -55,29 +55,7 @@ export default function CTASection() {
           }}
           className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-100/30 to-transparent rounded-full blur-3xl motion-reduce:animate-none"
         />
-        
-        {/* Floating particles */}
-        {[...Array(10)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-full motion-reduce:hidden"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              x: [0, Math.random() * 15 - 7.5, 0],
-              opacity: [0.3, 0.7, 0.3],
-              scale: [1, 1.3, 1],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
+
       </div>
       <div className="relative container mx-auto px-6">
         <motion.div
