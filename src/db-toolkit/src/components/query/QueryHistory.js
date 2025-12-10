@@ -73,7 +73,7 @@ export function QueryHistory({ connectionId, onSelectQuery }) {
                 </button>
               )}
             </div>
-          ))
+          ))}
         </div>
       )}
     </div>
