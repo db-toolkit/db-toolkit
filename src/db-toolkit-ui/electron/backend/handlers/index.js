@@ -8,6 +8,7 @@ const { registerSchemaHandlers } = require('./schema');
 const { registerSettingsHandlers } = require('./settings');
 const { registerDataHandlers } = require('./data');
 const { registerExportHandlers } = require('./export');
+const { registerDataExplorerHandlers } = require('./data-explorer');
 
 function registerAllHandlers() {
   registerConnectionHandlers();
@@ -16,6 +17,7 @@ function registerAllHandlers() {
   registerSettingsHandlers();
   registerDataHandlers();
   registerExportHandlers();
+  registerDataExplorerHandlers();
   console.log('All IPC handlers registered');
 }
 
