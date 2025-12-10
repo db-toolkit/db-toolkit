@@ -14,6 +14,7 @@ const { registerAnalyticsHandlers } = require('./analytics');
 const { registerBackupHandlers } = require('./backup');
 const { registerAnalyticsStreamHandlers } = require('./analytics-stream');
 const { registerIssuesHandlers } = require('./issues');
+const { registerAIHandlers } = require('./ai');
 
 function registerAllHandlers() {
   registerConnectionHandlers();
@@ -28,6 +29,7 @@ function registerAllHandlers() {
   registerBackupHandlers();
   registerAnalyticsStreamHandlers();
   registerIssuesHandlers();
+  registerAIHandlers();
   console.log('All IPC handlers registered');
 }
 
