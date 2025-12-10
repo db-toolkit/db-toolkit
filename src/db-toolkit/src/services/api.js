@@ -62,7 +62,7 @@ export const schemaAPI = {
       }
     }
     
-    const data = await ipc.invoke('schema:get-tree', connectionId);
+    const data = await ipc.invoke('schema:getTree', connectionId);
     
     try {
       await cacheService.setSchema(connectionId, data);
@@ -97,7 +97,7 @@ export const schemaAPI = {
       console.error('Cache read error:', err);
     }
     
-    const data = await ipc.invoke('schema:get-table-info', connectionId, schema, table);
+    const data = await ipc.invoke('schema:getTableInfo', connectionId, schema, table);
     
     try {
       await cacheService.setTableInfo(connectionId, schema, table, data);
@@ -128,24 +128,24 @@ export const schemaAPI = {
 export const queryAPI = {
   execute: (connectionId, data) => ipc.invoke('query:execute', connectionId, data),
   explain: (connectionId, data) => ipc.invoke('query:explain', connectionId, data),
-  getHistory: (connectionId) => ipc.invoke('query:get-history', connectionId),
-  clearHistory: (connectionId) => ipc.invoke('query:clear-history', connectionId),
+  getHistory: (connectionId) => ipc.invoke('query:getHistory', connectionId),
+  clearHistory: (connectionId) => ipc.invoke('query:clearHistory', connectionId),
 };
 
 export const dataAPI = {
-  updateRow: (connectionId, data) => ipc.invoke('data:update-row', connectionId, data),
-  insertRow: (connectionId, data) => ipc.invoke('data:insert-row', connectionId, data),
-  deleteRow: (connectionId, data) => ipc.invoke('data:delete-row', connectionId, data),
+  updateRow: (connectionId, data) => ipc.invoke('data:updateRow', connectionId, data),
+  insertRow: (connectionId, data) => ipc.invoke('data:insertRow', connectionId, data),
+  deleteRow: (connectionId, data) => ipc.invoke('data:deleteRow', connectionId, data),
 };
 
 export const csvAPI = {
   export: (data) => ipc.invoke('export:csv', data),
-  validate: (data) => ipc.invoke('export:validate-csv', data),
-  import: (data) => ipc.invoke('export:import-csv', data),
+  validate: (data) => ipc.invoke('import:validateCSV', data),
+  import: (data) => ipc.invoke('import:csv', data),
 };
 
 export const sessionAPI = {
-  getState: () => ipc.invoke('session:get-state'),
+  getState: () => ipc.invoke('session:getState'),
   save: (lastActive) => ipc.invoke('session:save', lastActive),
   restore: () => ipc.invoke('session:restore'),
   clear: () => ipc.invoke('session:clear'),
@@ -159,20 +159,20 @@ export const settingsAPI = {
 
 export const migratorAPI = {
   execute: (command) => ipc.invoke('migrator:execute', command),
-  getVersion: () => ipc.invoke('migrator:get-version'),
+  getVersion: () => ipc.invoke('migrator:version'),
 };
 
 export const issuesAPI = {
   create: (data) => ipc.invoke('issues:create', data),
-  getAll: () => ipc.invoke('issues:get-all'),
-  getById: (id) => ipc.invoke('issues:get-by-id', id),
-  updateStatus: (id, status) => ipc.invoke('issues:update-status', id, status),
+  getAll: () => ipc.invoke('issues:list'),
+  getById: (id) => ipc.invoke('issues:get', id),
+  updateStatus: (id, status) => ipc.invoke('issues:update', id, status),
   delete: (id) => ipc.invoke('issues:delete', id)
 };
 
 export const schemaAiAPI = {
   analyzeSchema: async (connectionId, schemaName) => {
-    const schemaData = await ipc.invoke('schema:get-tree', connectionId);
+    const schemaData = await ipc.invoke('schema:getTree', connectionId);
     
     if (schemaData.schemas && schemaData.schemas[schemaName]) {
       const tables = schemaData.schemas[schemaName].tables;
@@ -180,7 +180,7 @@ export const schemaAiAPI = {
         const firstTableName = Object.keys(tables)[0];
         const firstTable = tables[firstTableName];
         
-        return ipc.invoke('ai:analyze-schema', {
+        return ipc.invoke('ai:analyze-table', {
           connection_id: connectionId, 
           table_name: firstTableName,
           columns: firstTable.columns || []
