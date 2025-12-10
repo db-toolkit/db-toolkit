@@ -12,15 +12,14 @@ export function useBackups(connectionId = null) {
     if (!silent) setLoading(true);
     setError(null);
     try {
-      const params = connectionId ? { connection_id: connectionId } : {};
-      const result = await ipc.invoke('backup:get-all', params);
-      setBackups(result.backups);
+      const result = await ipc.invoke('backup:get-all', null);
+      setBackups(result.backups || result.data || []);
     } catch (err) {
       setError(err.message);
     } finally {
       if (!silent) setLoading(false);
     }
-  }, [connectionId]);
+  }, []);
 
   const createBackup = useCallback(async (data) => {
     try {
