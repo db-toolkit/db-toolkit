@@ -30,14 +30,14 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><a href="https://docs-dbtoolkit.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">Documentation</a></li>
               <li><Link href="/downloads" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">Downloads</Link></li>
-              <li><a href="https://github.com/Adelodunpeter25/db-toolkit/issues" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">Support</a></li>
+              <li><a href="https://github.com/db-toolkit/db-toolkit/issues" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">Support</a></li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Connect</h3>
             <div className="flex gap-4">
-              <a href="https://github.com/Adelodunpeter25/db-toolkit" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">
+              <a href="https://github.com/db-toolkit/db-toolkit" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">
                 <Github size={20} />
               </a>
               <a href="mailto:adelodunpeter24@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400">

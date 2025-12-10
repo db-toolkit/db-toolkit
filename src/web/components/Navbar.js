@@ -42,7 +42,7 @@ export default function Navbar() {
           {/* GitHub & Theme Toggle & Mobile Menu */}
           <div className="flex items-center gap-2">
             <a
-              href="https://github.com/Adelodunpeter25/db-toolkit"
+              href="https://github.com/db-toolkit/db-toolkit"
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex p-2 rounded-full hover:bg-gray-900 dark:hover:bg-white hover:scale-110 transition-all group"
