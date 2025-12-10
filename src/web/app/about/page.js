@@ -68,7 +68,7 @@ export default function About() {
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Feature Packed</h3>
-            <p className="text-gray-600 dark:text-gray-300">Query editor, backups, migrations, and real-time analytics</p>
+            <p className="text-gray-600 dark:text-gray-300">Query editor, backups, data explorer and editing, real-time analytics</p>
           </motion.div>
         </motion.div>
 
