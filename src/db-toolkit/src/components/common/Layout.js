@@ -119,7 +119,7 @@ function Layout({ children }) {
         <main className="flex-1 overflow-hidden bg-gray-50 dark:bg-gray-800">
           {children}
         </main>
-        <StatusBar onTerminalClick={() => setShowTerminal(!showTerminal)} />
+        <StatusBar />
           </div>
         </Split>
       ) : (
@@ -140,7 +140,7 @@ function Layout({ children }) {
           <main className="flex-1 overflow-hidden bg-gray-50 dark:bg-gray-800">
             {children}
           </main>
-          <StatusBar onTerminalClick={() => setShowTerminal(!showTerminal)} />
+          <StatusBar />
           </div>
         </div>
       )}
