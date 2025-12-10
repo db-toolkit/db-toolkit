@@ -119,13 +119,13 @@ export default function Features() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="relative aspect-video"
+                  className="relative w-full h-[600px]"
                 >
                   <Image
                     src={features[activeFeature].image}
                     alt={features[activeFeature].title}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                     priority
                   />
                 </motion.div>
