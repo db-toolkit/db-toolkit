@@ -13,9 +13,9 @@ export function detectPlatform() {
 
 export function getDownloadUrl(platform) {
   const urls = {
-    windows: 'https://github.com/Adelodunpeter25/db-toolkit/releases/latest/download/DB.Toolkit-win-x64.exe',
-    macos: 'https://github.com/Adelodunpeter25/db-toolkit/releases/latest/download/DB.Toolkit-mac-x64.dmg',
-    linux: 'https://github.com/Adelodunpeter25/db-toolkit/releases/latest/download/DB.Toolkit-linux.AppImage'
+    windows: 'https://github.com/db-toolkit/db-toolkit/releases/latest/download/DB.Toolkit-win-x64.exe',
+    macos: 'https://github.com/db-toolkit/db-toolkit/releases/latest/download/DB.Toolkit-mac-x64.dmg',
+    linux: 'https://github.com/db-toolkit/db-toolkit/releases/latest/download/DB.Toolkit-linux.AppImage'
   };
   
   return urls[platform] || urls.windows;
