@@ -12,7 +12,9 @@ function registerBackupHandlers() {
   const backupManager = new BackupManager();
 
   ipcMain.handle('backup:create', async (event, data) => {
-    const { connectionId, name, backupType, tables, compress } = data;
+    const { connection_id, name, backup_type, tables, compress } = data;
+    const connectionId = connection_id;
+    const backupType = backup_type;
     const { logger } = require('../utils/logger');
     
     try {
