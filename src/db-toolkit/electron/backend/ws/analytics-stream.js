@@ -4,17 +4,17 @@
 
 const { BrowserWindow } = require('electron');
 const { AnalyticsManager } = require('../operations/analytics-manager');
-const { getConnection } = require('../utils/connection-manager');
-const { getConnectionById } = require('../utils/connection-storage');
+const { connectionManager } = require('../utils/connection-manager');
+const { connectionStorage } = require('../utils/connection-storage');
 const { logger } = require('../utils/logger');
 
 const activeStreams = new Map();
 
-function startAnalyticsStream(connectionId) {
+async function startAnalyticsStream(connectionId) {
   if (activeStreams.has(connectionId)) return;
 
-  const connection = getConnection(connectionId);
-  const config = getConnectionById(connectionId);
+  const connection = await connectionManager.getConnector(connectionId);
+  const config = await connectionStorage.getConnection(connectionId);
   
   if (!connection || !config) {
     logger.warn(`Cannot start analytics stream for connection ${connectionId}`);

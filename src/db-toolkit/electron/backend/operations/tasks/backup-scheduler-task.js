@@ -4,9 +4,9 @@
 
 const { scheduler } = require('./scheduler');
 const backupStorage = require('../../utils/backup-storage');
-const { getAllConnections, getConnectionById } = require('../../utils/connection-storage');
+const { connectionStorage } = require('../../utils/connection-storage');
 const { BackupManager } = require('../backup-manager');
-const { getConnection } = require('../../utils/connection-manager');
+const { connectionManager } = require('../../utils/connection-manager');
 const { logger } = require('../../utils/logger.js');
 
 async function backupSchedulerTask() {
@@ -49,8 +49,8 @@ async function backupSchedulerTask() {
         if (schedule.next_run) {
           const nextRun = new Date(schedule.next_run);
           if (now >= nextRun) {
-            const config = getConnectionById(schedule.connection_id);
-            const connection = getConnection(schedule.connection_id);
+            const config = await connectionStorage.getConnection(schedule.connection_id);
+            const connection = await connectionManager.getConnector(schedule.connection_id);
             
             if (config && connection) {
               logger.info(`Running scheduled backup for '${config.name}'`);
