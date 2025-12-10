@@ -3,9 +3,10 @@
  */
 
 const { connectionManager } = require('../utils/connection-manager');
+const { QUERY_DEFAULTS } = require('../utils/constants');
 
 class QueryExecutor {
-  constructor(defaultTimeout = 30, defaultLimit = 1000) {
+  constructor(defaultTimeout = QUERY_DEFAULTS.TIMEOUT, defaultLimit = QUERY_DEFAULTS.LIMIT) {
     this.defaultTimeout = defaultTimeout;
     this.defaultLimit = defaultLimit;
   }

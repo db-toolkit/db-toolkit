@@ -3,39 +3,8 @@
  */
 
 const { connectionManager } = require('../utils/connection-manager');
-
-class SchemaCache {
-  constructor() {
-    this.cache = new Map();
-  }
-
-  get(key) {
-    const entry = this.cache.get(key);
-    if (!entry) return null;
-    if (Date.now() > entry.expiry) {
-      this.cache.delete(key);
-      return null;
-    }
-    return entry.data;
-  }
-
-  set(key, data, ttl = 600) {
-    this.cache.set(key, {
-      data,
-      expiry: Date.now() + ttl * 1000,
-    });
-  }
-
-  delete(key) {
-    this.cache.delete(key);
-  }
-
-  getKeys() {
-    return Array.from(this.cache.keys());
-  }
-}
-
-const schemaCache = new SchemaCache();
+const { schemaCache } = require('../utils/cache');
+const { CACHE_TTL } = require('../utils/constants');
 
 class SchemaExplorer {
   async getSchemaTree(connection, useCache = true) {
@@ -90,7 +59,7 @@ class SchemaExplorer {
         }
       }
 
-      schemaCache.set(cacheKey, schemaTree, 900);
+      schemaCache.set(cacheKey, schemaTree, CACHE_TTL.SCHEMA_TREE);
       return schemaTree;
     } catch (error) {
       console.error(`Failed to get schema tree for '${connection.name}':`, error);
@@ -129,7 +98,7 @@ class SchemaExplorer {
         sample_data: sampleResult.success ? (sampleResult.data || []).slice(0, 5) : [],
       };
 
-      schemaCache.set(cacheKey, tableInfo, 600);
+      schemaCache.set(cacheKey, tableInfo, CACHE_TTL.TABLE_INFO);
       return tableInfo;
     } catch (error) {
       console.error(`Failed to get table info for '${connection.name}.${schema}.${table}':`, error);

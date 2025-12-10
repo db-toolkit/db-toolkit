@@ -5,9 +5,10 @@
 const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
+const { QUERY_DEFAULTS } = require('../utils/constants');
 
 class QueryHistory {
-  constructor(storagePath = null, maxHistory = 100) {
+  constructor(storagePath = null, maxHistory = QUERY_DEFAULTS.MAX_HISTORY) {
     this.storagePath = storagePath || path.join(os.homedir(), '.db-toolkit', 'query_history.json');
     this.maxHistory = maxHistory;
   }
