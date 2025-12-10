@@ -111,11 +111,9 @@ function AnalyticsPage() {
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{conn.name}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{conn.db_type}</p>
-                  {conn.host && (
-                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                      {conn.host}:{conn.port}
-                    </p>
-                  )}
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    {conn.db_type === 'sqlite' ? conn.database.split('/').pop() : `${conn.host}:${conn.port}`}
+                  </p>
                 </div>
               </div>
               <Button
