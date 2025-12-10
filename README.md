@@ -2,9 +2,9 @@
 
 <div align="center">
 
-![DB Toolkit](https://img.shields.io/badge/version-0.1.0-blue) ![Python](https://img.shields.io/badge/python-3.11+-green) ![Node](https://img.shields.io/badge/node-18+-green) ![License](https://img.shields.io/badge/license-MIT-green)
+![DB Toolkit](https://img.shields.io/badge/version-0.1.0-blue) ![Node](https://img.shields.io/badge/node-18+-green) ![Electron](https://img.shields.io/badge/electron-latest-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
-A modern, cross-platform desktop database management application built with **Electron + React** frontend and **Python FastAPI** backend.
+A modern, cross-platform desktop database management application built with **Electron + React** frontend and **Node.js** backend.
 
 </div>
 
@@ -29,7 +29,7 @@ A modern, cross-platform desktop database management application built with **El
 - **Query History** - Track and re-run previous queries
 - **Query Formatting** - Format SQL with `Ctrl+Shift+F`
 - **Error Highlighting** - Real-time syntax error detection
-- **AI-Powered Analysis** - Explain query execution plans with Google Gemini
+- **AI-Powered Analysis** - Generate, optimize, and explain SQL queries with Cloudflare AI
 
 ### 📊 Data Explorer
 - **Inline Editing** - Double-click cells to edit data directly
@@ -46,8 +46,8 @@ A modern, cross-platform desktop database management application built with **El
 - **Manual Backups** - Create on-demand backups with compression
 - **Retention Policies** - Automatic cleanup of old backups
 - **Backup Verification** - Validate backup integrity
-- **Native & External Tools** - Support for pg_dump, mysqldump, mongodump with Python fallback
-- **Real-time Status** - WebSocket updates for backup progress
+- **Native & External Tools** - Support for pg_dump, mysqldump, mongodump with Node.js fallback
+- **Real-time Status** - IPC events for backup progress
 - **Notifications** - Get notified when backups complete
 
 ### ⚙️ Settings & Customization
@@ -59,7 +59,7 @@ A modern, cross-platform desktop database management application built with **El
 
 ## Tech Stack
 
-**Backend:** FastAPI, SQLAlchemy, AsyncPG, AIOMySQL, Motor, WebSockets, UV  
+**Backend:** Node.js, Electron IPC, SQLite3, PostgreSQL, MySQL, MongoDB drivers  
 **Frontend:** Electron, React 18, Tailwind CSS, Monaco Editor, Framer Motion, Vite
 
 ## Keyboard Shortcuts
@@ -75,4 +75,4 @@ MIT License
 
 ---
 
-**Built with ❤️ using Python, React, and Electron**
+**Built with ❤️ using Node.js, React, and Electron**
