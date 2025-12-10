@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Database, Download, Github, ArrowRight } from 'lucide-react';
+import { Download, Github, ArrowRight } from 'lucide-react';
 import { primaryGradient, buttonGradient } from '@/utils/gradients';
 import { detectPlatform, getDownloadUrl } from '@/utils/detectPlatform';
 import { useEffect, useState } from 'react';
