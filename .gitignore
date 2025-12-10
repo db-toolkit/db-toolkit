@@ -3,7 +3,7 @@ __pycache__/
 */__pycache__/
 **/__pycache__/
 *.py[oc]
-build/
+# build/ - commented out to include icon files
 dist/
 wheels/
 *.egg-info
@@ -44,5 +44,8 @@ src/db-toolkit-ui/resources/backend/
 
 # Backend build artifacts
 src/db-toolkit/dist/
-src/db-toolkit/build/
 src/db-toolkit/.ruff_cache/
+
+# Electron build output
+src/db-toolkit/release/
+src/db-toolkit/out/
