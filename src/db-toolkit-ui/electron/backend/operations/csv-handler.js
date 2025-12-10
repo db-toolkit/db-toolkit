@@ -74,6 +74,88 @@ class CSVHandler {
 
     return JSON.stringify(jsonData, null, 2);
   }
+
+  static validateCSVData(csvContent, columnMapping) {
+    const errors = [];
+    const rows = [];
+
+    try {
+      const lines = csvContent.trim().split('\n');
+      if (lines.length < 2) {
+        errors.push('CSV must have at least a header row and one data row');
+        return { rows, errors };
+      }
+
+      const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+        const mappedRow = {};
+
+        for (const [csvCol, dbCol] of Object.entries(columnMapping)) {
+          const colIdx = headers.indexOf(csvCol);
+          if (colIdx === -1) {
+            errors.push(`Row ${i + 1}: Missing column '${csvCol}'`);
+          } else {
+            const value = values[colIdx]?.trim();
+            mappedRow[dbCol] = value || null;
+          }
+        }
+
+        if (Object.keys(mappedRow).length > 0) {
+          rows.push(mappedRow);
+        }
+      }
+    } catch (error) {
+      console.error('CSV validation error:', error);
+      errors.push(`Validation error: ${error.message}`);
+    }
+
+    return { rows, errors };
+  }
+
+  static async importFromCSV(connector, table, rows, schema = null, batchSize = 100) {
+    if (!rows || rows.length === 0) {
+      return { success: false, error: 'No data to import' };
+    }
+
+    let imported = 0;
+    let failed = 0;
+    const errors = [];
+
+    for (let i = 0; i < rows.length; i += batchSize) {
+      const batch = rows.slice(i, i + batchSize);
+
+      for (const row of batch) {
+        try {
+          const columns = Object.keys(row).map(col => `"${col}"`).join(', ');
+          const values = Object.values(row).map(val => `'${val}'`).join(', ');
+          const fullTable = schema && schema !== 'main' && schema !== 'public' ? `${schema}."${table}"` : `"${table}"`;
+          const query = `INSERT INTO ${fullTable} (${columns}) VALUES (${values})`;
+
+          const result = await connector.executeQuery(query);
+          if (result.success) {
+            imported++;
+          } else {
+            failed++;
+            errors.push(`Row ${i + batch.indexOf(row) + 1}: ${result.error}`);
+          }
+        } catch (error) {
+          console.error(`CSV import row ${i + batch.indexOf(row) + 1} failed:`, error);
+          failed++;
+          errors.push(`Row ${i + batch.indexOf(row) + 1}: ${error.message}`);
+        }
+      }
+    }
+
+    return {
+      success: imported > 0,
+      imported,
+      failed,
+      errors: errors.slice(0, 10),
+      total_errors: errors.length,
+    };
+  }
 }
 
 module.exports = { CSVHandler };

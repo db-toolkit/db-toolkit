@@ -98,6 +98,59 @@ function registerExportHandlers() {
       throw error;
     }
   });
+
+  // Validate CSV
+  ipcMain.handle('import:validateCSV', async (event, csvContent, columnMapping) => {
+    try {
+      const { rows, errors } = CSVHandler.validateCSVData(csvContent, columnMapping);
+      return {
+        valid: errors.length === 0,
+        row_count: rows.length,
+        errors,
+      };
+    } catch (error) {
+      console.error('CSV validation error:', error);
+      throw error;
+    }
+  });
+
+  // Import CSV
+  ipcMain.handle('import:csv', async (event, connectionId, request) => {
+    try {
+      const connector = await connectionManager.getConnector(connectionId);
+      if (!connector) {
+        throw new Error('Connection not found');
+      }
+
+      const { rows, errors } = CSVHandler.validateCSVData(
+        request.csv_content,
+        request.column_mapping
+      );
+
+      if (errors.length > 0) {
+        return {
+          success: false,
+          imported: 0,
+          failed: rows.length,
+          errors,
+          total_errors: errors.length,
+        };
+      }
+
+      const result = await CSVHandler.importFromCSV(
+        connector,
+        request.table,
+        rows,
+        request.schema_name,
+        request.batch_size || 100
+      );
+
+      return result;
+    } catch (error) {
+      console.error('CSV import error:', error);
+      throw error;
+    }
+  });
 }
 
 module.exports = { registerExportHandlers };
