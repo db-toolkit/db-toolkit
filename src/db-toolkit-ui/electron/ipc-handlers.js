@@ -2,10 +2,9 @@
  * Additional IPC handlers for file operations and system metrics.
  */
 
-const { ipcMain, shell, dialog, BrowserWindow, app } = require('electron');
+const { ipcMain, shell, dialog, BrowserWindow } = require('electron');
 const path = require('path');
 const fs = require('fs').promises;
-const fsSync = require('fs');
 const os = require('os');
 const { exec } = require('child_process');
 
@@ -122,14 +121,7 @@ function registerSystemHandlers() {
     });
   });
 
-  ipcMain.handle('get-backend-port', () => {
-    const portFile = path.join(app.getPath('userData'), 'backend-port.txt');
-    try {
-      return parseInt(fsSync.readFileSync(portFile, 'utf-8'));
-    } catch {
-      return 8000;
-    }
-  });
+
 }
 
 function registerMenuHandlers() {
