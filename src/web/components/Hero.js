@@ -68,8 +68,8 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <span className="px-4 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-semibold rounded-full">
-            🎉 v0.1.0 - Introducing DbAssist AI
+          <span className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white text-sm font-bold rounded-full shadow-lg">
+            🎉 v0.1.0 Beta - Introducing DbAssist AI
           </span>
         </motion.div>
 
