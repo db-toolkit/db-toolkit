@@ -177,29 +177,53 @@ function registerIpcHandlers() {
 app.whenReady().then(async () => {
   registerIpcHandlers();
   const { createMenu, updateRecentConnections } = require('./menu');
-  const { startBackend, stopBackend } = require('./backend');
+  const { sessionManager } = require('./backend/utils/session-manager');
+  const { connectionManager } = require('./backend/utils/connection-manager');
   
+  const mainWindow = createWindow();
+  createMenu(mainWindow, !app.isPackaged);
+  
+  // Restore previous session
   try {
-    await startBackend(app);
-    const mainWindow = createWindow();
-    createMenu(mainWindow, !app.isPackaged);
+    const connections = await sessionManager.getRestorableConnections();
+    console.log(`Restoring ${connections.length} connections from previous session`);
+    for (const conn of connections) {
+      await connectionManager.connect(conn);
+    }
   } catch (err) {
-    console.error('Failed to start backend:', err);
-    app.quit();
+    console.error('Failed to restore session:', err);
   }
 });
 
-app.on('window-all-closed', () => {
-  const { stopBackend } = require('./backend');
-  stopBackend();
+app.on('window-all-closed', async () => {
+  // Save session before closing
+  try {
+    const { sessionManager } = require('./backend/utils/session-manager');
+    const { connectionManager } = require('./backend/utils/connection-manager');
+    const activeIds = await connectionManager.getAllActiveConnections();
+    await sessionManager.saveSession(activeIds);
+    console.log(`Saved ${activeIds.length} active connections`);
+  } catch (err) {
+    console.error('Failed to save session:', err);
+  }
+  
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-app.on('before-quit', () => {
-  const { stopBackend } = require('./backend');
-  stopBackend();
+app.on('before-quit', async () => {
+  // Save session before quitting
+  try {
+    const { sessionManager } = require('./backend/utils/session-manager');
+    const { connectionManager } = require('./backend/utils/connection-manager');
+    const activeIds = await connectionManager.getAllActiveConnections();
+    await sessionManager.saveSession(activeIds);
+    await connectionManager.disconnectAll();
+    console.log('Session saved and connections closed');
+  } catch (err) {
+    console.error('Failed to save session on quit:', err);
+  }
 });
 
 app.on('activate', () => {
