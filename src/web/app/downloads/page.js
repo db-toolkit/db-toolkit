@@ -1,22 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { Download, Monitor, Apple, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useDownload } from '@/hooks/useDownload';
 
 export default function DownloadsPage() {
-  const [downloading, setDownloading] = useState(null);
-
-  const handleDownload = (url, label) => {
-    setDownloading(label);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = '';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setTimeout(() => setDownloading(null), 3000);
-  };
+  const { download, downloading } = useDownload();
 
   const platforms = [
     {
@@ -80,7 +69,7 @@ export default function DownloadsPage() {
                   {platform.downloads.map((download) => (
                     <button
                       key={download.label}
-                      onClick={() => handleDownload(download.url, download.label)}
+                      onClick={() => download(download.url, download.label)}
                       disabled={downloading === download.label}
                       className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
                     >

@@ -5,10 +5,11 @@ import { Database, Download, Github, ArrowRight } from 'lucide-react';
 import { primaryGradient, buttonGradient } from '@/utils/gradients';
 import { detectPlatform, getDownloadUrl } from '@/utils/detectPlatform';
 import { useEffect, useState } from 'react';
+import { useDownload } from '@/hooks/useDownload';
 
 export default function Hero() {
   const [downloadUrl, setDownloadUrl] = useState('/downloads');
-  const [downloading, setDownloading] = useState(false);
+  const { download, downloading } = useDownload();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -18,17 +19,6 @@ export default function Hero() {
       }
     }
   }, []);
-
-  const handleDownload = (url) => {
-    setDownloading(true);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = '';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setTimeout(() => setDownloading(false), 2000);
-  };
 
   return (
     <section className={`relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br ${primaryGradient.light} dark:from-gray-950 dark:via-gray-900 dark:to-gray-950`}>
@@ -131,8 +121,8 @@ export default function Hero() {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
           <button
-            onClick={() => handleDownload(downloadUrl)}
-            disabled={downloading}
+            onClick={() => download(downloadUrl, 'DB-Toolkit')}
+            disabled={!!downloading}
             className={`group flex items-center gap-2 px-8 py-4 bg-gradient-to-r ${buttonGradient} text-white rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100`}
           >
             {downloading ? (
