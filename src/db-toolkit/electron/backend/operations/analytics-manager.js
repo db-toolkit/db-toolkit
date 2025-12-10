@@ -18,7 +18,7 @@ class AnalyticsManager {
   }
 
   async getAnalytics(config, connectionId) {
-    const dbType = config.type;
+    const dbType = config.db_type || config.type;
     let result;
 
     if (dbType === 'postgresql') {
@@ -78,7 +78,7 @@ class AnalyticsManager {
   }
 
   async getTableStatistics(config) {
-    const dbType = config.type;
+    const dbType = config.db_type || config.type;
 
     if (dbType === 'postgresql') {
       return await getTableStatsPostgreSQL(this.connection);
@@ -116,7 +116,7 @@ class AnalyticsManager {
   }
 
   async getQueryPlan(query, config) {
-    const dbType = config.type;
+    const dbType = config.db_type || config.type;
 
     try {
       if (dbType === 'postgresql') {
@@ -133,7 +133,7 @@ class AnalyticsManager {
   }
 
   async killQuery(pid, config) {
-    const dbType = config.type;
+    const dbType = config.db_type || config.type;
 
     try {
       if (dbType === 'postgresql') {
