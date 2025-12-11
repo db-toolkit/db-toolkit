@@ -3,8 +3,8 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Bot, 
+import {
+  Bot,
   AlertCircle,
   Loader2,
   X,
@@ -14,10 +14,10 @@ import { Button } from '../common/Button';
 import { useAiAssistant } from '../../hooks/useAiAssistant';
 import { useToast } from '../../contexts/ToastContext';
 
-export function AiAssistant({ 
-  connectionId, 
-  currentQuery, 
-  onQueryGenerated, 
+export function AiAssistant({
+  connectionId,
+  currentQuery,
+  onQueryGenerated,
   onQueryOptimized,
   lastError,
   schemaContext = {},
@@ -29,16 +29,20 @@ export function AiAssistant({
   const [naturalLanguage, setNaturalLanguage] = useState('');
   const [copiedStates, setCopiedStates] = useState({});
   const chatContainerRef = useRef(null);
-  
+
   const { generateQuery, optimizeQuery, explainQuery, fixQueryError, isLoading, error, clearError } = useAiAssistant(connectionId);
   const toast = useToast();
 
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   // Auto-scroll to latest message
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [chatHistory]);
+    scrollToBottom();
+  }, [chatHistory, error]);
 
   const copyToClipboard = async (text, key) => {
     try {
@@ -55,24 +59,24 @@ export function AiAssistant({
 
   const isQueryRequest = (text) => {
     const lowerText = text.toLowerCase().trim();
-    
+
     // Greetings and conversational phrases
     const conversational = [
       'hi', 'hello', 'hey', 'thanks', 'thank you', 'bye', 'goodbye',
       'how are you', 'what can you do', 'help', 'who are you'
     ];
-    
+
     if (conversational.some(phrase => lowerText === phrase || lowerText.startsWith(phrase + ' '))) {
       return false;
     }
-    
+
     // Query keywords
     const queryKeywords = [
       'show', 'get', 'find', 'list', 'select', 'fetch', 'retrieve',
       'count', 'sum', 'average', 'total', 'how many', 'display',
       'all', 'where', 'from', 'with', 'having', 'group by'
     ];
-    
+
     return queryKeywords.some(keyword => lowerText.includes(keyword));
   };
 
@@ -98,10 +102,10 @@ export function AiAssistant({
         'thanks': 'You\'re welcome! Let me know if you need help with any queries.',
         'thank you': 'Happy to help! Feel free to ask for more queries anytime.'
       };
-      
+
       const lowerInput = input.toLowerCase();
       let response = responses[lowerInput] || 'I\'m here to help you generate SQL queries. Try describing what data you want to retrieve from your database.';
-      
+
       const assistantMessage = { role: 'assistant', content: response, type: 'text' };
       onChatUpdate([...chatHistory, userMessage, assistantMessage]);
       setNaturalLanguage('');
@@ -170,17 +174,15 @@ export function AiAssistant({
             </div>
           ) : (
             chatHistory.map((msg, idx) => (
-              <div key={idx} className={`p-3 rounded-lg ${
-                msg.role === 'user' 
-                  ? 'bg-green-50 dark:bg-green-900/20 ml-4' 
-                  : 'bg-gray-50 dark:bg-gray-900 mr-4'
-              }`}>
+              <div key={idx} className={`p-3 rounded-lg ${msg.role === 'user'
+                ? 'bg-green-50 dark:bg-green-900/20 ml-4'
+                : 'bg-gray-50 dark:bg-gray-900 mr-4'
+                }`}>
                 <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                   {msg.role === 'user' ? 'You' : 'DBAssist'}
                 </div>
-                <div className={`text-sm ${
-                  msg.type === 'sql' ? 'font-mono bg-gray-800 dark:bg-gray-950 text-green-400 p-2 rounded' : 'text-gray-700 dark:text-gray-300'
-                }`}>
+                <div className={`text-sm ${msg.type === 'sql' ? 'font-mono bg-gray-800 dark:bg-gray-950 text-green-400 p-2 rounded' : 'text-gray-700 dark:text-gray-300'
+                  }`}>
                   {msg.content}
                 </div>
               </div>
@@ -207,6 +209,7 @@ export function AiAssistant({
             </div>
           </div>
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input at bottom */}
@@ -229,11 +232,10 @@ export function AiAssistant({
           <button
             onClick={handleGenerateQuery}
             disabled={isLoading || !naturalLanguage.trim()}
-            className={`absolute right-2 bottom-2 p-2 rounded-lg transition-colors ${
-              naturalLanguage.trim() && !isLoading
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
-            }`}
+            className={`absolute right-2 bottom-2 p-2 rounded-lg transition-colors ${naturalLanguage.trim() && !isLoading
+              ? 'bg-green-600 hover:bg-green-700 text-white'
+              : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+              }`}
           >
             {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
