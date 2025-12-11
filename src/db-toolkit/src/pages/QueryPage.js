@@ -255,7 +255,7 @@ function QueryPage() {
               </Split>
             </div>
             
-            <div className="h-full overflow-hidden">
+            <div className="h-full flex flex-col overflow-hidden">
               <AiAssistant
                 connectionId={connectionId}
                 currentQuery={query}
