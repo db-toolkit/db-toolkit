@@ -20,16 +20,20 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
 
   const handleExecuteWithFormat = () => {
     // Format query before execution if setting is enabled
-    if (settings?.auto_format_on_paste && editorRef.current) {
+    if (settings?.auto_format_on_paste && query && query.trim()) {
       try {
         const formatted = format(query, {
           language: 'postgresql',
           tabWidth: 2,
           keywordCase: 'upper',
         });
-        onChange(formatted);
-        // Execute after a brief delay to allow state update
-        setTimeout(() => onExecute(), 50);
+        if (formatted && formatted !== query) {
+          onChange(formatted);
+          // Execute after a brief delay to allow state update
+          setTimeout(() => onExecute(), 50);
+        } else {
+          onExecute();
+        }
       } catch (err) {
         console.error('Format error:', err);
         onExecute();
