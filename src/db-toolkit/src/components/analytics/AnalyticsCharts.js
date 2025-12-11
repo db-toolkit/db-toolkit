@@ -17,7 +17,7 @@ export function AnalyticsCharts({ history, timeRange }) {
     return () => observer.disconnect();
   }, []);
 
-  if (history.length === 0) {
+  if (!history || history.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
         <p className="text-sm text-gray-500 dark:text-gray-400">No historical data available</p>
