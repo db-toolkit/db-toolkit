@@ -8,39 +8,43 @@
 export function parseSchemaToCompletions(schema, monaco) {
   const suggestions = [];
 
-  if (!schema?.databases) return suggestions;
+  if (!schema?.schemas) return suggestions;
 
-  schema.databases.forEach(database => {
-    database.tables?.forEach(table => {
+  // Iterate over schemas (e.g., public, information_schema)
+  Object.entries(schema.schemas).forEach(([schemaName, schemaData]) => {
+    if (!schemaData.tables) return;
+
+    // Iterate over tables in the schema
+    Object.entries(schemaData.tables).forEach(([tableName, tableData]) => {
       // Add table suggestion
       suggestions.push({
-        label: table.name,
+        label: tableName,
         kind: monaco.languages.CompletionItemKind.Class,
-        insertText: table.name,
-        detail: `Table in ${database.name}`,
-        documentation: `${table.columns?.length || 0} columns`,
-        sortText: `1_${table.name}`, // Tables first
+        insertText: tableName,
+        detail: `Table in ${schemaName}`,
+        documentation: `${tableData.column_count || 0} columns`,
+        sortText: `1_${tableName}`, // Tables first
       });
 
       // Add column suggestions
-      table.columns?.forEach(column => {
+      tableData.columns?.forEach(column => {
         suggestions.push({
-          label: `${table.name}.${column.name}`,
+          label: `${tableName}.${column.column_name}`,
           kind: monaco.languages.CompletionItemKind.Field,
-          insertText: `${table.name}.${column.name}`,
-          detail: `${column.type}`,
-          documentation: `Column in ${table.name}`,
-          sortText: `2_${table.name}_${column.name}`, // Columns second
+          insertText: `${tableName}.${column.column_name}`,
+          detail: `${column.data_type}`,
+          documentation: `Column in ${tableName}`,
+          sortText: `2_${tableName}_${column.column_name}`, // Columns second
         });
 
         // Add column name only (for use after table is specified)
         suggestions.push({
-          label: column.name,
+          label: column.column_name,
           kind: monaco.languages.CompletionItemKind.Field,
-          insertText: column.name,
-          detail: `${column.type} - ${table.name}`,
-          documentation: column.nullable ? 'Nullable' : 'Not null',
-          sortText: `3_${column.name}`, // Column names third
+          insertText: column.column_name,
+          detail: `${column.data_type} - ${tableName}`,
+          documentation: column.is_nullable === 'YES' ? 'Nullable' : 'Not null',
+          sortText: `3_${column.column_name}`, // Column names third
         });
       });
     });
@@ -75,27 +79,27 @@ export function getSQLKeywords(monaco) {
  */
 export function detectSQLContext(textBeforeCursor) {
   const text = textBeforeCursor.trim().toUpperCase();
-  
+
   if (/FROM\s+$/i.test(textBeforeCursor)) {
     return 'table';
   }
-  
+
   if (/JOIN\s+$/i.test(textBeforeCursor)) {
     return 'table';
   }
-  
+
   if (/SELECT\s+$/i.test(textBeforeCursor)) {
     return 'column';
   }
-  
+
   if (/WHERE\s+\w*$/i.test(textBeforeCursor)) {
     return 'column';
   }
-  
+
   if (/SET\s+$/i.test(textBeforeCursor)) {
     return 'column';
   }
-  
+
   return 'all';
 }
 
@@ -104,19 +108,19 @@ export function detectSQLContext(textBeforeCursor) {
  */
 export function filterByContext(suggestions, context, monaco) {
   if (context === 'all') return suggestions;
-  
+
   if (context === 'table') {
-    return suggestions.filter(s => 
+    return suggestions.filter(s =>
       s.kind === monaco.languages.CompletionItemKind.Class
     );
   }
-  
+
   if (context === 'column') {
-    return suggestions.filter(s => 
+    return suggestions.filter(s =>
       s.kind === monaco.languages.CompletionItemKind.Field
     );
   }
-  
+
   return suggestions;
 }
 
@@ -129,7 +133,7 @@ export function createSQLCompletionProvider(getSchema, monaco) {
 
   return {
     triggerCharacters: ['.', ' '],
-    
+
     provideCompletionItems: async (model, position) => {
       const word = model.getWordUntilPosition(position);
       const range = {

@@ -6,20 +6,30 @@ import { Button } from '../common/Button';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useSettingsContext } from '../../contexts/SettingsContext';
 import { registerSqlSnippets } from './sqlSnippets';
-import { createSQLCompletionProvider } from '../../utils/monacoCompletions';
+import { createSQLCompletionProvider, clearCompletionCache } from '../../utils/monacoCompletions';
 import './QueryEditor.css';
 
 export function QueryEditor({ query, onChange, onExecute, loading, schema, error }) {
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const decorationsRef = useRef([]);
+  const schemaRef = useRef(schema);
+  const providerRef = useRef(null);
   const { theme } = useTheme();
   const { settings } = useSettingsContext();
+
+  // Update schema ref and clear cache when schema changes
+  useEffect(() => {
+    schemaRef.current = schema;
+    if (providerRef.current) {
+      clearCompletionCache(providerRef.current);
+    }
+  }, [schema]);
 
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
-    
+
     // Execute query: Ctrl+Enter
     editor.addCommand(
       monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
@@ -68,8 +78,10 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
     );
 
     // Register schema-aware autocomplete
-    const getSchema = () => Promise.resolve(schema || { databases: [] });
+    // Use a getter that accesses the ref to ensure we always get the latest schema
+    const getSchema = () => Promise.resolve(schemaRef.current);
     const completionProvider = createSQLCompletionProvider(getSchema, monaco);
+    providerRef.current = completionProvider;
     monaco.languages.registerCompletionItemProvider('sql', completionProvider);
   };
 
@@ -89,7 +101,7 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
     // Parse error message for line number
     const lineMatch = error.match(/line (\d+)/i);
     const positionMatch = error.match(/position (\d+)/i);
-    
+
     let lineNumber = 1;
     if (lineMatch) {
       lineNumber = parseInt(lineMatch[1], 10);
