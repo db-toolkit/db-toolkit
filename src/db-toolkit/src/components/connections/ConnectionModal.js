@@ -237,177 +237,218 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={connection ? 'Edit Connection' : 'New Connection'}>
       <form onSubmit={handleSubmit}>
-        <Input
-          label="Connection Name"
-          value={formData.name}
-          onChange={(e) => handleChange('name', e.target.value)}
-        />
+        {/* Basic Information Section */}
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+            Basic Information
+          </h3>
+          <Input
+            label="Connection Name"
+            value={formData.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+          />
 
-        <div className="mb-4">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={useUrl}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              Database Type
+            </label>
+            <select
+              value={formData.db_type}
               onChange={(e) => {
-                const checked = e.target.checked;
-                setUseUrl(checked);
-                if (!checked) {
-                  setDatabaseUrl('');
+                const newType = e.target.value;
+                const defaultPorts = {
+                  postgresql: 5432,
+                  mysql: 3306,
+                  mongodb: 27017,
+                  sqlite: 0
+                };
+                
+                const updated = {
+                  ...formData,
+                  db_type: newType,
+                  port: defaultPorts[newType],
+                  ...(newType === 'sqlite' && {
+                    host: '',
+                    username: '',
+                    password: ''
+                  })
+                };
+                setFormData(updated);
+                setHasChanges(true);
+                
+                if (!connection) {
+                  localStorage.setItem('connection-draft', JSON.stringify(updated));
                 }
               }}
-              className="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500"
-            />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Use Database URL
-            </span>
-          </label>
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            >
+              <option value="postgresql">PostgreSQL</option>
+              <option value="mysql">MySQL</option>
+              <option value="sqlite">SQLite</option>
+              <option value="mongodb">MongoDB</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={useUrl}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setUseUrl(checked);
+                  if (!checked) {
+                    setDatabaseUrl('');
+                  }
+                }}
+                className="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500"
+              />
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Use Database URL
+              </span>
+            </label>
+          </div>
         </div>
 
         {useUrl ? (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <div className="mb-6">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
               Database URL
-            </label>
-            <textarea
-              value={databaseUrl}
-              onChange={(e) => setDatabaseUrl(e.target.value)}
-              onBlur={(e) => {
-                if (e.target.value.trim()) {
-                  parseConnectionUrl(e.target.value);
-                }
-              }}
-              placeholder="postgresql://user:password@localhost:5432/database"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm"
-              rows="3"
-              required
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Examples:<br/>
-              • postgresql://user:pass@host:5432/db<br/>
-              • postgresql://user:pass@host:5432/db?sslmode=require<br/>
-              • mysql://user:pass@host:3306/db?ssl=true<br/>
-              • mongodb://user:pass@host:27017/db?tls=true<br/>
-              • sqlite:///path/to/db.sqlite
-            </p>
+            </h3>
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                Connection URL
+              </label>
+              <textarea
+                value={databaseUrl}
+                onChange={(e) => setDatabaseUrl(e.target.value)}
+                onBlur={(e) => {
+                  if (e.target.value.trim()) {
+                    parseConnectionUrl(e.target.value);
+                  }
+                }}
+                placeholder="postgresql://user:password@localhost:5432/database"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm"
+                rows="3"
+                required
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Examples:<br/>
+                • postgresql://user:pass@host:5432/db<br/>
+                • postgresql://user:pass@host:5432/db?sslmode=require<br/>
+                • mysql://user:pass@host:3306/db?ssl=true<br/>
+                • mongodb://user:pass@host:27017/db?tls=true<br/>
+                • sqlite:///path/to/db.sqlite
+              </p>
+            </div>
           </div>
         ) : (
           <>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Database Type
-              </label>
-          <select
-            value={formData.db_type}
-            onChange={(e) => {
-              const newType = e.target.value;
-              const defaultPorts = {
-                postgresql: 5432,
-                mysql: 3306,
-                mongodb: 27017,
-                sqlite: 0
-              };
-              
-              // Update both fields at once to trigger single re-render
-              const updated = {
-                ...formData,
-                db_type: newType,
-                port: defaultPorts[newType],
-                // Clear fields not needed for SQLite
-                ...(newType === 'sqlite' && {
-                  host: '',
-                  username: '',
-                  password: ''
-                })
-              };
-              setFormData(updated);
-              setHasChanges(true);
-              
-              if (!connection) {
-                localStorage.setItem('connection-draft', JSON.stringify(updated));
-              }
-            }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-          >
-            <option value="postgresql">PostgreSQL</option>
-            <option value="mysql">MySQL</option>
-            <option value="sqlite">SQLite</option>
-            <option value="mongodb">MongoDB</option>
-          </select>
-            </div>
+            {/* Connection Details Section */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                Connection Details
+              </h3>
 
-            {formData.db_type !== 'sqlite' && (
-              <>
-                <Input
-                  label="Host"
-                  value={formData.host}
-                  onChange={(e) => handleChange('host', e.target.value)}
-                  required
-                />
-                <Input
-                  label="Port"
-                  type="number"
-                  value={formData.port}
-                  onChange={(e) => handleChange('port', parseInt(e.target.value))}
-                  required
-                />
-              </>
-            )}
+              {formData.db_type !== 'sqlite' && (
+                <>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                        Host
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.host}
+                        onChange={(e) => handleChange('host', e.target.value)}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                        Port
+                      </label>
+                      <input
+                        type="number"
+                        value={formData.port}
+                        onChange={(e) => handleChange('port', parseInt(e.target.value))}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
-            {formData.db_type === 'sqlite' ? (
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Database File
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={formData.database}
-                    onChange={(e) => handleChange('database', e.target.value)}
-                    placeholder="/path/to/database.sqlite"
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  />
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={async () => {
-                      try {
-                        const filePath = await window.electron.ipcRenderer.invoke('dialog:showOpenDialog', {
-                          properties: ['openFile'],
-                          filters: [
-                            { name: 'SQLite Database', extensions: ['sqlite', 'sqlite3', 'db'] },
-                            { name: 'All Files', extensions: ['*'] }
-                          ]
-                        });
-                        if (filePath) {
-                          handleChange('database', filePath);
-                        }
-                      } catch (err) {
-                        toast.error('Failed to open file dialog');
-                      }
-                    }}
-                  >
-                    Browse
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <Input
-                label="Database"
-                value={formData.database}
-                onChange={(e) => handleChange('database', e.target.value)}
-              />
-            )}
-
-            {formData.db_type !== 'sqlite' && (
-              <>
-                <Input
-                  label="Username"
-                  value={formData.username}
-                  onChange={(e) => handleChange('username', e.target.value)}
-                  required
-                />
+              {formData.db_type === 'sqlite' ? (
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                    Database File
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={formData.database}
+                      onChange={(e) => handleChange('database', e.target.value)}
+                      placeholder="/path/to/database.sqlite"
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={async () => {
+                        try {
+                          const filePath = await window.electron.ipcRenderer.invoke('dialog:showOpenDialog', {
+                            properties: ['openFile'],
+                            filters: [
+                              { name: 'SQLite Database', extensions: ['sqlite', 'sqlite3', 'db'] },
+                              { name: 'All Files', extensions: ['*'] }
+                            ]
+                          });
+                          if (filePath) {
+                            handleChange('database', filePath);
+                          }
+                        } catch (err) {
+                          toast.error('Failed to open file dialog');
+                        }
+                      }}
+                    >
+                      Browse
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                      Database
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.database}
+                      onChange={(e) => handleChange('database', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.username}
+                      onChange={(e) => handleChange('username', e.target.value)}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {formData.db_type !== 'sqlite' && (
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                     Password
                   </label>
                   <div className="relative">
@@ -426,9 +467,16 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
                     </button>
                   </div>
                 </div>
+              )}
+            </div>
 
-                {/* SSL Configuration */}
-                <div className="mb-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+            {/* SSL Configuration Section */}
+            {formData.db_type !== 'sqlite' && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                  🔒 SSL/TLS Configuration
+                </h3>
+                <div className="p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg">
                   <label className="flex items-center gap-2 cursor-pointer mb-3">
                     <input
                       type="checkbox"
@@ -436,14 +484,14 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
                       onChange={(e) => handleChange('ssl_enabled', e.target.checked)}
                       className="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500"
                     />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Enable SSL/TLS Connection
                     </span>
                   </label>
 
                   {formData.ssl_enabled && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                         SSL Mode
                       </label>
                       <select
@@ -484,7 +532,7 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
                     </div>
                   )}
                 </div>
-              </>
+              </div>
             )}
           </>
         )}
