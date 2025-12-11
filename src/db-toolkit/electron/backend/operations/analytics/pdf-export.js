@@ -23,36 +23,31 @@ async function generateAnalyticsPDF(connectionName, metrics, historicalData, slo
   const queryStatsHtml = Object.entries(queryStats)
     .filter(([_, count]) => count > 0)
     .map(([type, count]) => `
-      <div class="metric-card">
-        <div class="metric-label">${escapeHtml(type)}</div>
-        <div class="metric-value">${count}</div>
-      </div>
+      <p style="margin: 5px 0; color: #4b5563; font-size: 14px;"><strong>${escapeHtml(type)}:</strong> ${count}</p>
     `).join('');
-  html = html.replace('{{QUERY_STATS}}', queryStatsHtml || '<p>No query statistics available</p>');
+  html = html.replace('{{QUERY_STATS}}', queryStatsHtml || '<p style="color: #6b7280; font-size: 14px;">No query statistics available</p>');
   
   // Current queries
   const currentQueries = metrics.current_queries || [];
   const currentQueriesHtml = currentQueries.slice(0, 10).map(q => `
     <tr>
-      <td>${q.pid || 'N/A'}</td>
-      <td>${escapeHtml(q.usename || q.user || 'N/A')}</td>
-      <td>${formatDuration(q.duration || 0)}</td>
-      <td><span class="badge badge-info">${escapeHtml(q.state || 'active')}</span></td>
-      <td><div class="query-text">${escapeHtml(truncateText(q.query, 100))}</div></td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${q.pid || 'N/A'}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(q.usename || q.user || 'N/A')}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${formatDuration(q.duration || 0)}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-family: 'Courier New', monospace; font-size: 11px; color: #4b5563;">${escapeHtml(truncateText(q.query, 80))}</td>
     </tr>
   `).join('');
-  html = html.replace('{{CURRENT_QUERIES}}', currentQueriesHtml || '<tr><td colspan="5">No active queries</td></tr>');
+  html = html.replace('{{CURRENT_QUERIES}}', currentQueriesHtml || '<tr><td colspan="4" style="padding: 12px; text-align: center; color: #6b7280;">No active queries</td></tr>');
   
   // Slow queries
   const slowQueriesHtml = (slowQueries || []).slice(0, 20).map(q => `
     <tr>
-      <td>${q.timestamp?.slice(0, 19) || 'N/A'}</td>
-      <td>${escapeHtml(q.user || 'N/A')}</td>
-      <td><span class="badge badge-warning">${formatDuration(q.duration)}</span></td>
-      <td><div class="query-text">${escapeHtml(truncateText(q.query, 100))}</div></td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${q.timestamp?.slice(0, 19) || 'N/A'}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${formatDuration(q.duration)}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-family: 'Courier New', monospace; font-size: 11px; color: #4b5563;">${escapeHtml(truncateText(q.query, 80))}</td>
     </tr>
   `).join('');
-  html = html.replace('{{SLOW_QUERIES}}', slowQueriesHtml || '<tr><td colspan="4">No slow queries recorded</td></tr>');
+  html = html.replace('{{SLOW_QUERIES}}', slowQueriesHtml || '<tr><td colspan="3" style="padding: 12px; text-align: center; color: #6b7280;">No slow queries recorded</td></tr>');
   
   // Table stats
   const tableStatsHtml = (tableStats || []).slice(0, 20).map(t => {
@@ -62,14 +57,13 @@ async function generateAnalyticsPDF(connectionName, metrics, historicalData, slo
     const indexSize = t.index_size ? formatBytes(t.index_size) : 'N/A';
     return `
       <tr>
-        <td>${escapeHtml(tableName)}</td>
-        <td>${size}</td>
-        <td>${rows.toLocaleString()}</td>
-        <td>${indexSize}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(tableName)}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${size}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${rows.toLocaleString()}</td>
       </tr>
     `;
   }).join('');
-  html = html.replace('{{TABLE_STATS}}', tableStatsHtml || '<tr><td colspan="4">No table statistics available</td></tr>');
+  html = html.replace('{{TABLE_STATS}}', tableStatsHtml || '<tr><td colspan="3" style="padding: 12px; text-align: center; color: #6b7280;">No table statistics available</td></tr>');
   
   // Historical summary
   let historicalSummary = 'No historical data available';
