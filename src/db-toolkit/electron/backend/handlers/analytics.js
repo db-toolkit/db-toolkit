@@ -2,7 +2,9 @@
  * IPC handlers for analytics operations.
  */
 
-const { ipcMain } = require('electron');
+const { ipcMain, shell, app } = require('electron');
+const path = require('path');
+const fs = require('fs').promises;
 const { connectionManager } = require('../utils/connection-manager');
 const { connectionStorage } = require('../utils/connection-storage');
 const { AnalyticsManager } = require('../operations/analytics-manager');
@@ -76,7 +78,16 @@ function registerAnalyticsHandlers() {
       const config = await connectionStorage.getConnection(connectionId);
       const manager = new AnalyticsManager(connection);
       const pdfBuffer = await manager.exportToPDF(connectionId, config.name, config);
-      return { success: true, data: pdfBuffer };
+      
+      const downloadsPath = app.getPath('downloads');
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      const filename = `analytics-${config.name}-${timestamp}.pdf`;
+      const filepath = path.join(downloadsPath, filename);
+      
+      await fs.writeFile(filepath, pdfBuffer);
+      shell.showItemInFolder(filepath);
+      
+      return { success: true, path: filepath };
     } catch (error) {
       return { success: false, error: error.message };
     }

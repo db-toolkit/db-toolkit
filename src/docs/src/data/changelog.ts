@@ -1,7 +1,7 @@
 export const changelogVersions = [
   {
     version: "0.1.0-beta",
-    date: "2025-12-09",
+    date: "2025-12-10",
     sections: [
       {
         heading: "Beta Release",

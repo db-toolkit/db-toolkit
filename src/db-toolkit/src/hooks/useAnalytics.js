@@ -139,9 +139,9 @@ export function useAnalytics(connectionId) {
     try {
       const result = await ipc.invoke('analytics:export-pdf', connectionId);
       if (result.success) {
-        toast.success('PDF exported successfully');
+        toast.success(`PDF exported to Downloads folder`);
       } else {
-        toast.error('Failed to export PDF');
+        toast.error(result.error || 'Failed to export PDF');
       }
     } catch (err) {
       toast.error('Failed to export PDF');
