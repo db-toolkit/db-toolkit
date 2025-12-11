@@ -97,7 +97,10 @@ function Layout({ children }) {
           minSize={[200, 600]}
           maxSize={[400, Infinity]}
           gutterSize={4}
-          onDragEnd={(sizes) => localStorage.setItem('sidebar-width', sizes[0])}
+          onDragEnd={(sizes) => {
+            setSidebarWidth(sizes[0]);
+            localStorage.setItem('sidebar-width', sizes[0]);
+          }}
           className="flex h-full"
         >
           <div>
