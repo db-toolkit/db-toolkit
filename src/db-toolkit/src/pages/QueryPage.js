@@ -144,7 +144,7 @@ function QueryPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden">
       {reconnecting && (
         <div className="flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800">
           <Loader2 className="w-4 h-4 animate-spin text-green-600 dark:text-green-400" />
@@ -159,8 +159,8 @@ function QueryPage() {
               key={tab.id}
               onClick={() => setActiveTabId(tab.id)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-t cursor-pointer transition ${activeTabId === tab.id
-                  ? 'bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
             >
               <span className="text-sm font-medium whitespace-nowrap">{tab.name}</span>
