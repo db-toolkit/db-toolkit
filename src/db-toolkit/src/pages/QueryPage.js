@@ -148,49 +148,50 @@ function QueryPage() {
       setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, error: errorMsg, executionTime: time } : t));
 
       // Trigger AI Auto-Fix
-      try {
-        console.log('Triggering AI Auto-Fix for error:', errorMsg);
-        toast.info('Attempting to auto-fix query error...');
+      setTimeout(async () => {
+        try {
+          console.log('Triggering AI Auto-Fix for error:', errorMsg);
+          toast.info('Attempting to auto-fix query error...');
 
-
-        // Extract tables from schema structure
-        let tables = {};
-        if (schema) {
-          if (schema.tables) {
-            tables = schema.tables;
-          } else if (schema.schemas) {
-            // Flatten schemas
-            Object.values(schema.schemas).forEach(s => {
-              if (s.tables) Object.assign(tables, s.tables);
-            });
-          } else {
-            // Assume schema is the tables map itself if it has values with columns
-            const firstKey = Object.keys(schema)[0];
-            if (firstKey && schema[firstKey]?.columns) {
-              tables = schema;
+          // Extract tables from schema structure
+          let tables = {};
+          if (schema) {
+            if (schema.tables) {
+              tables = schema.tables;
+            } else if (schema.schemas) {
+              // Flatten schemas
+              Object.values(schema.schemas).forEach(s => {
+                if (s.tables) Object.assign(tables, s.tables);
+              });
+            } else {
+              // Assume schema is the tables map itself if it has values with columns
+              const firstKey = Object.keys(schema)[0];
+              if (firstKey && schema[firstKey]?.columns) {
+                tables = schema;
+              }
             }
           }
-        }
 
-        const fixResult = await fixQueryError(query, errorMsg, tables);
-        console.log('AI Auto-Fix result:', fixResult);
+          const fixResult = await fixQueryError(query, errorMsg, tables);
+          console.log('AI Auto-Fix result:', fixResult);
 
-        if (fixResult && fixResult.fixed_query) {
-          console.log('AI Auto-Fix success:', fixResult);
-          toast.success('AI found a fix!');
-          setFixSuggestion({
-            original: query,
-            fixed: fixResult.fixed_query,
-            explanation: fixResult.explanation
-          });
-        } else {
-          console.warn('AI Auto-Fix returned no fixed query');
-          toast.error('AI could not find a fix.');
+          if (fixResult && fixResult.fixed_query) {
+            console.log('AI Auto-Fix success:', fixResult);
+            toast.success('AI found a fix!');
+            setFixSuggestion({
+              original: query,
+              fixed: fixResult.fixed_query,
+              explanation: fixResult.explanation
+            });
+          } else {
+            console.warn('AI Auto-Fix returned no fixed query');
+            toast.error('AI could not find a fix.');
+          }
+        } catch (aiErr) {
+          console.error('Auto-fix failed:', aiErr);
+          toast.error(`Auto-fix failed: ${aiErr.message}`);
         }
-      } catch (aiErr) {
-        console.error('Auto-fix failed:', aiErr);
-        toast.error(`Auto-fix failed: ${aiErr.message}`);
-      }
+      }, 100);
     }
   };
 
