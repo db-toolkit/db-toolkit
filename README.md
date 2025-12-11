@@ -6,6 +6,8 @@
 
 A modern, cross-platform desktop database management application built with **Electron + React** frontend and **Node.js** backend.
 
+![DB Toolkit Preview](src/web/public/preview.png)
+
 </div>
 
 ## Features
