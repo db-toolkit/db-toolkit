@@ -13,7 +13,7 @@ export default function Features() {
     {
       icon: Code,
       title: 'Query Editor',
-      description: 'Monaco editor with syntax highlighting, autocomplete, and query formatting.',
+      description: 'Monaco editor with AI assistant, syntax highlighting, autocomplete, and query formatting.',
       image: '/features/editor.png'
     },
     {
@@ -25,7 +25,7 @@ export default function Features() {
     {
       icon: Lock,
       title: 'Automated Backups',
-      description: 'Schedule backups with retention policies and one-click restore.',
+      description: 'Schedule backups with multiple formats (SQL, JSON, CSV), retention policies, and one-click restore.',
       image: '/features/backup.png'
     },
     {
