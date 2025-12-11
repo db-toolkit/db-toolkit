@@ -215,8 +215,8 @@ export function filterNodesBySearch(nodes, searchQuery) {
   
   const query = searchQuery.toLowerCase();
   return nodes.filter(node => 
-    node.data.label.toLowerCase().includes(query) ||
-    node.data.schema.toLowerCase().includes(query) ||
-    node.data.columns.some(col => col.name.toLowerCase().includes(query))
+    node.data?.label?.toLowerCase().includes(query) ||
+    node.data?.schema?.toLowerCase().includes(query) ||
+    node.data?.columns?.some(col => col?.name?.toLowerCase().includes(query))
   );
 }
