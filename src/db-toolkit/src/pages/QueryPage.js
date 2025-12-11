@@ -223,7 +223,7 @@ function QueryPage() {
             gutterSize={8}
             className="flex h-full w-full"
           >
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col overflow-hidden">
               <Split
                 direction="vertical"
                 sizes={[50, 50]}
