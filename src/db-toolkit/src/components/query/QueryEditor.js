@@ -52,17 +52,32 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
     }
   }, [schema]);
 
+  // Prevent default reload on Cmd+R globally when editor is focused
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
 
-    // Execute query: F5
+    // Execute query: F5 or Cmd+R
+    const runQuery = () => {
+      console.log('Run query triggered');
+      handleExecuteWithFormat();
+    };
+
+    editor.addCommand(monaco.KeyCode.F5, runQuery);
+
     editor.addCommand(
-      monaco.KeyCode.F5,
-      () => {
-        console.log('F5 pressed');
-        handleExecuteWithFormat();
-      }
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyR,
+      runQuery
     );
 
     // Format query: Ctrl+Shift+F
@@ -199,7 +214,7 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
             disabled={loading || !query.trim()}
             loading={loading}
           >
-            Run (F5)
+            Run (Cmd+R)
           </Button>
         </div>
       </div>
