@@ -150,6 +150,8 @@ function QueryPage() {
       // Trigger AI Auto-Fix
       try {
         console.log('Triggering AI Auto-Fix for error:', errorMsg);
+        toast.info('Attempting to auto-fix query error...');
+
 
         // Extract tables from schema structure
         let tables = {};
@@ -174,6 +176,8 @@ function QueryPage() {
         console.log('AI Auto-Fix result:', fixResult);
 
         if (fixResult && fixResult.fixed_query) {
+          console.log('AI Auto-Fix success:', fixResult);
+          toast.success('AI found a fix!');
           setFixSuggestion({
             original: query,
             fixed: fixResult.fixed_query,
@@ -181,9 +185,11 @@ function QueryPage() {
           });
         } else {
           console.warn('AI Auto-Fix returned no fixed query');
+          toast.error('AI could not find a fix.');
         }
       } catch (aiErr) {
         console.error('Auto-fix failed:', aiErr);
+        toast.error(`Auto-fix failed: ${aiErr.message}`);
       }
     }
   };
