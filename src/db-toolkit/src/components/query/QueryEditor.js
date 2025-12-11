@@ -51,11 +51,11 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
     editorRef.current = editor;
     monacoRef.current = monaco;
 
-    // Execute query: Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
+    // Execute query: F5
     editor.addCommand(
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+      monaco.KeyCode.F5,
       () => {
-        console.log('Cmd+Enter pressed');
+        console.log('F5 pressed');
         handleExecuteWithFormat();
       }
     );
@@ -194,7 +194,7 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
             disabled={loading || !query.trim()}
             loading={loading}
           >
-            Run (Cmd+Enter)
+            Run (F5)
           </Button>
         </div>
       </div>
