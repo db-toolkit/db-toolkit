@@ -9,7 +9,15 @@ const { logger } = require('../utils/logger');
 class MongoDBConnector extends BaseConnector {
   async connect(config) {
     try {
-      const uri = `mongodb://${config.username}:${config.password}@${config.host}:${config.port || 27017}`;
+      let uri = `mongodb://${config.username}:${config.password}@${config.host}:${config.port || 27017}`;
+      
+      if (config.ssl_enabled) {
+        uri += '?tls=true';
+        if (config.ssl_mode === 'require') {
+          uri += '&tlsAllowInvalidCertificates=true';
+        }
+      }
+
       this.connection = new MongoClient(uri);
       await this.connection.connect();
       await this.connection.db('admin').command({ ping: 1 });
@@ -39,7 +47,15 @@ class MongoDBConnector extends BaseConnector {
 
   async testConnection(config) {
     try {
-      const uri = `mongodb://${config.username}:${config.password}@${config.host}:${config.port || 27017}`;
+      let uri = `mongodb://${config.username}:${config.password}@${config.host}:${config.port || 27017}`;
+      
+      if (config.ssl_enabled) {
+        uri += '?tls=true';
+        if (config.ssl_mode === 'require') {
+          uri += '&tlsAllowInvalidCertificates=true';
+        }
+      }
+
       const client = new MongoClient(uri);
       await client.connect();
       await client.db('admin').command({ ping: 1 });

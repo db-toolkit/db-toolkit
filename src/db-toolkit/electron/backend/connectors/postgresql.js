@@ -9,13 +9,21 @@ const { logger } = require('../utils/logger');
 class PostgreSQLConnector extends BaseConnector {
   async connect(config) {
     try {
-      this.connection = new Pool({
+      const poolConfig = {
         host: config.host,
         port: config.port || 5432,
         user: config.username,
         password: config.password,
         database: config.database,
-      });
+      };
+
+      if (config.ssl_enabled) {
+        poolConfig.ssl = {
+          rejectUnauthorized: config.ssl_mode === 'verify-full' || config.ssl_mode === 'verify-ca',
+        };
+      }
+
+      this.connection = new Pool(poolConfig);
       await this.connection.query('SELECT 1');
       this.isConnected = true;
       logger.info('PostgreSQL connection established');
@@ -43,13 +51,21 @@ class PostgreSQLConnector extends BaseConnector {
 
   async testConnection(config) {
     try {
-      const pool = new Pool({
+      const poolConfig = {
         host: config.host,
         port: config.port || 5432,
         user: config.username,
         password: config.password,
         database: config.database,
-      });
+      };
+
+      if (config.ssl_enabled) {
+        poolConfig.ssl = {
+          rejectUnauthorized: config.ssl_mode === 'verify-full' || config.ssl_mode === 'verify-ca',
+        };
+      }
+
+      const pool = new Pool(poolConfig);
       await pool.query('SELECT 1');
       await pool.end();
       return { success: true, message: 'Connection successful' };

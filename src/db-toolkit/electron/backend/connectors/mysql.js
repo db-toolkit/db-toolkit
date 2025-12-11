@@ -9,13 +9,21 @@ const { logger } = require('../utils/logger');
 class MySQLConnector extends BaseConnector {
   async connect(config) {
     try {
-      this.connection = await mysql.createConnection({
+      const connConfig = {
         host: config.host,
         port: config.port || 3306,
         user: config.username,
         password: config.password,
         database: config.database,
-      });
+      };
+
+      if (config.ssl_enabled) {
+        connConfig.ssl = {
+          rejectUnauthorized: config.ssl_mode === 'verify-full' || config.ssl_mode === 'verify-ca',
+        };
+      }
+
+      this.connection = await mysql.createConnection(connConfig);
       this.isConnected = true;
       logger.info('MySQL connection established');
       return true;
@@ -42,13 +50,21 @@ class MySQLConnector extends BaseConnector {
 
   async testConnection(config) {
     try {
-      const conn = await mysql.createConnection({
+      const connConfig = {
         host: config.host,
         port: config.port || 3306,
         user: config.username,
         password: config.password,
         database: config.database,
-      });
+      };
+
+      if (config.ssl_enabled) {
+        connConfig.ssl = {
+          rejectUnauthorized: config.ssl_mode === 'verify-full' || config.ssl_mode === 'verify-ca',
+        };
+      }
+
+      const conn = await mysql.createConnection(connConfig);
       await conn.end();
       return { success: true, message: 'Connection successful' };
     } catch (error) {
