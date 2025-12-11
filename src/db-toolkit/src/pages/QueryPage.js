@@ -107,7 +107,8 @@ function QueryPage() {
   }, [connectionId, fetchSchemaTree, toast]);
 
   const setQuery = useCallback((newQuery) => {
-    setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, query: newQuery } : t));
+    setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, query: newQuery, error: null } : t));
+    setFixSuggestion(null);
   }, [activeTabId]);
 
   const addTab = () => {
