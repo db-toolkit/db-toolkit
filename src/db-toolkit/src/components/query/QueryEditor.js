@@ -63,6 +63,12 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Use ref to access latest handler in Monaco commands (which close over initial props)
+  const handleExecuteWithFormatRef = useRef(handleExecuteWithFormat);
+  useEffect(() => {
+    handleExecuteWithFormatRef.current = handleExecuteWithFormat;
+  }, [handleExecuteWithFormat]);
+
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
@@ -70,7 +76,9 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
     // Execute query: F5 or Cmd+R
     const runQuery = () => {
       console.log('Run query triggered');
-      handleExecuteWithFormat();
+      if (handleExecuteWithFormatRef.current) {
+        handleExecuteWithFormatRef.current();
+      }
     };
 
     editor.addCommand(monaco.KeyCode.F5, runQuery);
