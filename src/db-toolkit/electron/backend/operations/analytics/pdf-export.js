@@ -80,7 +80,8 @@ async function generateAnalyticsPDF(connectionName, metrics, historicalData, slo
   const pdfBuffer = await win.webContents.printToPDF({
     printBackground: true,
     pageSize: 'A4',
-    margins: { top: 0, bottom: 0, left: 0, right: 0 }
+    margins: { top: 0, bottom: 0, left: 0, right: 0 },
+    preferCSSPageSize: true
   });
   
   win.close();
