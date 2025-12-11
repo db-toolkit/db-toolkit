@@ -30,7 +30,7 @@ export default function FAQ() {
     },
     {
       question: 'Does it work offline?',
-      answer: 'Yes, DB Toolkit is a desktop application that works completely offline. No internet connection required.'
+      answer: 'Yes, DB Toolkit is a desktop application that works completely offline. No internet connection required, though database access depends on whether your database is local or remote.'
     },
     {
       question: 'Is my data secure?',
