@@ -92,6 +92,9 @@ export function useMenuActions() {
           break;
 
         // Help Menu
+        case 'open-docs':
+          navigate('/docs');
+          break;
         case 'keyboard-shortcuts':
           window.dispatchEvent(new CustomEvent('menu:keyboard-shortcuts'));
           break;

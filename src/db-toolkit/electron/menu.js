@@ -216,7 +216,7 @@ function createMenu(mainWindow, isDev = false) {
         {
           label: 'Documentation',
           accelerator: 'F1',
-          click: () => shell.openExternal('https://github.com/yourusername/db-toolkit')
+          click: () => mainWindow.webContents.send('menu-action', 'open-docs')
         },
         {
           label: 'Keyboard Shortcuts',
