@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Download, Plus, X, Bot, Loader2, Workflow } from 'lucide-react';
 import Split from 'react-split';
 import { useQuery, useSchema } from '../hooks';
+import { useAiAssistant } from '../hooks/useAiAssistant';
 import { useSettingsContext } from '../contexts/SettingsContext';
 import { Button } from '../components/common/Button';
 import { connectionsAPI } from '../services/api';
@@ -126,9 +127,14 @@ function QueryPage() {
   };
   const { settings } = useSettingsContext();
 
+  const { fixQueryError } = useAiAssistant(connectionId);
+  const [fixSuggestion, setFixSuggestion] = useState(null);
+
   const handleExecute = async () => {
     if (!query.trim()) return;
     const startTime = Date.now();
+    setFixSuggestion(null); // Clear previous suggestions
+
     try {
       const limit = settings?.default_query_limit || 1000;
       const timeout = settings?.default_query_timeout || 30;
@@ -140,7 +146,32 @@ function QueryPage() {
       const errorMsg = err.response?.data?.detail || err.message;
       const time = Date.now() - startTime;
       setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, error: errorMsg, executionTime: time } : t));
+
+      // Trigger AI Auto-Fix
+      try {
+        const fixResult = await fixQueryError(query, errorMsg, { tables: schema });
+        if (fixResult && fixResult.fixed_query) {
+          setFixSuggestion({
+            original: query,
+            fixed: fixResult.fixed_query,
+            explanation: fixResult.explanation
+          });
+        }
+      } catch (aiErr) {
+        console.error('Auto-fix failed:', aiErr);
+      }
     }
+  };
+
+  const handleAcceptFix = () => {
+    if (fixSuggestion) {
+      setQuery(fixSuggestion.fixed);
+      setFixSuggestion(null);
+    }
+  };
+
+  const handleRejectFix = () => {
+    setFixSuggestion(null);
   };
 
   return (
@@ -241,6 +272,9 @@ function QueryPage() {
                   loading={loading}
                   schema={schema}
                   error={error}
+                  fixSuggestion={fixSuggestion}
+                  onAcceptFix={handleAcceptFix}
+                  onRejectFix={handleRejectFix}
                 />
               </div>
 

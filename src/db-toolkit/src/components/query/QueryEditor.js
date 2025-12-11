@@ -7,9 +7,10 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useSettingsContext } from '../../contexts/SettingsContext';
 import { registerSqlSnippets } from './sqlSnippets';
 import { createSQLCompletionProvider, clearCompletionCache } from '../../utils/monacoCompletions';
+import { FixSuggestionCard } from './FixSuggestionCard';
 import './QueryEditor.css';
 
-export function QueryEditor({ query, onChange, onExecute, loading, schema, error }) {
+export function QueryEditor({ query, onChange, onExecute, loading, schema, error, fixSuggestion, onAcceptFix, onRejectFix }) {
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const decorationsRef = useRef([]);
@@ -202,7 +203,7 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
           </Button>
         </div>
       </div>
-      <div className="flex-1">
+      <div className="flex-1 relative">
         <Editor
           height="100%"
           defaultLanguage="sql"
@@ -227,6 +228,11 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
             fontFamily: '"JetBrains Mono", "Fira Code", Consolas, monospace',
             glyphMargin: true,
           }}
+        />
+        <FixSuggestionCard
+          suggestion={fixSuggestion}
+          onAccept={onAcceptFix}
+          onReject={onRejectFix}
         />
       </div>
     </div>
