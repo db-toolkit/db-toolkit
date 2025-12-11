@@ -23,6 +23,8 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
     database: '',
     username: '',
     password: '',
+    ssl_enabled: false,
+    ssl_mode: 'require',
   });
 
   useEffect(() => {
@@ -36,6 +38,8 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
           database: connection.database || '',
           username: connection.username || '',
           password: connection.password || '',
+          ssl_enabled: connection.ssl_enabled || false,
+          ssl_mode: connection.ssl_mode || 'require',
         });
         setHasChanges(false);
       } else {
@@ -66,6 +70,8 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
             database: '',
             username: '',
             password: '',
+            ssl_enabled: false,
+            ssl_mode: 'require',
           });
           setHasChanges(false);
         }
@@ -389,6 +395,64 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
+                </div>
+
+                {/* SSL Configuration */}
+                <div className="mb-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <label className="flex items-center gap-2 cursor-pointer mb-3">
+                    <input
+                      type="checkbox"
+                      checked={formData.ssl_enabled}
+                      onChange={(e) => handleChange('ssl_enabled', e.target.checked)}
+                      className="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Enable SSL/TLS Connection
+                    </span>
+                  </label>
+
+                  {formData.ssl_enabled && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        SSL Mode
+                      </label>
+                      <select
+                        value={formData.ssl_mode}
+                        onChange={(e) => handleChange('ssl_mode', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      >
+                        {formData.db_type === 'postgresql' && (
+                          <>
+                            <option value="disable">Disable</option>
+                            <option value="allow">Allow</option>
+                            <option value="prefer">Prefer</option>
+                            <option value="require">Require</option>
+                            <option value="verify-ca">Verify CA</option>
+                            <option value="verify-full">Verify Full</option>
+                          </>
+                        )}
+                        {formData.db_type === 'mysql' && (
+                          <>
+                            <option value="disable">Disable</option>
+                            <option value="require">Require</option>
+                            <option value="verify-ca">Verify CA</option>
+                            <option value="verify-full">Verify Full</option>
+                          </>
+                        )}
+                        {formData.db_type === 'mongodb' && (
+                          <>
+                            <option value="disable">Disable</option>
+                            <option value="require">Require</option>
+                          </>
+                        )}
+                      </select>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {formData.ssl_mode === 'require' && 'Requires SSL but does not verify certificates'}
+                        {formData.ssl_mode === 'verify-ca' && 'Requires SSL and verifies CA certificate'}
+                        {formData.ssl_mode === 'verify-full' && 'Requires SSL and verifies full certificate chain'}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </>
             )}
