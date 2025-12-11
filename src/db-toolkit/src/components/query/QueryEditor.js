@@ -77,20 +77,6 @@ export function QueryEditor({ query, onChange, onExecute, loading, schema, error
       }
     );
 
-    // Clear editor: Ctrl+C (when no selection)
-    editor.addCommand(
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyC,
-      () => {
-        const selection = editor.getSelection();
-        if (selection.isEmpty()) {
-          editor.setValue('');
-        } else {
-          // Let default copy behavior work
-          document.execCommand('copy');
-        }
-      }
-    );
-
     // Toggle comment: Ctrl+/
     editor.addCommand(
       monaco.KeyMod.CtrlCmd | monaco.KeyCode.Slash,
