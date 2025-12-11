@@ -32,8 +32,7 @@ export default function Features() {
       icon: BarChart3,
       title: 'Real-time Analytics',
       description: 'Monitor performance with live metrics and query execution insights',
-      image: '/features/analytics.png',
-      showMore: true
+      image: '/features/analytics.png'
     }
   ];
 
@@ -92,15 +91,13 @@ export default function Features() {
                     }`}>
                       {feature.description}
                     </p>
-                    {feature.showMore && (
-                      <p className="text-xs italic text-gray-400 dark:text-gray-500 mt-2">
-                        and many more...
-                      </p>
-                    )}
                   </div>
                 </div>
               </motion.button>
             ))}
+            <p className="text-sm italic text-gray-400 dark:text-gray-500 text-center mt-4">
+              and many more...
+            </p>
           </div>
 
           {/* Feature Preview - Right Side (Hidden on Mobile) */}
