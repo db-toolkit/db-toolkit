@@ -1,11 +1,31 @@
 import { Calendar, Clock, ArrowLeft, User } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getPostBySlug, getAllPostSlugs } from '@/utils/blog';
+import { getPostBySlug, getAllPostSlugs, getAllPosts } from '@/utils/blog';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { Inter } from 'next/font/google';
+import BlogCard from '@/components/BlogCard';
 
 const inter = Inter({ subsets: ['latin'] });
+
+const components = {
+  img: (props) => (
+    <figure className="my-8">
+      <Image
+        {...props}
+        width={800}
+        height={450}
+        className="rounded-lg w-full h-auto"
+        alt={props.alt || ''}
+      />
+      {props.alt && (
+        <figcaption className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2 italic">
+          {props.alt}
+        </figcaption>
+      )}
+    </figure>
+  ),
+};
 
 export function generateStaticParams() {
   return getAllPostSlugs();
@@ -13,6 +33,12 @@ export function generateStaticParams() {
 
 export default function BlogPost({ params }) {
   const post = getPostBySlug(params.slug);
+  const allPosts = getAllPosts();
+  
+  // Get related posts based on tags
+  const relatedPosts = allPosts
+    .filter(p => p.slug !== post.slug && p.tags?.some(tag => post.tags?.includes(tag)))
+    .slice(0, 3);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24">
@@ -54,7 +80,7 @@ export default function BlogPost({ params }) {
               {post.title}
             </h1>
             
-            <div className="flex flex-wrap items-center gap-6 text-gray-500 dark:text-gray-400 mb-8 pb-8 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex flex-wrap items-center gap-6 text-gray-500 dark:text-gray-400 mb-4">
               {post.author && (
                 <span className="flex items-center gap-2">
                   <User size={18} />
@@ -65,17 +91,34 @@ export default function BlogPost({ params }) {
                 <Calendar size={18} />
                 {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
-              <span className="flex items-center gap-2">
-                <Clock size={18} />
-                {post.readingTime}
-              </span>
             </div>
             
-            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-3 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-cyan-600 dark:prose-a:text-teal-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium prose-strong:text-gray-900 dark:prose-strong:text-white prose-code:text-cyan-600 dark:prose-code:text-teal-400 prose-code:bg-gray-100 dark:prose-code:bg-gray-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-ul:my-6 prose-li:my-2">
-              <MDXRemote source={post.content} />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg mb-8">
+              <Clock size={18} className="text-cyan-600 dark:text-teal-400" />
+              <span className="font-semibold text-cyan-700 dark:text-cyan-300">{post.readingTime}</span>
+            </div>
+            
+            <div className="border-b border-gray-200 dark:border-gray-700 mb-8" />
+            
+            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-3 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-cyan-600 dark:prose-a:text-teal-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium prose-strong:text-gray-900 dark:prose-strong:text-white prose-code:text-cyan-600 dark:prose-code:text-teal-400 prose-code:bg-gray-100 dark:prose-code:bg-gray-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-ul:my-6 prose-li:my-2 prose-img:rounded-lg">
+              <MDXRemote source={post.content} components={components} />
             </div>
           </div>
         </div>
+        
+        {/* Related Posts */}
+        {relatedPosts.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+              Related Articles
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {relatedPosts.map((relatedPost) => (
+                <BlogCard key={relatedPost.slug} post={relatedPost} />
+              ))}
+            </div>
+          </div>
+        )}
       </article>
     </main>
   );
