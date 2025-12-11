@@ -1,38 +1,14 @@
-import dynamic from 'next/dynamic';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-
-const BlogContent = dynamic(() => Promise.resolve(({ content }) => (
-  <div
-    className="prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300"
-    dangerouslySetInnerHTML={{ __html: content }}
-  />
-)), { ssr: true });
+import { getPostBySlug, getAllPostSlugs } from '@/utils/blog';
+import { MDXRemote } from 'next-mdx-remote/rsc';
 
 export function generateStaticParams() {
-  return [
-    { slug: 'getting-started' },
-    { slug: 'database-migrations' },
-    { slug: 'backup-strategies' }
-  ];
+  return getAllPostSlugs();
 }
 
 export default function BlogPost({ params }) {
-  const post = {
-    title: 'Getting Started with DB Toolkit',
-    date: 'January 19, 2025',
-    readTime: '5 min read',
-    content: `
-      <h2>Introduction</h2>
-      <p>DB Toolkit is a modern database management application that makes working with databases simple and efficient.</p>
-      
-      <h2>Installation</h2>
-      <p>Download the latest version for your platform from our releases page.</p>
-      
-      <h2>First Steps</h2>
-      <p>After installation, create your first database connection and start exploring your data.</p>
-    `
-  };
+  const post = getPostBySlug(params.slug);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24">
@@ -53,15 +29,17 @@ export default function BlogPost({ params }) {
           <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mb-8 pb-8 border-b border-gray-200 dark:border-gray-700">
             <span className="flex items-center gap-2">
               <Calendar size={18} />
-              {post.date}
+              {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </span>
             <span className="flex items-center gap-2">
               <Clock size={18} />
-              {post.readTime}
+              {post.readingTime}
             </span>
           </div>
           
-          <BlogContent content={post.content} />
+          <div className="prose prose-lg dark:prose-invert max-w-none">
+            <MDXRemote source={post.content} />
+          </div>
         </div>
       </article>
     </main>

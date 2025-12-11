@@ -1,34 +1,11 @@
-'use client';
-
 import { motion } from 'framer-motion';
 import BlogCard from '@/components/BlogCard';
 import { fadeInUp, staggerContainer } from '@/utils/motion';
 import Footer from '@/components/Footer';
+import { getAllPosts } from '@/utils/blog';
 
 export default function Blog() {
-  const posts = [
-    {
-      slug: 'getting-started',
-      title: 'Getting Started with DB Toolkit',
-      excerpt: 'Learn how to install and set up DB Toolkit for your database management needs.',
-      date: 'January 19, 2025',
-      readTime: '5 min read'
-    },
-    {
-      slug: 'database-migrations',
-      title: 'Managing Database Migrations',
-      excerpt: 'A comprehensive guide to using the migration features in DB Toolkit.',
-      date: 'January 18, 2025',
-      readTime: '8 min read'
-    },
-    {
-      slug: 'backup-strategies',
-      title: 'Effective Backup Strategies',
-      excerpt: 'Best practices for backing up your databases with automated scheduling.',
-      date: 'January 17, 2025',
-      readTime: '6 min read'
-    }
-  ];
+  const posts = getAllPosts();
 
   return (
     <main className="min-h-screen bg-white dark:bg-gray-900 pt-24">
@@ -40,13 +17,19 @@ export default function Blog() {
           Tips, tutorials, and updates about DB Toolkit
         </motion.p>
 
-        <motion.div {...staggerContainer} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {posts.map((post, index) => (
-            <motion.div key={post.slug} {...fadeInUp(0.3 + index * 0.1)}>
-              <BlogCard post={post} />
-            </motion.div>
-          ))}
-        </motion.div>
+        {posts.length === 0 ? (
+          <div className="text-center text-gray-500 dark:text-gray-400 py-20">
+            <p className="text-xl">No blog posts yet. Check back soon!</p>
+          </div>
+        ) : (
+          <motion.div {...staggerContainer} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {posts.map((post, index) => (
+              <motion.div key={post.slug} {...fadeInUp(0.3 + index * 0.1)}>
+                <BlogCard post={post} />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
       </div>
       <Footer />
     </main>

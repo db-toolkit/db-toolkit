@@ -9,11 +9,11 @@ export default function BlogCard({ post }) {
           <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
             <span className="flex items-center gap-1">
               <Calendar size={16} />
-              {post.date}
+              {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </span>
             <span className="flex items-center gap-1">
               <Clock size={16} />
-              {post.readTime}
+              {post.readingTime}
             </span>
           </div>
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
