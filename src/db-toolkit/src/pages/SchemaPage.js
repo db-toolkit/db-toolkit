@@ -48,16 +48,18 @@ function SchemaPage() {
     try {
       const schemaName = Object.keys(schema.schemas)[0];
       const result = await analyzeSchema(schemaName, forceRefresh);
+      console.log('Schema analysis result:', result);
       setSchemaAnalysis(result);
       setShowAiPanel(true);
       toast.success('Schema analysis complete');
     } catch (err) {
+      console.error('Schema analysis error:', err);
       toast.error('Failed to analyze schema');
     }
   };
 
   if (loading) return <LoadingState fullScreen message="Loading schema..." />;
-  
+
   if (error) return (
     <div className="p-8">
       <ErrorMessage message={error.message || "Failed to load schema. Please ensure you are connected to the database."} />
