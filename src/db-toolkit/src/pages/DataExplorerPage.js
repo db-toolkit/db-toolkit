@@ -431,6 +431,12 @@ function DataExplorerPage() {
                   sortOrder={sortOrder}
                   onCellClick={handleCellClick}
                   onCellUpdate={handleCellUpdate}
+                  onFilterByValue={(column, value, exclude = false) => {
+                    const filterValue = exclude ? `!${value}` : value;
+                    handleFilterChange(column, filterValue);
+                    setShowFilters(true);
+                    toast.info(`Filter ${exclude ? 'excluded' : 'applied'}: ${column} = ${value}`);
+                  }}
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">

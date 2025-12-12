@@ -2,12 +2,26 @@
  * Data grid component for displaying table data
  */
 import { useState } from 'react';
-import { ChevronUp, ChevronDown, Eye, Check, X } from 'lucide-react';
+import { ChevronUp, ChevronDown, Eye, Check, X, Copy, Filter, FilterX } from 'lucide-react';
+import { ContextMenu, useContextMenu } from '../common/ContextMenu';
+import { useToast } from '../../contexts/ToastContext';
 
-export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellClick, onCellUpdate }) {
+export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellClick, onCellUpdate, onFilterByValue }) {
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState('');
   const [saving, setSaving] = useState(false);
+  const cellContextMenu = useContextMenu();
+  const headerContextMenu = useContextMenu();
+  const toast = useToast();
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Copied to clipboard');
+    } catch (err) {
+      toast.error('Failed to copy');
+    }
+  };
 
   const handleSort = (column) => {
     const newOrder = sortColumn === column && sortOrder === 'ASC' ? 'DESC' : 'ASC';
@@ -72,6 +86,10 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
               <th
                 key={column}
                 onClick={() => handleSort(column)}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  headerContextMenu.open(e, { column, colIndex: columns.indexOf(column) });
+                }}
                 className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <div className="flex items-center gap-2">
@@ -97,6 +115,10 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
                     key={colIndex}
                     className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap group relative"
                     onDoubleClick={() => onCellUpdate && startEdit(rowIndex, colIndex, value)}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      cellContextMenu.open(e, { row, rowIndex, column, colIndex, value });
+                    }}
                   >
                     {isEditing ? (
                       <div className="flex items-center gap-2">
@@ -153,6 +175,88 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
           ))}
         </tbody>
       </table>
+
+      <ContextMenu
+        isOpen={cellContextMenu.isOpen}
+        position={cellContextMenu.position}
+        onClose={cellContextMenu.close}
+        items={cellContextMenu.data ? [
+          {
+            label: 'Copy Cell Value',
+            icon: <Copy size={16} />,
+            onClick: () => copyToClipboard(String(cellContextMenu.data.value || ''))
+          },
+          {
+            label: 'Copy Row as JSON',
+            icon: <Copy size={16} />,
+            onClick: () => {
+              const rowObj = {};
+              columns.forEach((col, idx) => {
+                rowObj[col] = cellContextMenu.data.row[idx];
+              });
+              copyToClipboard(JSON.stringify(rowObj, null, 2));
+            }
+          },
+          { separator: true },
+          {
+            label: 'Filter by Value',
+            icon: <Filter size={16} />,
+            onClick: () => onFilterByValue?.(cellContextMenu.data.column, cellContextMenu.data.value),
+            disabled: !onFilterByValue
+          },
+          {
+            label: 'Exclude Value',
+            icon: <FilterX size={16} />,
+            onClick: () => onFilterByValue?.(cellContextMenu.data.column, cellContextMenu.data.value, true),
+            disabled: !onFilterByValue
+          },
+          { separator: true },
+          {
+            label: 'Edit Cell',
+            icon: <Check size={16} />,
+            onClick: () => startEdit(cellContextMenu.data.rowIndex, cellContextMenu.data.colIndex, cellContextMenu.data.value),
+            disabled: !onCellUpdate
+          },
+          {
+            label: 'View Full Content',
+            icon: <Eye size={16} />,
+            onClick: () => onCellClick(cellContextMenu.data.row, cellContextMenu.data.column, cellContextMenu.data.colIndex),
+            disabled: !isTruncated(cellContextMenu.data.value)
+          }
+        ] : []}
+      />
+
+      <ContextMenu
+        isOpen={headerContextMenu.isOpen}
+        position={headerContextMenu.position}
+        onClose={headerContextMenu.close}
+        items={headerContextMenu.data ? [
+          {
+            label: 'Sort Ascending',
+            icon: <ChevronUp size={16} />,
+            onClick: () => onSort(headerContextMenu.data.column, 'ASC')
+          },
+          {
+            label: 'Sort Descending',
+            icon: <ChevronDown size={16} />,
+            onClick: () => onSort(headerContextMenu.data.column, 'DESC')
+          },
+          { separator: true },
+          {
+            label: 'Copy Column Name',
+            icon: <Copy size={16} />,
+            onClick: () => copyToClipboard(headerContextMenu.data.column)
+          },
+          {
+            label: 'Copy All Values',
+            icon: <Copy size={16} />,
+            onClick: () => {
+              const values = data.map(row => row[headerContextMenu.data.colIndex]).join('\n');
+              copyToClipboard(values);
+            }
+          }
+        ] : []}
+      />
     </div>
   );
 }

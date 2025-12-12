@@ -149,12 +149,14 @@ export function getTableContextMenuItems({
       icon: <RefreshCw size={16} />,
       onClick: () => onRefresh?.(schemaName, tableName)
     },
-    { separator: true },
-    {
-      label: 'Drop Table',
-      icon: <Trash2 size={16} />,
-      danger: true,
-      onClick: () => onDrop?.(schemaName, tableName)
-    }
+    ...(onDrop ? [
+      { separator: true },
+      {
+        label: 'Drop Table',
+        icon: <Trash2 size={16} />,
+        danger: true,
+        onClick: () => onDrop(schemaName, tableName)
+      }
+    ] : [])
   ];
 }

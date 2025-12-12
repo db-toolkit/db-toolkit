@@ -91,9 +91,7 @@ export function TableSelector({ schema, selectedTable, onSelectTable, onRefreshT
           tableName: contextMenu.data.tableName,
           tableData: contextMenu.data.tableData,
           onRefresh: onRefreshTable,
-          onDrop: () => {
-            toast.error('Drop table not available in Data Explorer. Use Query Editor.');
-          },
+          onDrop: null,
           toast
         }) : []}
       />
