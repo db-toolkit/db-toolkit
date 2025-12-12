@@ -36,39 +36,34 @@ function StatusBar() {
     let lastUsage = 0;
 
     const updateSystemMetrics = async () => {
-      if (window.performance && window.performance.memory) {
-        const now = Date.now();
-        const currentUsage = window.performance.memory.usedJSHeapSize;
-        const timeDiff = now - lastTime;
-        const usageDiff = Math.abs(currentUsage - lastUsage);
-        
-        const cpuPercent = Math.min(100, (usageDiff / timeDiff) * 0.01);
-        
-        lastTime = now;
-        lastUsage = currentUsage;
-        
-        if (window.electron && window.electron.getSystemMetrics) {
-          try {
-            const systemMetrics = await window.electron.getSystemMetrics();
-            setMetrics(prev => ({ 
-              ...prev, 
-              cpu: cpuPercent.toFixed(1),
-              load: systemMetrics.loadAvg.toFixed(1),
-              disk: systemMetrics.disk
-            }));
-          } catch (err) {
-            setMetrics(prev => ({ 
-              ...prev, 
-              cpu: cpuPercent.toFixed(1)
-            }));
-          }
-        } else {
+      // Fallback CPU estimation using renderer heap (used only if system metrics missing)
+      const now = Date.now();
+      const currentUsage = window.performance?.memory?.usedJSHeapSize || 0;
+      const timeDiff = now - lastTime;
+      const usageDiff = Math.abs(currentUsage - lastUsage);
+      const fallbackCpuPercent = timeDiff > 0 ? Math.min(100, (usageDiff / timeDiff) * 0.01) : 0;
+      lastTime = now;
+      lastUsage = currentUsage;
+
+      if (window.electron?.getSystemMetrics) {
+        try {
+          const systemMetrics = await window.electron.getSystemMetrics();
           setMetrics(prev => ({ 
             ...prev, 
-            cpu: cpuPercent.toFixed(1)
+            cpu: (systemMetrics.cpuPercent ?? fallbackCpuPercent).toFixed(1),
+            load: systemMetrics.loadAvg?.toFixed(1) || prev.load,
+            disk: systemMetrics.disk || prev.disk
           }));
+          return;
+        } catch (err) {
+          // fall through to fallback below
         }
       }
+
+      setMetrics(prev => ({ 
+        ...prev, 
+        cpu: fallbackCpuPercent.toFixed(1)
+      }));
     };
 
     updateSystemMetrics();

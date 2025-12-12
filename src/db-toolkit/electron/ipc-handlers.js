@@ -92,10 +92,29 @@ function registerFileHandlers() {
 }
 
 function registerSystemHandlers() {
+  // Track CPU between invocations to compute percent usage
+  let lastCpu = process.cpuUsage();
+  let lastHrTime = process.hrtime.bigint();
+
   ipcMain.handle('get-system-metrics', async () => {
     const loadAvg = os.loadavg()[0];
-    
+
+    // Calculate CPU percent for the Electron (main + renderer) process
+    const currentCpu = process.cpuUsage();
+    const currentHrTime = process.hrtime.bigint();
+    const cpuDiffMicros = (currentCpu.user - lastCpu.user) + (currentCpu.system - lastCpu.system);
+    const elapsedMs = Number(currentHrTime - lastHrTime) / 1e6;
+    const cpuPercent = elapsedMs > 0 ? Math.min(100, (cpuDiffMicros / 1000) / elapsedMs * 100) : 0;
+    lastCpu = currentCpu;
+    lastHrTime = currentHrTime;
+
     return new Promise((resolve) => {
+      const resolveWith = (disk) => resolve({
+        loadAvg,
+        disk,
+        cpuPercent: Number(cpuPercent.toFixed(1))
+      });
+
       if (process.platform === 'darwin' || process.platform === 'linux') {
         exec('df -k /', (error, stdout) => {
           let disk = { used: 0, free: 0, total: 0 };
@@ -112,7 +131,7 @@ function registerSystemHandlers() {
               };
             }
           }
-          resolve({ loadAvg, disk });
+          resolveWith(disk);
         });
       } else if (process.platform === 'win32') {
         exec('wmic logicaldisk get size,freespace,caption', (error, stdout) => {
@@ -130,15 +149,13 @@ function registerSystemHandlers() {
               };
             }
           }
-          resolve({ loadAvg, disk });
+          resolveWith(disk);
         });
       } else {
-        resolve({ loadAvg, disk: { used: 0, free: 0, total: 0 } });
+        resolveWith({ used: 0, free: 0, total: 0 });
       }
     });
   });
-
-
 }
 
 function registerMenuHandlers() {
