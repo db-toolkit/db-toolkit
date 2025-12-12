@@ -4,6 +4,7 @@
 
 const { CloudflareAIClient } = require('./cloudflare-client');
 const { SCHEMA_ANALYSIS_PROMPT, SYSTEM_PROMPT } = require('./prompts');
+const { logger } = require('../../utils/logger');
 
 class SchemaAnalyzer {
   constructor(accountId, apiToken, model = '@cf/meta/llama-3.1-70b-instruct', temperature = 0.7, maxTokens = 2048) {
@@ -308,7 +309,6 @@ let _schemaAnalyzer = null;
 function getSchemaAnalyzer() {
   if (_schemaAnalyzer === null) {
     try {
-      const { logger } = require('../../utils/logger');
       const { app } = require('electron');
       const path = require('path');
 
@@ -338,7 +338,6 @@ function getSchemaAnalyzer() {
       _schemaAnalyzer = new SchemaAnalyzer(accountId, apiToken);
       logger.info('[Schema Analyzer] Schema analyzer initialized successfully');
     } catch (error) {
-      const { logger } = require('../../utils/logger');
       logger.error('[Schema Analyzer] Failed to initialize schema analyzer:', error);
       return null;
     }
