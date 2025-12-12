@@ -20,6 +20,9 @@ import { ColumnSelector } from './ColumnSelector';
 import { FilterBuilder } from './FilterBuilder';
 import { SQLPreview } from './SQLPreview';
 import { ErrorDisplay } from './ErrorDisplay';
+import { GroupByBuilder } from './GroupByBuilder';
+import { OrderByBuilder } from './OrderByBuilder';
+import { LimitBuilder } from './LimitBuilder';
 import { generateSQL, validateQuery, getJoinTypes } from '../../utils/queryBuilder';
 
 const nodeTypes = {
@@ -31,6 +34,10 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [filters, setFilters] = useState([]);
+  const [groupBy, setGroupBy] = useState([]);
+  const [orderBy, setOrderBy] = useState([]);
+  const [limit, setLimit] = useState(null);
+  const [offset, setOffset] = useState(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [validationErrors, setValidationErrors] = useState([]);
 
@@ -60,12 +67,12 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
       joins,
       columns: selectedColumns,
       filters,
-      groupBy: [],
-      orderBy: [],
-      limit: null,
-      offset: null
+      groupBy,
+      orderBy,
+      limit,
+      offset
     };
-  }, [nodes, edges, selectedColumns, filters]);
+  }, [nodes, edges, selectedColumns, filters, groupBy, orderBy, limit, offset]);
 
   // Generate SQL with parameters
   const sqlResult = useMemo(() => generateSQL(queryState), [queryState]);
@@ -306,13 +313,42 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
             onReorder={handleReorderColumn}
           />
 
-          <FilterBuilder
-            filters={filters}
-            tables={nodes.map(n => ({ name: n.data.tableName, columns: n.data.columns }))}
-            onAddFilter={handleAddFilter}
-            onUpdateFilter={handleUpdateFilter}
-            onRemoveFilter={handleRemoveFilter}
-          />
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <FilterBuilder
+              filters={filters}
+              tables={nodes.map(n => ({ name: n.data.tableName, columns: n.data.columns }))}
+              onAddFilter={handleAddFilter}
+              onUpdateFilter={handleUpdateFilter}
+              onRemoveFilter={handleRemoveFilter}
+            />
+          </div>
+
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <GroupByBuilder
+              columns={selectedColumns}
+              groupBy={groupBy}
+              onUpdate={setGroupBy}
+            />
+          </div>
+
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <OrderByBuilder
+              columns={selectedColumns}
+              orderBy={orderBy}
+              onUpdate={setOrderBy}
+            />
+          </div>
+
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <LimitBuilder
+              limit={limit}
+              offset={offset}
+              onUpdate={({ limit: newLimit, offset: newOffset }) => {
+                setLimit(newLimit);
+                setOffset(newOffset);
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
