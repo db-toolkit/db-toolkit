@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { useWorkspace } from '../components/workspace/WorkspaceProvider';
 import { Download, Plus, X, Bot, Loader2, Workflow } from 'lucide-react';
 import Split from 'react-split';
 import { useQuery, useSchema } from '../hooks';
@@ -18,7 +19,8 @@ import { cacheService } from '../services/indexedDB';
 
 function QueryPage() {
   const { connectionId } = useParams();
-  const [tabs, setTabs] = useState([{ id: 1, name: 'Query 1', query: '', result: null, executionTime: 0, error: null, chatHistory: [] }]);
+  const { activeWorkspace, setHasUnsavedChanges } = useWorkspace();
+  const [tabs, setTabs] = useState([{ id: 1, name: 'Query 1', query: '', result: null, executionTime: 0, error: null, chatHistory: [], saved: true }]);
   const [activeTabId, setActiveTabId] = useState(1);
   const [showExport, setShowExport] = useState(false);
   const [showAiAssistant, setShowAiAssistant] = useState(false);
@@ -75,6 +77,14 @@ function QueryPage() {
     return () => clearTimeout(timer);
   }, [tabs, activeTabId, connectionId]);
 
+  // Track unsaved changes
+  useEffect(() => {
+    const hasUnsaved = tabs.some(t => !t.saved && t.query.trim());
+    if (activeWorkspace) {
+      setHasUnsavedChanges(activeWorkspace.id, hasUnsaved);
+    }
+  }, [tabs, activeWorkspace, setHasUnsavedChanges]);
+
   // Auto-reconnect on page load
   useEffect(() => {
     const reconnect = async () => {
@@ -107,7 +117,7 @@ function QueryPage() {
   }, [connectionId, fetchSchemaTree, toast]);
 
   const setQuery = useCallback((newQuery) => {
-    setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, query: newQuery, error: null } : t));
+    setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, query: newQuery, error: null, saved: false } : t));
     setFixSuggestion(null);
   }, [activeTabId]);
 
@@ -143,7 +153,7 @@ function QueryPage() {
       const timeout = settings?.default_query_timeout || 30;
       const queryResult = await executeQuery(query, limit, 0, timeout);
       const time = Date.now() - startTime;
-      setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, result: queryResult, executionTime: time, error: null } : t));
+      setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, result: queryResult, executionTime: time, error: null, saved: true } : t));
     } catch (err) {
       console.error('Query failed:', err);
       const errorMsg = err.response?.data?.detail || err.message;

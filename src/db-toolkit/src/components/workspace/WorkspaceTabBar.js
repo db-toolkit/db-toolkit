@@ -40,6 +40,7 @@ export function WorkspaceTabBar() {
                         onClick={handleTabClick}
                         onClose={handleCloseTab}
                         onUpdate={updateWorkspace}
+                        workspaces={workspaces}
                     />
                 ))}
             </div>

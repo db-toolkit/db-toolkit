@@ -3,6 +3,7 @@
  */
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useWorkspaceShortcuts } from '../../hooks/useWorkspaceShortcuts';
 
 const WorkspaceContext = createContext(null);
 
@@ -16,6 +17,8 @@ export function WorkspaceProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
+    
+    useWorkspaceShortcuts();
 
     // Load workspaces on mount and create default if none exist
     useEffect(() => {
@@ -71,6 +74,16 @@ export function WorkspaceProvider({ children }) {
 
     const closeWorkspace = useCallback(async (workspaceId) => {
         try {
+            const workspace = workspaces.find(w => w.id === workspaceId);
+            
+            // Check for unsaved changes
+            if (workspace?.hasUnsavedChanges) {
+                const confirmed = window.confirm(
+                    'This workspace has unsaved changes. Are you sure you want to close it?'
+                );
+                if (!confirmed) return false;
+            }
+
             const result = await ipc.invoke('workspace:delete', workspaceId);
 
             if (result.success) {
@@ -143,6 +156,12 @@ export function WorkspaceProvider({ children }) {
         }, 1000);
     }, [activeWorkspaceId, updateWorkspaceState]);
 
+    const setHasUnsavedChanges = useCallback((workspaceId, hasChanges) => {
+        setWorkspaces(prev => prev.map(w => 
+            w.id === workspaceId ? { ...w, hasUnsavedChanges: hasChanges } : w
+        ));
+    }, []);
+
     const getActiveWorkspace = useCallback(() => {
         return workspaces.find(w => w.id === activeWorkspaceId);
     }, [workspaces, activeWorkspaceId]);
@@ -188,7 +207,8 @@ export function WorkspaceProvider({ children }) {
         updateWorkspace,
         loadWorkspaces,
         getWorkspaceState,
-        setWorkspaceState
+        setWorkspaceState,
+        setHasUnsavedChanges
     };
 
     return (

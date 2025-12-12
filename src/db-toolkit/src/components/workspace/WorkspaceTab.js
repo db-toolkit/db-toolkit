@@ -8,7 +8,7 @@ const ipc = {
     invoke: (channel, ...args) => window.electron.ipcRenderer.invoke(channel, ...args)
 };
 
-export function WorkspaceTab({ workspace, isActive, onClick, onClose, onUpdate }) {
+export function WorkspaceTab({ workspace, isActive, onClick, onClose, onUpdate, workspaces }) {
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
     const [isRenaming, setIsRenaming] = useState(false);
@@ -116,6 +116,11 @@ export function WorkspaceTab({ workspace, isActive, onClick, onClose, onUpdate }
             {/* Database Icon */}
             <Database size={14} className={`flex-shrink-0 ${isActive ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}`} />
 
+            {/* Unsaved indicator */}
+            {workspace.hasUnsavedChanges && (
+                <div className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" title="Unsaved changes" />
+            )}
+
             {/* Workspace Name */}
             {isRenaming ? (
                 <input
@@ -176,7 +181,30 @@ export function WorkspaceTab({ workspace, isActive, onClick, onClose, onUpdate }
                         className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                         <Trash2 size={14} />
-                        Delete
+                        Close
+                    </button>
+                    <button
+                        onClick={() => {
+                            setShowContextMenu(false);
+                            // Close all except this one
+                            const otherWorkspaces = workspaces.filter(w => w.id !== workspace.id);
+                            otherWorkspaces.forEach(w => onClose(w.id));
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                        <X size={14} />
+                        Close Others
+                    </button>
+                    <button
+                        onClick={() => {
+                            setShowContextMenu(false);
+                            // Close all workspaces
+                            workspaces.forEach(w => onClose(w.id));
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                        <X size={14} />
+                        Close All
                     </button>
                 </div>
             )}
