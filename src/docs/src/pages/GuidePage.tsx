@@ -11,6 +11,8 @@ const loadData = async (section: string) => {
       return (await import('../data/gettingStarted')).gettingStartedData;
     case 'connections':
       return (await import('../data/connections')).connectionsData;
+    case 'workspaces':
+      return (await import('../data/workspaces')).workspacesData;
     case 'query-editor':
       return (await import('../data/queryEditor')).queryEditorData;
     case 'schema-explorer':
@@ -31,6 +33,7 @@ const loadData = async (section: string) => {
 const sections = [
   { id: 'getting-started', label: 'Getting Started' },
   { id: 'connections', label: 'Connections' },
+  { id: 'workspaces', label: 'Workspaces' },
   { id: 'query-editor', label: 'Query Editor' },
   { id: 'schema-explorer', label: 'Schema Explorer' },
   { id: 'data-explorer', label: 'Data Explorer' },
