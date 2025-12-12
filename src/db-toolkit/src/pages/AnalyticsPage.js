@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Database, Download } from 'lucide-react';
 import { useConnections, useAnalytics } from '../hooks';
 import { useToast } from '../contexts/ToastContext';
+import { useWorkspace } from '../components/workspace/WorkspaceProvider';
 import { Button } from '../components/common/Button';
 
 import { AnalyticsStats } from '../components/analytics/AnalyticsStats';
@@ -24,9 +25,10 @@ import { pageTransition } from '../utils/animations';
 function AnalyticsPage() {
   const navigate = useNavigate();
   const { connections, connectToDatabase } = useConnections();
+  const { getWorkspaceState, setWorkspaceState } = useWorkspace();
   const toast = useToast();
-  const [connectionId, setConnectionId] = useState(null);
-  const [connectionName, setConnectionName] = useState('');
+  const [connectionId, setConnectionId] = useState(() => getWorkspaceState('analyticsConnectionId'));
+  const [connectionName, setConnectionName] = useState(() => getWorkspaceState('analyticsConnectionName') || '');
   const [connecting, setConnecting] = useState(null);
   const [timeRange, setTimeRange] = useState(1);
   const [planModal, setPlanModal] = useState({ isOpen: false, query: '', plan: null });
@@ -68,6 +70,8 @@ function AnalyticsPage() {
       const conn = connections.find(c => c.id === id);
       setConnectionId(id);
       setConnectionName(conn?.name || '');
+      setWorkspaceState('analyticsConnectionId', id);
+      setWorkspaceState('analyticsConnectionName', conn?.name || '');
       toast.success('Connected successfully');
     } catch (err) {
       toast.error('Failed to connect');
@@ -178,7 +182,12 @@ function AnalyticsPage() {
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => setConnectionId(null)}
+              onClick={() => {
+                setConnectionId(null);
+                setConnectionName('');
+                setWorkspaceState('analyticsConnectionId', null);
+                setWorkspaceState('analyticsConnectionName', '');
+              }}
             >
               Change Connection
             </Button>

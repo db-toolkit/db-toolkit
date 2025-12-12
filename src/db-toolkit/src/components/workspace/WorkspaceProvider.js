@@ -93,7 +93,12 @@ export function WorkspaceProvider({ children }) {
             if (activeWorkspaceId === workspaceId) {
                 const remaining = workspaces.filter(w => w.id !== workspaceId);
                 if (remaining.length > 0) {
-                    setActiveWorkspaceId(remaining[0].id);
+                    const targetWorkspace = remaining[0];
+                    // Navigate to target workspace's route first
+                    if (targetWorkspace.state?.activeRoute) {
+                        navigate(targetWorkspace.state.activeRoute);
+                    }
+                    setActiveWorkspaceId(targetWorkspace.id);
                 }
             }
 
@@ -108,7 +113,7 @@ export function WorkspaceProvider({ children }) {
             console.error('Failed to close workspace:', error);
             return false;
         }
-    }, [activeWorkspaceId, workspaces]);
+    }, [activeWorkspaceId, workspaces, navigate]);
 
     const switchWorkspace = useCallback((workspaceId) => {
         const workspace = workspaces.find(w => w.id === workspaceId);
