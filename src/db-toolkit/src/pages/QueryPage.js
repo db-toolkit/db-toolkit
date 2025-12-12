@@ -30,6 +30,8 @@ function QueryPage() {
   const [showAiAssistant, setShowAiAssistant] = useState(false);
   const [showQueryBuilder, setShowQueryBuilder] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
+  const [editingTabId, setEditingTabId] = useState(null);
+  const [editingTabName, setEditingTabName] = useState('');
   const { loading, executeQuery } = useQuery(connectionId);
   const { schema, fetchSchemaTree } = useSchema(connectionId);
   const toast = useToast();
@@ -142,7 +144,17 @@ function QueryPage() {
   };
 
   const renameTab = (id, newName) => {
-    setTabs(prev => prev.map(t => t.id === id ? { ...t, name: newName } : t));
+    if (newName && newName.trim()) {
+      setTabs(prev => prev.map(t => t.id === id ? { ...t, name: newName.trim() } : t));
+      toast.success('Tab renamed');
+    }
+    setEditingTabId(null);
+    setEditingTabName('');
+  };
+
+  const startRenaming = (id, currentName) => {
+    setEditingTabId(id);
+    setEditingTabName(currentName);
   };
 
   const closeOtherTabs = (id) => {
@@ -309,7 +321,23 @@ function QueryPage() {
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
             >
-              <span className="text-sm font-medium whitespace-nowrap">{tab.name}</span>
+              {editingTabId === tab.id ? (
+                <input
+                  type="text"
+                  value={editingTabName}
+                  onChange={(e) => setEditingTabName(e.target.value)}
+                  onBlur={() => renameTab(tab.id, editingTabName)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') renameTab(tab.id, editingTabName);
+                    if (e.key === 'Escape') { setEditingTabId(null); setEditingTabName(''); }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  autoFocus
+                  className="text-sm font-medium bg-white dark:bg-gray-900 border border-green-500 rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-green-500 min-w-[80px]"
+                />
+              ) : (
+                <span className="text-sm font-medium whitespace-nowrap">{tab.name}</span>
+              )}
               {tabs.length > 1 && (
                 <button
                   onClick={(e) => { e.stopPropagation(); closeTab(tab.id); }}
@@ -468,13 +496,7 @@ function QueryPage() {
             onClick: () => {
               const tabId = tabContextMenu.data.tabId;
               const currentName = tabs.find(t => t.id === tabId)?.name;
-              setTimeout(() => {
-                const newName = prompt('Enter new tab name:', currentName);
-                if (newName && newName.trim()) {
-                  renameTab(tabId, newName.trim());
-                  toast.success('Tab renamed');
-                }
-              }, 100);
+              startRenaming(tabId, currentName);
             }
           },
           { separator: true },
