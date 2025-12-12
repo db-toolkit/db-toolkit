@@ -26,6 +26,51 @@ export function SchemaAiPanel({ analysis, loading, onClose, onRefresh }) {
     );
   }
 
+  // Handle error state
+  if (analysis && (analysis.success === false || analysis.error)) {
+    return (
+      <div className="fixed right-0 top-0 h-full w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-xl z-50 flex flex-col">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-purple-500" />
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">Schema Analysis</h3>
+          </div>
+          <button onClick={onClose} className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center max-w-sm">
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <X className="w-8 h-8 text-red-600 dark:text-red-400" />
+            </div>
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Analysis Failed</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              {analysis.error || 'Unable to analyze schema'}
+            </p>
+            {analysis.error === 'AI not configured' && (
+              <div className="text-xs text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-900 p-3 rounded mb-4">
+                <p className="mb-2">AI features require Cloudflare credentials.</p>
+                <p>Add to your .env file:</p>
+                <code className="block mt-1 text-left">
+                  CLOUDFLARE_ACCOUNT_ID=...
+                  <br />
+                  CLOUDFLARE_API_TOKEN=...
+                </code>
+              </div>
+            )}
+            <button
+              onClick={onRefresh}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm font-medium"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!analysis) return null;
 
   return (
