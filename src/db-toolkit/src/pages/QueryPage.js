@@ -154,6 +154,45 @@ function QueryPage() {
 
   const isFixingRef = useRef(false);
 
+  const buildSchemaContext = useCallback(() => {
+    const tables = {};
+    if (!schema) return tables;
+
+    const normalizeColumns = (cols) => (cols || []).map(col => ({
+      name: col.name || col.column_name,
+      type: col.type || col.data_type,
+    }));
+
+    if (schema.schemas) {
+      Object.values(schema.schemas).forEach(s => {
+        if (s.tables) {
+          Object.entries(s.tables).forEach(([tableName, tableDef]) => {
+            tables[tableName] = {
+              columns: normalizeColumns(tableDef.columns || []),
+            };
+          });
+        }
+      });
+    } else if (schema.tables) {
+      Object.entries(schema.tables).forEach(([tableName, tableDef]) => {
+        tables[tableName] = {
+          columns: normalizeColumns(tableDef.columns || []),
+        };
+      });
+    } else {
+      // Fallback: if schema looks like a table map directly
+      Object.entries(schema || {}).forEach(([tableName, tableDef]) => {
+        if (tableDef?.columns) {
+          tables[tableName] = {
+            columns: normalizeColumns(tableDef.columns),
+          };
+        }
+      });
+    }
+
+    return tables;
+  }, [schema]);
+
   // Auto-fix effect
   useEffect(() => {
     const triggerAutoFix = async () => {
@@ -164,24 +203,7 @@ function QueryPage() {
         console.log('Auto-fix effect triggered for error:', error);
         toast.info('Attempting to auto-fix query error...');
 
-        // Extract tables from schema structure
-        let tables = {};
-        if (schema) {
-          if (schema.tables) {
-            tables = schema.tables;
-          } else if (schema.schemas) {
-            // Flatten schemas
-            Object.values(schema.schemas).forEach(s => {
-              if (s.tables) Object.assign(tables, s.tables);
-            });
-          } else {
-            // Assume schema is the tables map itself if it has values with columns
-            const firstKey = Object.keys(schema)[0];
-            if (firstKey && schema[firstKey]?.columns) {
-              tables = schema;
-            }
-          }
-        }
+        const tables = buildSchemaContext();
 
         const fixResult = await fixQueryError(query, error, tables);
 
