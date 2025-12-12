@@ -81,17 +81,9 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
-      "build/icons/**/*",
-      "resources/backend/**/*"
+      "build/icons/**/*"
     ],
     "extraResources": [
-      {
-        "from": "resources/backend",
-        "to": "backend",
-        "filter": [
-          "**/*"
-        ]
-      },
       {
         "from": ".env",
         "to": ".env"
