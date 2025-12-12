@@ -4,10 +4,15 @@
 import { useState } from 'react';
 import { Database, Table, Search } from 'lucide-react';
 import { useDebounce } from '../../utils/debounce';
+import { ContextMenu, useContextMenu } from '../common/ContextMenu';
+import { getTableContextMenuItems } from '../../utils/contextMenuActions';
+import { useToast } from '../../contexts/ToastContext';
 
-export function TableSelector({ schema, selectedTable, onSelectTable }) {
+export function TableSelector({ schema, selectedTable, onSelectTable, onRefreshTable }) {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 300);
+  const contextMenu = useContextMenu();
+  const toast = useToast();
 
   if (!schema?.schemas) {
     return (
@@ -51,24 +56,47 @@ export function TableSelector({ schema, selectedTable, onSelectTable }) {
                 <Database size={16} />
                 {schemaName}
               </div>
-              {filteredTables.map((tableName) => (
-                <button
-                  key={tableName}
-                  onClick={() => onSelectTable(schemaName, tableName)}
-                  className={`w-full flex items-center gap-2 px-6 py-2 text-sm transition ${
-                    selectedTable?.schema === schemaName && selectedTable?.table === tableName
-                      ? 'bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  <Table size={14} />
-                  {tableName}
-                </button>
-              ))}
+              {filteredTables.map((tableName) => {
+                const tableData = schemaData.tables?.[tableName];
+                return (
+                  <button
+                    key={tableName}
+                    onClick={() => onSelectTable(schemaName, tableName)}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      contextMenu.open(e, { schemaName, tableName, tableData });
+                    }}
+                    className={`w-full flex items-center gap-2 px-6 py-2 text-sm transition ${
+                      selectedTable?.schema === schemaName && selectedTable?.table === tableName
+                        ? 'bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    <Table size={14} />
+                    {tableName}
+                  </button>
+                );
+              })}
             </div>
           );
         })}
       </div>
+      
+      <ContextMenu
+        isOpen={contextMenu.isOpen}
+        position={contextMenu.position}
+        onClose={contextMenu.close}
+        items={contextMenu.data ? getTableContextMenuItems({
+          schemaName: contextMenu.data.schemaName,
+          tableName: contextMenu.data.tableName,
+          tableData: contextMenu.data.tableData,
+          onRefresh: onRefreshTable,
+          onDrop: () => {
+            toast.error('Drop table not available in Data Explorer. Use Query Editor.');
+          },
+          toast
+        }) : []}
+      />
     </div>
   );
 }

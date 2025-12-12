@@ -397,6 +397,7 @@ function DataExplorerPage() {
               schema={schema}
               selectedTable={selectedTable}
               onSelectTable={handleSelectTable}
+              onRefreshTable={handleRefresh}
             />
           )}
         </div>
