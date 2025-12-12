@@ -53,6 +53,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: src/db-toolkit/package-lock.json
       
+      - name: Create .env file
+        working-directory: src/db-toolkit
+        run: |
+          echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" > .env
+          echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> .env
+      
       - name: Install dependencies
         working-directory: src/db-toolkit
         run: |
