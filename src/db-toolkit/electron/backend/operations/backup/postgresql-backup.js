@@ -42,6 +42,7 @@ async function backupPostgreSQLPgDump(backup, config, tables) {
 
 async function backupPostgreSQLNative(backup, config, tables) {
   const { Client } = require('pg');
+  const { backupNotifier } = require('../../ws/backup-notifier');
   const outputFile = backup.file_path.replace('.gz', '');
   
   const client = new Client({
@@ -63,7 +64,16 @@ async function backupPostgreSQLNative(backup, config, tables) {
       tableList = result.rows.map(r => r.tablename);
     }
     
+    const totalTables = tableList.length;
+    let processedTables = 0;
+    
     for (const table of tableList) {
+      processedTables++;
+      const progress = Math.floor((processedTables / totalTables) * 70) + 10; // 10-80%
+      await backupNotifier.notifyBackupUpdate(backup.id, 'in_progress', { 
+        connection_name: config.name, 
+        progress 
+      });
       if (backup.backup_type !== 'data_only') {
         const cols = await client.query(`
           SELECT column_name, data_type, character_maximum_length, is_nullable, column_default
@@ -112,6 +122,11 @@ async function backupPostgreSQLNative(backup, config, tables) {
         }
       }
     }
+    
+    await backupNotifier.notifyBackupUpdate(backup.id, 'in_progress', { 
+      connection_name: config.name, 
+      progress: 80 
+    });
     
     await fs.writeFile(outputFile, content);
   } finally {

@@ -52,12 +52,7 @@ class BackupManager {
       await backupStorage.updateBackup(backup.id, { status: 'in_progress' });
       await backupNotifier.notifyBackupUpdate(backup.id, 'in_progress', { 
         connection_name: config.name, 
-        progress: 0 
-      });
-      
-      await backupNotifier.notifyBackupUpdate(backup.id, 'in_progress', { 
-        connection_name: config.name, 
-        progress: 25 
+        progress: 5 
       });
       
       const dbType = config.type || config.db_type;
@@ -74,15 +69,10 @@ class BackupManager {
         throw new Error(`Backup not supported for ${dbType}`);
       }
       
-      await backupNotifier.notifyBackupUpdate(backup.id, 'in_progress', { 
-        connection_name: config.name, 
-        progress: 75 
-      });
-      
       if (compress) {
         await backupNotifier.notifyBackupUpdate(backup.id, 'in_progress', { 
           connection_name: config.name, 
-          progress: 85 
+          progress: 90 
         });
         const uncompressed = backup.file_path.replace('.gz', '');
         if (await this._fileExists(uncompressed)) {
