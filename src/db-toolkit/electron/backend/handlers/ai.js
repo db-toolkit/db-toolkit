@@ -133,6 +133,26 @@ function registerAIHandlers() {
     }
   });
 
+  ipcMain.handle('ai:analyze-schema', async (event, connectionId, schemaName, tables) => {
+    try {
+      logger.info(`AI analyze-schema called with schema: '${schemaName}', tables: ${Object.keys(tables || {}).length}`);
+
+      const analyzer = getSchemaAnalyzer();
+      if (!analyzer) {
+        return { success: false, error: 'AI not configured' };
+      }
+
+      // Get DB type from connection
+      const connection = await connectionManager.getConnection(connectionId);
+      const dbType = connection ? connection.db_type : 'postgres';
+
+      return await analyzer.analyzeSchema(schemaName, tables, dbType);
+    } catch (error) {
+      logger.error('AI analyze-schema error:', error);
+      return { success: false, error: error.message };
+    }
+  });
+
   ipcMain.handle('ai:suggest-indexes', async (event, tableName, columns, queryPatterns, dbType) => {
     try {
       logger.info(`AI suggest-indexes called with table: '${tableName}', dbType: ${dbType}`);

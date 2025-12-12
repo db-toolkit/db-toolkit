@@ -10,7 +10,7 @@ class SchemaAnalyzer {
     if (!accountId || !apiToken) {
       throw new Error('Cloudflare credentials not configured');
     }
-    
+
     this.client = new CloudflareAIClient(accountId, apiToken);
     this.model = model;
     this.temperature = temperature;
@@ -24,11 +24,11 @@ class SchemaAnalyzer {
       for (const col of columns) {
         schemaInfo += `  - ${col.name} (${col.type || 'unknown'})\n`;
       }
-      
+
       const prompt = SCHEMA_ANALYSIS_PROMPT
         .replace('{db_type}', dbType)
         .replace('{schema_info}', schemaInfo);
-      
+
       const response = await this.client.generate(
         prompt,
         this.model,
@@ -36,7 +36,7 @@ class SchemaAnalyzer {
         this.temperature,
         SYSTEM_PROMPT
       );
-      
+
       return {
         success: true,
         table_name: tableName,
@@ -61,11 +61,11 @@ class SchemaAnalyzer {
   async suggestIndexes(tableName, columns, queryPatterns = null, dbType = 'postgresql') {
     try {
       const suggestions = [];
-      
+
       for (const column of columns) {
         const colName = column.name || '';
         const colType = (column.type || '').toLowerCase();
-        
+
         if (colName.toLowerCase().includes('id') && colName !== 'id') {
           suggestions.push({
             type: 'btree',
@@ -106,17 +106,17 @@ class SchemaAnalyzer {
     try {
       const relationships = [];
       const tableNames = Object.keys(tables);
-      
+
       for (const [tableName, columns] of Object.entries(tables)) {
         for (const column of columns) {
           const colName = (column.name || '').toLowerCase();
-          
+
           if (colName.endsWith('_id') && colName !== 'id') {
             const referencedTable = colName.slice(0, -3);
-            
+
             for (const otherTable of tableNames) {
-              if (otherTable.toLowerCase() === referencedTable || 
-                  otherTable.toLowerCase() === referencedTable + 's') {
+              if (otherTable.toLowerCase() === referencedTable ||
+                otherTable.toLowerCase() === referencedTable + 's') {
                 relationships.push({
                   from_table: tableName,
                   from_column: column.name,
@@ -145,26 +145,133 @@ class SchemaAnalyzer {
     }
   }
 
+  async analyzeSchema(schemaName, tables, dbType = 'postgresql') {
+    try {
+      const tableNames = Object.keys(tables);
+      const tableCount = tableNames.length;
+
+      if (tableCount === 0) {
+        return {
+          success: false,
+          error: 'No tables found in schema',
+          summary: '',
+          design_patterns: [],
+          relationships: [],
+          optimization_suggestions: []
+        };
+      }
+
+      // Analyze relationships across all tables
+      const relationshipAnalysis = await this.analyzeRelationships(tables, dbType);
+      const relationships = relationshipAnalysis.relationships || [];
+
+      // Generate summary
+      const summary = `Schema "${schemaName}" contains ${tableCount} table${tableCount !== 1 ? 's' : ''}. ` +
+        `Detected ${relationships.length} relationship${relationships.length !== 1 ? 's' : ''} between tables.`;
+
+      // Identify design patterns
+      const design_patterns = [];
+
+      // Check for common patterns
+      const hasUserTable = tableNames.some(t => t.toLowerCase().includes('user'));
+      const hasAuditFields = Object.values(tables).some(cols =>
+        cols.some(c => ['created_at', 'updated_at', 'deleted_at'].includes(c.name?.toLowerCase()))
+      );
+      const hasJunctionTables = tableNames.some(t => t.includes('_'));
+
+      if (hasUserTable) {
+        design_patterns.push('User management pattern detected');
+      }
+      if (hasAuditFields) {
+        design_patterns.push('Audit trail pattern with timestamp tracking');
+      }
+      if (hasJunctionTables) {
+        design_patterns.push('Many-to-many relationships using junction tables');
+      }
+      if (relationships.length > tableCount) {
+        design_patterns.push('Highly normalized schema with multiple relationships');
+      }
+
+      // Format relationships for display
+      const formattedRelationships = relationships.map(rel =>
+        `${rel.from_table}.${rel.from_column} → ${rel.to_table}.${rel.to_column}`
+      );
+
+      // Generate optimization suggestions
+      const optimization_suggestions = [];
+
+      // Check for missing indexes on foreign keys
+      const foreignKeyColumns = relationships.map(r => ({
+        table: r.from_table,
+        column: r.from_column
+      }));
+
+      if (foreignKeyColumns.length > 0) {
+        optimization_suggestions.push(
+          `Consider adding indexes on foreign key columns for better join performance`
+        );
+      }
+
+      // Check for tables without primary keys
+      const tablesWithoutPK = Object.entries(tables).filter(([name, cols]) =>
+        !cols.some(c => c.primary_key || c.name === 'id')
+      );
+
+      if (tablesWithoutPK.length > 0) {
+        optimization_suggestions.push(
+          `${tablesWithoutPK.length} table(s) may be missing primary keys: ${tablesWithoutPK.map(([name]) => name).join(', ')}`
+        );
+      }
+
+      // Check for large tables without partitioning
+      if (tableCount > 20) {
+        optimization_suggestions.push(
+          'Large schema detected - consider table partitioning for frequently accessed tables'
+        );
+      }
+
+      return {
+        success: true,
+        schema_name: schemaName,
+        summary,
+        design_patterns,
+        relationships: formattedRelationships.slice(0, 10), // Limit to 10 for display
+        optimization_suggestions,
+        table_count: tableCount,
+        relationship_count: relationships.length
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        summary: '',
+        design_patterns: [],
+        relationships: [],
+        optimization_suggestions: []
+      };
+    }
+  }
+
   async generateCommonQueries(tableName, columns, dbType = 'postgresql') {
     try {
       const queries = [];
-      
+
       queries.push({
         name: 'Select All Records',
         query: `SELECT * FROM ${tableName} LIMIT 10;`,
         description: 'Retrieve first 10 records from the table'
       });
-      
+
       queries.push({
         name: 'Count Records',
         query: `SELECT COUNT(*) FROM ${tableName};`,
         description: 'Count total number of records'
       });
-      
+
       for (const column of columns) {
         const colName = column.name || '';
         const colType = (column.type || '').toLowerCase();
-        
+
         if (colType.includes('timestamp') || colType.includes('date')) {
           queries.push({
             name: `Recent Records by ${colName}`,
@@ -203,11 +310,11 @@ function getSchemaAnalyzer() {
     try {
       const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
       const apiToken = process.env.CLOUDFLARE_API_TOKEN;
-      
+
       if (!accountId || !apiToken) {
         return null;
       }
-      
+
       _schemaAnalyzer = new SchemaAnalyzer(accountId, apiToken);
     } catch (error) {
       return null;

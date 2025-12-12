@@ -13,7 +13,7 @@ export const connectionsAPI = {
     if (cached) {
       return { data: cached };
     }
-    
+
     const data = await ipc.invoke('connections:getAll');
     localStorageService.set(CACHE_KEYS.CONNECTIONS, data, CACHE_TTL.CONNECTIONS);
     return { data };
@@ -61,9 +61,9 @@ export const schemaAPI = {
         console.error('Cache read error:', err);
       }
     }
-    
+
     const data = await ipc.invoke('schema:getTree', connectionId);
-    
+
     try {
       await cacheService.setSchema(connectionId, data);
     } catch (err) {
@@ -75,13 +75,13 @@ export const schemaAPI = {
         CACHE_TTL.SCHEMA
       );
     }
-    
+
     return { data };
   },
-  
+
   getTableInfo: async (connectionId, schema, table) => {
     const cacheKey = `${CACHE_KEYS.TABLE_INFO}_${schema}_${table}`;
-    
+
     try {
       const cached = await cacheService.getTableInfo(connectionId, schema, table);
       if (cached) {
@@ -96,9 +96,9 @@ export const schemaAPI = {
     } catch (err) {
       console.error('Cache read error:', err);
     }
-    
+
     const data = await ipc.invoke('schema:getTableInfo', connectionId, schema, table);
-    
+
     try {
       await cacheService.setTableInfo(connectionId, schema, table, data);
     } catch (err) {
@@ -110,10 +110,10 @@ export const schemaAPI = {
         CACHE_TTL.TABLE_INFO
       );
     }
-    
+
     return { data };
   },
-  
+
   refresh: async (connectionId) => {
     try {
       await cacheService.clearConnection(connectionId);
@@ -177,26 +177,23 @@ export const issuesAPI = {
 export const schemaAiAPI = {
   analyzeSchema: async (connectionId, schemaName) => {
     const schemaData = await ipc.invoke('schema:getTree', connectionId);
-    
+
     if (schemaData.schemas && schemaData.schemas[schemaName]) {
       const tables = schemaData.schemas[schemaName].tables;
       if (tables && Object.keys(tables).length > 0) {
-        const firstTableName = Object.keys(tables)[0];
-        const firstTable = tables[firstTableName];
-        
-        const columns = Array.isArray(firstTable.columns)
-          ? firstTable.columns
-          : Object.values(firstTable.columns || []).map(col => ({
+        // Convert tables to the format expected by analyzeSchema
+        const formattedTables = {};
+        Object.entries(tables).forEach(([tableName, table]) => {
+          formattedTables[tableName] = Array.isArray(table.columns)
+            ? table.columns
+            : Object.values(table.columns || []).map(col => ({
               name: col.name || col.column_name,
-              type: col.type || col.data_type
+              type: col.type || col.data_type,
+              primary_key: col.primary_key || false
             }));
-
-        const result = await ipc.invoke('ai:analyze-table', {
-          connection_id: connectionId, 
-          table_name: firstTableName,
-          columns
         });
 
+        const result = await ipc.invoke('ai:analyze-schema', connectionId, schemaName, formattedTables);
         return { data: result };
       }
     }
