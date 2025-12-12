@@ -23,7 +23,7 @@ class BackupManager {
     await fs.mkdir(BACKUP_DIR, { recursive: true });
   }
 
-  async createBackup(connection, config, name, backupType, tables = null, compress = true) {
+  async createBackup(connection, config, name, backupType, tables = null, compress = true, scheduleId = null) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
     let filename = `${config.name}_${timestamp}.sql`;
     if (compress) filename += '.gz';
@@ -36,7 +36,8 @@ class BackupManager {
       backupType,
       filePath,
       tables,
-      compress
+      compress,
+      scheduleId
     );
     
     // Start backup in background

@@ -163,7 +163,7 @@
         {
           "id": "query-editor",
           "title": "Query Editor Usage",
-          "content": "The Query Editor provides a powerful environment for writing and executing SQL queries.\n\n**Features:**\n- Syntax highlighting for SQL\n- Auto-completion (Ctrl+Space)\n- Multiple query tabs\n- Query history tracking\n- Format SQL (Ctrl+Shift+F)\n\n**Keyboard Shortcuts:**\n- `Ctrl/Cmd + Enter` - Execute query\n- `Ctrl/Cmd + Shift + F` - Format SQL\n- `Ctrl/Cmd + /` - Toggle comment\n- `Ctrl/Cmd + S` - Save query\n\n**Tips:**\n- Use semicolons to separate multiple queries\n- Select specific text to execute only that query\n- Results are paginated automatically\n- Export results to CSV or JSON",
+          "content": "The Query Editor provides a powerful environment for writing and executing SQL queries.\n\n**Features:**\n- Syntax highlighting for SQL\n- Auto-completion (Ctrl+Space)\n- Multiple query tabs\n- Query history tracking\n- Format SQL (Ctrl+Shift+F)\n\n**Keyboard Shortcuts:**\n- `Ctrl/Cmd + R` - Execute query\n- `Ctrl/Cmd + Shift + F` - Format SQL\n- `Ctrl/Cmd + /` - Toggle comment\n- `Ctrl/Cmd + S` - Save query\n\n**Tips:**\n- Use semicolons to separate multiple queries\n- Select specific text to execute only that query\n- Results are paginated automatically\n- Export results to CSV or JSON",
           "keywords": ["query", "editor", "shortcuts", "sql"]
         },
 

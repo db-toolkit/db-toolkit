@@ -12,6 +12,7 @@ import { BackupCard } from '../components/backup/BackupCard';
 import { BackupModal } from '../components/backup/BackupModal';
 import { ScheduleModal } from '../components/backup/ScheduleModal';
 import { ScheduleCard } from '../components/backup/ScheduleCard';
+import { ScheduleBackupsModal } from '../components/backup/ScheduleBackupsModal';
 import { useBackupWebSocket } from '../websockets/useBackupWebSocket';
 import { pageTransition } from '../utils/animations';
 import api from '../services/api';
@@ -20,7 +21,10 @@ function BackupsPage() {
   const toast = useToast();
   const [showModal, setShowModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showScheduleBackupsModal, setShowScheduleBackupsModal] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [schedules, setSchedules] = useState([]);
+  const [scheduleBackupCounts, setScheduleBackupCounts] = useState({});
   const [activeTab, setActiveTab] = useState('backups');
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -45,7 +49,20 @@ function BackupsPage() {
 
   useEffect(() => {
     fetchSchedules();
-  }, []);
+    calculateScheduleBackupCounts();
+  }, [backups]);
+
+  const calculateScheduleBackupCounts = () => {
+    const counts = {};
+    schedules.forEach(schedule => {
+      const scheduleBackups = (backups || []).filter(b => b.schedule_id === schedule.id);
+      counts[schedule.id] = {
+        count: scheduleBackups.length,
+        lastStatus: scheduleBackups[0]?.status || null
+      };
+    });
+    setScheduleBackupCounts(counts);
+  };
 
   const fetchSchedules = async () => {
     try {
@@ -97,6 +114,24 @@ function BackupsPage() {
     } catch (err) {
       toast.error('Failed to delete schedule');
     }
+  };
+
+  const handleViewScheduleBackups = (scheduleId) => {
+    const schedule = schedules.find(s => s.id === scheduleId);
+    setSelectedSchedule(schedule);
+    setShowScheduleBackupsModal(true);
+  };
+
+  const handleShowInFolder = async (filePath) => {
+    try {
+      await window.electron.ipcRenderer.invoke('shell:showItemInFolder', filePath);
+    } catch (err) {
+      toast.error('Failed to open folder');
+    }
+  };
+
+  const getScheduleBackups = (scheduleId) => {
+    return (backups || []).filter(b => b.schedule_id === scheduleId);
   };
 
   const handleVerify = async (backupId) => {
@@ -235,6 +270,7 @@ function BackupsPage() {
               onRestore={handleRestore}
               onDownload={handleDownload}
               onDelete={handleDelete}
+              onShowInFolder={handleShowInFolder}
             />
           ))}
         </div>
@@ -261,6 +297,9 @@ function BackupsPage() {
               schedule={schedule}
               onToggle={handleToggleSchedule}
               onDelete={handleDeleteSchedule}
+              onViewBackups={handleViewScheduleBackups}
+              backupCount={scheduleBackupCounts[schedule.id]?.count || 0}
+              lastBackupStatus={scheduleBackupCounts[schedule.id]?.lastStatus}
             />
           ))}
         </div>
@@ -278,6 +317,16 @@ function BackupsPage() {
         onClose={() => setShowScheduleModal(false)}
         onSave={handleCreateSchedule}
         connections={connections}
+      />
+
+      <ScheduleBackupsModal
+        isOpen={showScheduleBackupsModal}
+        onClose={() => setShowScheduleBackupsModal(false)}
+        schedule={selectedSchedule}
+        backups={selectedSchedule ? getScheduleBackups(selectedSchedule.id) : []}
+        onRestore={handleRestore}
+        onDownload={handleDownload}
+        onDelete={handleDelete}
       />
     </motion.div>
   );

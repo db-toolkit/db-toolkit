@@ -28,7 +28,7 @@ async function writeMetadata(data) {
   await fs.writeFile(METADATA_FILE, JSON.stringify(data, null, 2));
 }
 
-async function addBackup(connectionId, name, backupType, filePath, tables = null, compressed = false) {
+async function addBackup(connectionId, name, backupType, filePath, tables = null, compressed = false, scheduleId = null) {
   const data = await readMetadata();
   const backupId = `backup_${Date.now()}`;
   
@@ -41,6 +41,7 @@ async function addBackup(connectionId, name, backupType, filePath, tables = null
     status: 'pending',
     tables,
     compressed,
+    schedule_id: scheduleId,
     created_at: new Date().toISOString(),
     file_size: 0,
     verified: false

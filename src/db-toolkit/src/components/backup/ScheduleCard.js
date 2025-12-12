@@ -1,7 +1,7 @@
-import { Trash2, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Trash2, Clock, CheckCircle, XCircle, Eye, FolderOpen } from 'lucide-react';
 import { Button } from '../common/Button';
 
-export function ScheduleCard({ schedule, onToggle, onDelete }) {
+export function ScheduleCard({ schedule, onToggle, onDelete, onViewBackups, backupCount = 0, lastBackupStatus = null }) {
   const formatDate = (dateStr) => {
     if (!dateStr) return 'Not scheduled';
     return new Date(dateStr).toLocaleString();
@@ -39,7 +39,35 @@ export function ScheduleCard({ schedule, onToggle, onDelete }) {
         </div>
       </div>
 
+      {backupCount > 0 && (
+        <div className="mb-3 p-2 bg-gray-50 dark:bg-gray-900/50 rounded text-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600 dark:text-gray-400">
+              {backupCount} backup{backupCount !== 1 ? 's' : ''} created
+            </span>
+            {lastBackupStatus && (
+              <span className={`flex items-center gap-1 ${
+                lastBackupStatus === 'completed' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+              }`}>
+                {lastBackupStatus === 'completed' ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                Last: {lastBackupStatus}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-2">
+        {backupCount > 0 && (
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Eye size={16} />}
+            onClick={() => onViewBackups(schedule.id)}
+          >
+            View Backups
+          </Button>
+        )}
         <Button
           variant={schedule.enabled ? 'secondary' : 'success'}
           size="sm"
