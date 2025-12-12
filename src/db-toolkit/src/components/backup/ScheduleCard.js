@@ -65,7 +65,7 @@ export function ScheduleCard({ schedule, onToggle, onDelete, onViewBackups, back
             icon={<Eye size={16} />}
             onClick={() => onViewBackups(schedule.id)}
           >
-            View Backups
+            View
           </Button>
         )}
         <Button
