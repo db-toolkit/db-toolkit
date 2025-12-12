@@ -21,10 +21,14 @@ const BackupsPage = lazy(() => import('./pages/BackupsPage'));
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
 const DocumentationPage = lazy(() => import('./pages/DocumentationPage'));
 
+function WorkspaceWrapper() {
+  useWorkspaceShortcuts();
+  return null;
+}
+
 function AppContent() {
   const navigate = useNavigate();
   useMenuActions();
-  useWorkspaceShortcuts();
 
   useEffect(() => {
     const sessionState = JSON.parse(localStorage.getItem('session-state') || '{}');
@@ -45,6 +49,7 @@ function AppContent() {
 
   return (
     <WorkspaceProvider>
+      <WorkspaceWrapper />
       <Layout>
         <Suspense fallback={
           <div className="flex items-center justify-center h-screen">
