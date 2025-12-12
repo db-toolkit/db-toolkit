@@ -347,4 +347,3 @@ function getSchemaAnalyzer() {
 }
 
 module.exports = { SchemaAnalyzer, getSchemaAnalyzer };
-```
