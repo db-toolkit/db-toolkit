@@ -100,6 +100,14 @@ export function QueryResultsPanel({ connectionId, result, executionTime, onSelec
                     </button>
                   </div>
                 </div>
+              ) : totalRows === 0 ? (
+                <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                  <div className="text-center">
+                    <Table size={48} className="mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium mb-2">No rows returned</p>
+                    <p className="text-sm">The query executed successfully but returned no results.</p>
+                  </div>
+                </div>
               ) : (
                 <EditableTable
                   connectionId={connectionId}
