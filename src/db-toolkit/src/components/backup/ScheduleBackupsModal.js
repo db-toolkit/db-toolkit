@@ -1,9 +1,9 @@
-import { X, Download, Trash2, RotateCcw, Database, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { X, Download, Trash2, RotateCcw, Database, CheckCircle, XCircle, Clock, FolderOpen } from 'lucide-react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { EmptyState } from '../common/EmptyState';
 
-export function ScheduleBackupsModal({ isOpen, onClose, schedule, backups, onRestore, onDownload, onDelete }) {
+export function ScheduleBackupsModal({ isOpen, onClose, schedule, backups, onRestore, onDownload, onDelete, onShowInFolder }) {
   const formatSize = (bytes) => {
     if (!bytes) return 'N/A';
     const mb = bytes / (1024 * 1024);
@@ -67,7 +67,7 @@ export function ScheduleBackupsModal({ isOpen, onClose, schedule, backups, onRes
                   </div>
                 )}
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <Button
                     variant="success"
                     size="sm"
@@ -85,6 +85,16 @@ export function ScheduleBackupsModal({ isOpen, onClose, schedule, backups, onRes
                     disabled={backup.status !== 'completed'}
                   >
                     Download
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={<FolderOpen size={14} />}
+                    onClick={() => onShowInFolder(backup.file_path)}
+                    disabled={backup.status !== 'completed'}
+                    title="Show in folder"
+                  >
+                    Show
                   </Button>
                   <Button
                     variant="danger"

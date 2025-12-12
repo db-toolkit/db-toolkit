@@ -1,8 +1,8 @@
-import { Download, Trash2, RotateCcw, Database, CheckCircle, XCircle, Clock, FolderOpen } from 'lucide-react';
+import { Download, Trash2, RotateCcw, Database, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { Button } from '../common/Button';
 import { ProgressBar } from '../common/ProgressBar';
 
-export function BackupCard({ backup, onRestore, onDownload, onDelete, onShowInFolder }) {
+export function BackupCard({ backup, onRestore, onDownload, onDelete }) {
   const formatSize = (bytes) => {
     if (!bytes) return 'N/A';
     const mb = bytes / (1024 * 1024);
@@ -59,7 +59,7 @@ export function BackupCard({ backup, onRestore, onDownload, onDelete, onShowInFo
         </div>
       )}
 
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2">
         <Button
           variant="success"
           size="sm"
@@ -77,16 +77,6 @@ export function BackupCard({ backup, onRestore, onDownload, onDelete, onShowInFo
           disabled={backup.status !== 'completed'}
         >
           Download
-        </Button>
-        <Button
-          variant="secondary"
-          size="sm"
-          icon={<FolderOpen size={16} />}
-          onClick={() => onShowInFolder(backup.file_path)}
-          disabled={backup.status !== 'completed'}
-          title="Show in folder"
-        >
-          Show
         </Button>
         <Button
           variant="danger"

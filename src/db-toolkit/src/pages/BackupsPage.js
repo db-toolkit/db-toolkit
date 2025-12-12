@@ -270,7 +270,6 @@ function BackupsPage() {
               onRestore={handleRestore}
               onDownload={handleDownload}
               onDelete={handleDelete}
-              onShowInFolder={handleShowInFolder}
             />
           ))}
         </div>
@@ -327,6 +326,7 @@ function BackupsPage() {
         onRestore={handleRestore}
         onDownload={handleDownload}
         onDelete={handleDelete}
+        onShowInFolder={handleShowInFolder}
       />
     </motion.div>
   );
