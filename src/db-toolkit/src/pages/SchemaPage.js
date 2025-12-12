@@ -48,7 +48,6 @@ function SchemaPage() {
     try {
       const schemaName = Object.keys(schema.schemas)[0];
       const result = await analyzeSchema(schemaName, forceRefresh);
-      console.log('Schema analysis result:', result);
       setSchemaAnalysis(result);
       setShowAiPanel(true);
       toast.success('Schema analysis complete');
