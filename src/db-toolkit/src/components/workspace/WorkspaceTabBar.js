@@ -7,11 +7,14 @@ import { WorkspaceTab } from './WorkspaceTab';
 import { useNavigate } from 'react-router-dom';
 
 export function WorkspaceTabBar() {
-    const { workspaces, activeWorkspaceId, switchWorkspace, closeWorkspace } = useWorkspace();
+    const { workspaces, activeWorkspaceId, switchWorkspace, closeWorkspace, createWorkspace } = useWorkspace();
     const navigate = useNavigate();
 
-    const handleNewWorkspace = () => {
-        navigate('/connections');
+    const handleNewWorkspace = async () => {
+        const newWorkspace = await createWorkspace(null, `Workspace ${workspaces.length + 1}`, null);
+        if (newWorkspace) {
+            navigate('/connections');
+        }
     };
 
     const handleTabClick = (workspaceId) => {
@@ -30,9 +33,7 @@ export function WorkspaceTabBar() {
         await closeWorkspace(workspaceId);
     };
 
-    if (workspaces.length === 0) {
-        return null;
-    }
+
 
     return (
         <div className="flex items-center bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">

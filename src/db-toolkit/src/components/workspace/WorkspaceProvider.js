@@ -17,10 +17,17 @@ export function WorkspaceProvider({ children }) {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Load workspaces on mount
+    // Load workspaces on mount and create default if none exist
     useEffect(() => {
         loadWorkspaces();
     }, []);
+
+    // Auto-create default workspace if none exist
+    useEffect(() => {
+        if (!loading && workspaces.length === 0) {
+            createWorkspace(null, 'Default Workspace', null);
+        }
+    }, [loading, workspaces.length]);
 
     const loadWorkspaces = useCallback(async () => {
         try {
