@@ -24,7 +24,9 @@ import { GroupByBuilder } from './GroupByBuilder';
 import { OrderByBuilder } from './OrderByBuilder';
 import { LimitBuilder } from './LimitBuilder';
 import { EdgeConfigPanel } from './EdgeConfigPanel';
-import { generateSQL, validateQuery, getJoinTypes } from '../../utils/queryBuilder';
+import { useQueryBuilderState } from './useQueryBuilderState';
+import { useTableOperations } from './useTableOperations';
+import { generateSQL, validateQuery } from '../../utils/queryBuilder';
 
 const nodeTypes = {
   queryTable: QueryTableNode
@@ -35,13 +37,28 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [filters, setFilters] = useState([]);
-  const [groupBy, setGroupBy] = useState([]);
-  const [orderBy, setOrderBy] = useState([]);
-  const [limit, setLimit] = useState(null);
-  const [offset, setOffset] = useState(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [validationErrors, setValidationErrors] = useState([]);
   const [selectedEdge, setSelectedEdge] = useState(null);
+
+  // Use custom hooks for state and operations
+  const {
+    groupBy,
+    setGroupBy,
+    orderBy,
+    setOrderBy,
+    limit,
+    setLimit,
+    offset,
+    setOffset,
+    queryState
+  } = useQueryBuilderState(nodes, edges, selectedColumns, filters);
+
+  const {
+    handleColumnToggle,
+    handleRemoveTable,
+    handleAddTable: addTableToCanvas
+  } = useTableOperations(nodes, setNodes, setEdges, setSelectedColumns);
 
   // Track added tables
   const addedTables = useMemo(() =>
@@ -49,115 +66,15 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
     [nodes]
   );
 
-  // Generate query state
-  const queryState = useMemo(() => {
-    const tables = nodes.map(node => ({ name: node.data.tableName }));
-    const joins = edges.map(edge => {
-      const sourceNode = nodes.find(n => n.id === edge.source);
-      const targetNode = nodes.find(n => n.id === edge.target);
-      return {
-        type: edge.data?.joinType || 'INNER JOIN',
-        sourceTable: sourceNode?.data.tableName,
-        targetTable: targetNode?.data.tableName,
-        sourceColumn: edge.data?.sourceColumn || 'id',
-        targetColumn: edge.data?.targetColumn || 'id'
-      };
-    });
-
-    return {
-      tables,
-      joins,
-      columns: selectedColumns,
-      filters,
-      groupBy,
-      orderBy,
-      limit,
-      offset
-    };
-  }, [nodes, edges, selectedColumns, filters, groupBy, orderBy, limit, offset]);
-
   // Generate SQL with parameters
   const sqlResult = useMemo(() => generateSQL(queryState), [queryState]);
   const sql = sqlResult.sql;
   const params = sqlResult.params;
 
-  // Toggle column selection
-  const handleColumnToggle = useCallback((tableName, column) => {
-    const columnName = column.name || column.column_name;
-    if (!columnName) return;
-
-    const colId = `${tableName}.${columnName}`;
-    setSelectedColumns(prev => {
-      const exists = prev.find(c => `${c.table}.${c.name}` === colId);
-      if (exists) {
-        return prev.filter(c => `${c.table}.${c.name}` !== colId);
-      } else {
-        return [...prev, {
-          table: tableName,
-          name: columnName,
-          type: column.data_type || column.type,
-          aggregate: null,
-          alias: null
-        }];
-      }
-    });
-  }, []);
-
-  // Remove table from canvas
-  const handleRemoveTable = useCallback((tableName) => {
-    setNodes(nds => nds.filter(n => n.data.tableName !== tableName));
-    setEdges(eds => eds.filter(e => {
-      const sourceNode = nodes.find(n => n.id === e.source);
-      const targetNode = nodes.find(n => n.id === e.target);
-      return sourceNode?.data.tableName !== tableName && targetNode?.data.tableName !== tableName;
-    }));
-    setSelectedColumns(cols => cols.filter(c => c.table !== tableName));
-  }, [setNodes, setEdges, nodes]);
-
-  // Add table to canvas with smart positioning
+  // Wrapper for handleAddTable to pass required callbacks
   const handleAddTable = useCallback((table) => {
-    // Smart grid-based positioning to avoid overlaps
-    const gridSize = 350; // Horizontal spacing
-    const rowHeight = 250; // Vertical spacing
-    const startX = 100;
-    const startY = 100;
-    const maxColumns = 3; // Max tables per row
-
-    const existingPositions = nodes.map(n => n.position);
-    let x = startX;
-    let y = startY;
-
-    // Find next available grid position
-    let positionFound = false;
-    for (let row = 0; row < 10 && !positionFound; row++) {
-      for (let col = 0; col < maxColumns && !positionFound; col++) {
-        x = startX + (col * gridSize);
-        y = startY + (row * rowHeight);
-
-        // Check if position is occupied (within 200px)
-        const isOccupied = existingPositions.some(p =>
-          Math.abs(p.x - x) < 200 && Math.abs(p.y - y) < 150
-        );
-
-        if (!isOccupied) {
-          positionFound = true;
-        }
-      }
-    }
-
-    const newNode = {
-      id: table.name,
-      type: 'queryTable',
-      position: { x, y },
-      data: {
-        tableName: table.name,
-        columns: table.columns,
-        onColumnToggle: handleColumnToggle,
-        onRemove: handleRemoveTable
-      }
-    };
-    setNodes(nds => [...nds, newNode]);
-  }, [nodes, setNodes, handleColumnToggle, handleRemoveTable]);
+    addTableToCanvas(table, handleColumnToggle, handleRemoveTable);
+  }, [addTableToCanvas, handleColumnToggle, handleRemoveTable]);
 
   // Update nodes when columns change
   useEffect(() => {
