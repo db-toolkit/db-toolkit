@@ -13,19 +13,12 @@ export function WorkspaceTabBar() {
     const handleNewWorkspace = async () => {
         const newWorkspace = await createWorkspace(null, `Workspace ${workspaces.length + 1}`, null);
         if (newWorkspace) {
-            navigate('/connections');
+            navigate('/');
         }
     };
 
     const handleTabClick = (workspaceId) => {
-        const workspace = workspaces.find(w => w.id === workspaceId);
-        if (workspace) {
-            switchWorkspace(workspaceId);
-            // Navigate to the workspace's last active route
-            if (workspace.state?.activeRoute) {
-                navigate(workspace.state.activeRoute);
-            }
-        }
+        switchWorkspace(workspaceId);
     };
 
     const handleCloseTab = async (workspaceId) => {
