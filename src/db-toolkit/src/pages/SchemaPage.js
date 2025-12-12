@@ -39,24 +39,7 @@ function SchemaPage() {
     setSelectedTable({ schema: schemaName, table: tableName });
   };
 
-  const handleViewData = (schemaName, tableName) => {
-    navigate(`/data-explorer?connection=${connectionId}&schema=${schemaName}&table=${tableName}`);
-  };
 
-  const handleGenerateQuery = (query) => {
-    navigate(`/query/${connectionId}`, { state: { initialQuery: query } });
-  };
-
-  const handleAnalyzeTable = async (schemaName, tableName, tableData) => {
-    try {
-      const result = await analyzeSchema(schemaName, false);
-      setSchemaAnalysis(result);
-      setShowAiPanel(true);
-      toast.success(`Analyzing ${tableName}...`);
-    } catch (err) {
-      toast.error('Failed to analyze table');
-    }
-  };
 
   const handleRefreshTable = async (schemaName, tableName) => {
     try {
@@ -170,9 +153,6 @@ function SchemaPage() {
             <SchemaTree 
               schema={schema} 
               onTableClick={handleTableClick}
-              onViewData={handleViewData}
-              onGenerateQuery={handleGenerateQuery}
-              onAnalyzeWithAI={handleAnalyzeTable}
               onRefreshTable={handleRefreshTable}
               onDropTable={handleDropTable}
             />

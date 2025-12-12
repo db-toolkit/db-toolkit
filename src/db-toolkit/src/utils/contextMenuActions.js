@@ -3,12 +3,8 @@
  */
 
 import { 
-  Eye, 
-  Code, 
-  FileText, 
   Copy, 
   Download, 
-  Bot, 
   RefreshCw, 
   Trash2 
 } from 'lucide-react';
@@ -99,46 +95,11 @@ export function getTableContextMenuItems({
   schemaName,
   tableName,
   tableData,
-  onViewData,
-  onGenerateQuery,
-  onAnalyzeWithAI,
   onRefresh,
   onDrop,
   toast
 }) {
   return [
-    {
-      label: 'View Data (top 100 rows)',
-      icon: <Eye size={16} />,
-      onClick: () => onViewData?.(schemaName, tableName)
-    },
-    {
-      label: 'Generate SELECT *',
-      icon: <Code size={16} />,
-      onClick: () => {
-        const query = generateSelectQuery(schemaName, tableName);
-        onGenerateQuery?.(query);
-        toast?.success('SELECT query generated');
-      }
-    },
-    {
-      label: 'Generate INSERT template',
-      icon: <FileText size={16} />,
-      onClick: () => {
-        const query = generateInsertTemplate(schemaName, tableName, tableData?.columns);
-        onGenerateQuery?.(query);
-        toast?.success('INSERT template generated');
-      }
-    },
-    {
-      label: 'Generate UPDATE template',
-      icon: <FileText size={16} />,
-      onClick: () => {
-        const query = generateUpdateTemplate(schemaName, tableName, tableData?.columns);
-        onGenerateQuery?.(query);
-        toast?.success('UPDATE template generated');
-      }
-    },
     {
       label: 'Copy Table Name',
       icon: <Copy size={16} />,
@@ -148,6 +109,34 @@ export function getTableContextMenuItems({
       }
     },
     {
+      label: 'Copy SELECT Query',
+      icon: <Copy size={16} />,
+      onClick: async () => {
+        const query = generateSelectQuery(schemaName, tableName);
+        const success = await copyToClipboard(query);
+        if (success) toast?.success('SELECT query copied to clipboard');
+      }
+    },
+    {
+      label: 'Copy INSERT Template',
+      icon: <Copy size={16} />,
+      onClick: async () => {
+        const query = generateInsertTemplate(schemaName, tableName, tableData?.columns);
+        const success = await copyToClipboard(query);
+        if (success) toast?.success('INSERT template copied to clipboard');
+      }
+    },
+    {
+      label: 'Copy UPDATE Template',
+      icon: <Copy size={16} />,
+      onClick: async () => {
+        const query = generateUpdateTemplate(schemaName, tableName, tableData?.columns);
+        const success = await copyToClipboard(query);
+        if (success) toast?.success('UPDATE template copied to clipboard');
+      }
+    },
+    { separator: true },
+    {
       label: 'Export Schema as JSON',
       icon: <Download size={16} />,
       onClick: () => {
@@ -156,16 +145,11 @@ export function getTableContextMenuItems({
       }
     },
     {
-      label: 'Analyze with AI',
-      icon: <Bot size={16} />,
-      onClick: () => onAnalyzeWithAI?.(schemaName, tableName, tableData)
-    },
-    { separator: true },
-    {
       label: 'Refresh Table',
       icon: <RefreshCw size={16} />,
       onClick: () => onRefresh?.(schemaName, tableName)
     },
+    { separator: true },
     {
       label: 'Drop Table',
       icon: <Trash2 size={16} />,

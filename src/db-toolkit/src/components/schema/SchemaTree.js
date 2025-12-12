@@ -130,9 +130,6 @@ const SchemaTree = memo(function SchemaTree({
           schemaName: contextMenu.data.schemaName,
           tableName: contextMenu.data.tableName,
           tableData: contextMenu.data.tableData,
-          onViewData,
-          onGenerateQuery,
-          onAnalyzeWithAI,
           onRefresh: onRefreshTable,
           onDrop: onDropTable,
           toast
