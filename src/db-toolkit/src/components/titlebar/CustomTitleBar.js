@@ -8,7 +8,7 @@ import { Tooltip } from '../common/Tooltip';
 
 export function CustomTitleBar({ onToggleSidebar }) {
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    const [workspacesEnabled, setWorkspacesEnabled] = useState(true);
+    const [workspacesEnabled, setWorkspacesEnabled] = useState(null);
 
     useEffect(() => {
         const loadSettings = async () => {
@@ -47,7 +47,9 @@ export function CustomTitleBar({ onToggleSidebar }) {
                 </div>
 
                 {/* Workspace tabs or app title */}
-                {workspacesEnabled ? (
+                {workspacesEnabled === null ? (
+                    <div className="flex-1" />
+                ) : workspacesEnabled ? (
                     <div className="flex-1">
                         <WorkspaceTabBar />
                     </div>
