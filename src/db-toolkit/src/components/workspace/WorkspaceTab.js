@@ -106,6 +106,7 @@ export function WorkspaceTab({ workspace, isActive, onClick, onClose, onUpdate, 
                     : 'border-transparent bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600'
                 }
       `}
+            style={{ WebkitAppRegion: 'no-drag' }}
         >
             {/* Connection Type Icon */}
             <div

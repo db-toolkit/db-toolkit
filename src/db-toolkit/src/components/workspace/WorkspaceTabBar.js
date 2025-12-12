@@ -11,6 +11,7 @@ export function WorkspaceTabBar() {
     const { workspaces, activeWorkspaceId, switchWorkspace, closeWorkspace, createWorkspace, updateWorkspace } = useWorkspace();
     const navigate = useNavigate();
     const [draggedIndex, setDraggedIndex] = useState(null);
+    const [dragOverIndex, setDragOverIndex] = useState(null);
 
     const handleNewWorkspace = async () => {
         const newWorkspace = await createWorkspace(null, `Workspace ${workspaces.length + 1}`, null);
@@ -28,33 +29,44 @@ export function WorkspaceTabBar() {
     };
 
     const handleDragStart = (e, index) => {
-        setDraggedIndex(index);
         e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', index);
+        setDraggedIndex(index);
     };
 
     const handleDragOver = (e, index) => {
         e.preventDefault();
+        e.stopPropagation();
         if (draggedIndex === null || draggedIndex === index) return;
-        setDraggedIndex(index);
+        setDragOverIndex(index);
     };
 
-    const handleDragEnd = (e, index) => {
+    const handleDrop = (e, dropIndex) => {
         e.preventDefault();
-        if (draggedIndex === null || draggedIndex === index) {
+        e.stopPropagation();
+        
+        if (draggedIndex === null || draggedIndex === dropIndex) {
             setDraggedIndex(null);
+            setDragOverIndex(null);
             return;
         }
 
         const newWorkspaces = [...workspaces];
         const draggedItem = newWorkspaces[draggedIndex];
         newWorkspaces.splice(draggedIndex, 1);
-        newWorkspaces.splice(index, 0, draggedItem);
+        newWorkspaces.splice(dropIndex, 0, draggedItem);
 
         newWorkspaces.forEach((ws, idx) => {
             updateWorkspace(ws.id, { order: idx });
         });
 
         setDraggedIndex(null);
+        setDragOverIndex(null);
+    };
+
+    const handleDragEnd = () => {
+        setDraggedIndex(null);
+        setDragOverIndex(null);
     };
 
 
@@ -69,8 +81,9 @@ export function WorkspaceTabBar() {
                         draggable
                         onDragStart={(e) => handleDragStart(e, index)}
                         onDragOver={(e) => handleDragOver(e, index)}
-                        onDrop={(e) => handleDragEnd(e, index)}
-                        onDragEnd={() => setDraggedIndex(null)}
+                        onDrop={(e) => handleDrop(e, index)}
+                        onDragEnd={handleDragEnd}
+                        className={`${dragOverIndex === index && draggedIndex !== index ? 'border-l-2 border-green-500' : ''}`}
                     >
                         <WorkspaceTab
                             workspace={workspace}
@@ -88,6 +101,7 @@ export function WorkspaceTabBar() {
             <button
                 onClick={handleNewWorkspace}
                 className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-shrink-0"
+                style={{ WebkitAppRegion: 'no-drag' }}
                 title="Open new workspace"
             >
                 <Plus size={16} />

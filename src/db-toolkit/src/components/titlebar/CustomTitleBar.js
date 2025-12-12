@@ -25,7 +25,7 @@ export function CustomTitleBar({ onToggleSidebar }) {
                 </div>
 
                 {/* Workspace tabs (center) */}
-                <div className="flex-1" style={{ WebkitAppRegion: 'no-drag' }}>
+                <div className="flex-1">
                     <WorkspaceTabBar />
                 </div>
             </div>
