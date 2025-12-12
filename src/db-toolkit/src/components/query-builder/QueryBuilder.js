@@ -79,6 +79,39 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
   const sql = sqlResult.sql;
   const params = sqlResult.params;
 
+  // Toggle column selection
+  const handleColumnToggle = useCallback((tableName, column) => {
+    const columnName = column.name || column.column_name;
+    if (!columnName) return;
+
+    const colId = `${tableName}.${columnName}`;
+    setSelectedColumns(prev => {
+      const exists = prev.find(c => `${c.table}.${c.name}` === colId);
+      if (exists) {
+        return prev.filter(c => `${c.table}.${c.name}` !== colId);
+      } else {
+        return [...prev, {
+          table: tableName,
+          name: columnName,
+          type: column.data_type || column.type,
+          aggregate: null,
+          alias: null
+        }];
+      }
+    });
+  }, []);
+
+  // Remove table from canvas
+  const handleRemoveTable = useCallback((tableName) => {
+    setNodes(nds => nds.filter(n => n.data.tableName !== tableName));
+    setEdges(eds => eds.filter(e => {
+      const sourceNode = nodes.find(n => n.id === e.source);
+      const targetNode = nodes.find(n => n.id === e.target);
+      return sourceNode?.data.tableName !== tableName && targetNode?.data.tableName !== tableName;
+    }));
+    setSelectedColumns(cols => cols.filter(c => c.table !== tableName));
+  }, [setNodes, setEdges, nodes]);
+
   // Add table to canvas with smart positioning
   const handleAddTable = useCallback((table) => {
     // Smart grid-based positioning to avoid overlaps
@@ -123,39 +156,6 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
     };
     setNodes(nds => [...nds, newNode]);
   }, [nodes, setNodes, handleColumnToggle, handleRemoveTable]);
-
-  // Remove table from canvas
-  const handleRemoveTable = useCallback((tableName) => {
-    setNodes(nds => nds.filter(n => n.data.tableName !== tableName));
-    setEdges(eds => eds.filter(e => {
-      const sourceNode = nodes.find(n => n.id === e.source);
-      const targetNode = nodes.find(n => n.id === e.target);
-      return sourceNode?.data.tableName !== tableName && targetNode?.data.tableName !== tableName;
-    }));
-    setSelectedColumns(cols => cols.filter(c => c.table !== tableName));
-  }, [setNodes, setEdges, nodes]);
-
-  // Toggle column selection
-  const handleColumnToggle = useCallback((tableName, column) => {
-    const columnName = column.name || column.column_name;
-    if (!columnName) return;
-
-    const colId = `${tableName}.${columnName}`;
-    setSelectedColumns(prev => {
-      const exists = prev.find(c => `${c.table}.${c.name}` === colId);
-      if (exists) {
-        return prev.filter(c => `${c.table}.${c.name}` !== colId);
-      } else {
-        return [...prev, {
-          table: tableName,
-          name: columnName,
-          type: column.data_type || column.type,
-          aggregate: null,
-          alias: null
-        }];
-      }
-    });
-  }, []);
 
   // Update nodes when columns change
   useEffect(() => {
