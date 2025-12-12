@@ -2,30 +2,18 @@
  * Main visual query builder component
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import ReactFlow, {
-  Background,
-  Controls,
-  MiniMap,
-  useNodesState,
-  useEdgesState,
-  addEdge
-} from 'reactflow';
-import Split from 'react-split';
+import { useNodesState, useEdgesState, addEdge } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { X } from 'lucide-react';
 import { Button } from '../common/Button';
 import QueryTableNode from './QueryTableNode';
 import { TableSelector } from './TableSelector';
-import { ColumnSelector } from './ColumnSelector';
-import { FilterBuilder } from './FilterBuilder';
-import { SQLPreview } from './SQLPreview';
-import { ErrorDisplay } from './ErrorDisplay';
-import { GroupByBuilder } from './GroupByBuilder';
-import { OrderByBuilder } from './OrderByBuilder';
-import { LimitBuilder } from './LimitBuilder';
+import { QueryCanvas } from './QueryCanvas';
+import { QueryConfigSidebar } from './QueryConfigSidebar';
 import { EdgeConfigPanel } from './EdgeConfigPanel';
 import { useQueryBuilderState } from './useQueryBuilderState';
 import { useTableOperations } from './useTableOperations';
+import { useColumnFilterOperations } from './useColumnFilterOperations';
 import { generateSQL, validateQuery } from '../../utils/queryBuilder';
 
 const nodeTypes = {
@@ -41,30 +29,18 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
   const [validationErrors, setValidationErrors] = useState([]);
   const [selectedEdge, setSelectedEdge] = useState(null);
 
-  // Use custom hooks for state and operations
-  const {
-    groupBy,
-    setGroupBy,
-    orderBy,
-    setOrderBy,
-    limit,
-    setLimit,
-    offset,
-    setOffset,
-    queryState
-  } = useQueryBuilderState(nodes, edges, selectedColumns, filters);
+  // Use custom hooks
+  const { groupBy, setGroupBy, orderBy, setOrderBy, limit, setLimit, offset, setOffset, queryState } =
+    useQueryBuilderState(nodes, edges, selectedColumns, filters);
 
-  const {
-    handleColumnToggle,
-    handleRemoveTable,
-    handleAddTable: addTableToCanvas
-  } = useTableOperations(nodes, setNodes, setEdges, setSelectedColumns);
+  const { handleColumnToggle, handleRemoveTable, handleAddTable: addTableToCanvas } =
+    useTableOperations(nodes, setNodes, setEdges, setSelectedColumns);
+
+  const { handleUpdateColumn, handleRemoveColumn, handleReorderColumn, handleAddFilter, handleUpdateFilter, handleRemoveFilter } =
+    useColumnFilterOperations(setSelectedColumns, setFilters);
 
   // Track added tables
-  const addedTables = useMemo(() =>
-    nodes.map(node => node.data.tableName),
-    [nodes]
-  );
+  const addedTables = useMemo(() => nodes.map(node => node.data.tableName), [nodes]);
 
   // Generate SQL with parameters
   const sqlResult = useMemo(() => generateSQL(queryState), [queryState]);
@@ -120,42 +96,6 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
     ));
   }, [selectedEdge, setEdges]);
 
-  // Update column
-  const handleUpdateColumn = useCallback((idx, updates) => {
-    setSelectedColumns(prev => prev.map((col, i) =>
-      i === idx ? { ...col, ...updates } : col
-    ));
-  }, []);
-
-  // Remove column
-  const handleRemoveColumn = useCallback((idx) => {
-    setSelectedColumns(prev => prev.filter((_, i) => i !== idx));
-  }, []);
-
-  // Reorder columns
-  const handleReorderColumn = useCallback((fromIdx, toIdx) => {
-    if (toIdx < 0 || toIdx >= selectedColumns.length) return;
-    setSelectedColumns(prev => {
-      const newCols = [...prev];
-      const [moved] = newCols.splice(fromIdx, 1);
-      newCols.splice(toIdx, 0, moved);
-      return newCols;
-    });
-  }, [selectedColumns]);
-
-  // Filter operations
-  const handleAddFilter = useCallback((filter) => {
-    setFilters(prev => [...prev, filter]);
-  }, []);
-
-  const handleUpdateFilter = useCallback((id, updates) => {
-    setFilters(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
-  }, []);
-
-  const handleRemoveFilter = useCallback((id) => {
-    setFilters(prev => prev.filter(f => f.id !== id));
-  }, []);
-
   // Execute query
   const handleExecute = async () => {
     const validation = validateQuery(queryState);
@@ -199,94 +139,43 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
         />
 
         {/* Canvas */}
-        <div className="flex-1 flex flex-col">
-          <Split
-            direction="vertical"
-            sizes={[70, 30]}
-            minSize={[300, 150]}
-            gutterSize={8}
-            className="flex flex-col h-full"
-          >
-            <div className="overflow-hidden">
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onEdgeClick={onEdgeClick}
-                nodeTypes={nodeTypes}
-                fitView
-                minZoom={0.2}
-                maxZoom={1.5}
-              >
-                <Background />
-                <Controls />
-                <MiniMap />
-              </ReactFlow>
-            </div>
+        <QueryCanvas
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          validationErrors={validationErrors}
+          sql={sql}
+          isExecuting={isExecuting}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onEdgeClick={onEdgeClick}
+          onDismissErrors={() => setValidationErrors([])}
+          onExecute={handleExecute}
+        />
 
-            {/* SQL Preview with Error Display */}
-            <div className="overflow-hidden">
-              <ErrorDisplay
-                errors={validationErrors}
-                onDismiss={() => setValidationErrors([])}
-              />
-              <SQLPreview
-                sql={sql}
-                onExecute={handleExecute}
-                isExecuting={isExecuting}
-              />
-            </div>
-          </Split>
-        </div>
-
-        {/* Right Sidebar - Column & Filter Config */}
-        <div className="w-80 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 overflow-y-auto p-4 space-y-6">
-          <ColumnSelector
-            columns={selectedColumns}
-            onUpdateColumn={handleUpdateColumn}
-            onRemoveColumn={handleRemoveColumn}
-            onReorder={handleReorderColumn}
-          />
-
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-            <FilterBuilder
-              filters={filters}
-              tables={nodes.map(n => ({ name: n.data.tableName, columns: n.data.columns }))}
-              onAddFilter={handleAddFilter}
-              onUpdateFilter={handleUpdateFilter}
-              onRemoveFilter={handleRemoveFilter}
-            />
-          </div>
-
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-            <GroupByBuilder
-              columns={selectedColumns}
-              groupBy={groupBy}
-              onUpdate={setGroupBy}
-            />
-          </div>
-
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-            <OrderByBuilder
-              columns={selectedColumns}
-              orderBy={orderBy}
-              onUpdate={setOrderBy}
-            />
-          </div>
-
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-            <LimitBuilder
-              limit={limit}
-              offset={offset}
-              onUpdate={({ limit: newLimit, offset: newOffset }) => {
-                setLimit(newLimit);
-                setOffset(newOffset);
-              }}
-            />
-          </div>
-        </div>
+        {/* Right Sidebar */}
+        <QueryConfigSidebar
+          selectedColumns={selectedColumns}
+          filters={filters}
+          groupBy={groupBy}
+          orderBy={orderBy}
+          limit={limit}
+          offset={offset}
+          nodes={nodes}
+          onUpdateColumn={handleUpdateColumn}
+          onRemoveColumn={handleRemoveColumn}
+          onReorderColumn={handleReorderColumn}
+          onAddFilter={handleAddFilter}
+          onUpdateFilter={handleUpdateFilter}
+          onRemoveFilter={handleRemoveFilter}
+          onUpdateGroupBy={setGroupBy}
+          onUpdateOrderBy={setOrderBy}
+          onUpdateLimit={({ limit: newLimit, offset: newOffset }) => {
+            setLimit(newLimit);
+            setOffset(newOffset);
+          }}
+        />
       </div>
 
       {/* Edge Configuration Modal */}
