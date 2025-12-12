@@ -54,8 +54,8 @@ export function CustomTitleBar({ onToggleSidebar }) {
                         <WorkspaceTabBar />
                     </div>
                 ) : (
-                    <div className="flex-1 flex items-center justify-center">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">DB Toolkit</span>
+                    <div className="flex-1 flex items-center justify-center" style={{ WebkitAppRegion: 'drag' }}>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300" style={{ WebkitAppRegion: 'no-drag' }}>DB Toolkit</span>
                     </div>
                 )}
             </div>
