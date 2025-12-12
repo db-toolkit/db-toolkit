@@ -23,6 +23,7 @@ import { ErrorDisplay } from './ErrorDisplay';
 import { GroupByBuilder } from './GroupByBuilder';
 import { OrderByBuilder } from './OrderByBuilder';
 import { LimitBuilder } from './LimitBuilder';
+import { EdgeConfigPanel } from './EdgeConfigPanel';
 import { generateSQL, validateQuery, getJoinTypes } from '../../utils/queryBuilder';
 
 const nodeTypes = {
@@ -40,6 +41,7 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
   const [offset, setOffset] = useState(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [validationErrors, setValidationErrors] = useState([]);
+  const [selectedEdge, setSelectedEdge] = useState(null);
 
   // Track added tables
   const addedTables = useMemo(() =>
@@ -184,6 +186,23 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
     setEdges(eds => addEdge(newEdge, eds));
   }, [setEdges]);
 
+  // Handle edge click for configuration
+  const onEdgeClick = useCallback((event, edge) => {
+    event.stopPropagation();
+    setSelectedEdge(edge);
+  }, []);
+
+  // Handle edge update
+  const handleEdgeUpdate = useCallback((updates) => {
+    if (!selectedEdge) return;
+
+    setEdges(eds => eds.map(e =>
+      e.id === selectedEdge.id
+        ? { ...e, data: { ...e.data, ...updates } }
+        : e
+    ));
+  }, [selectedEdge, setEdges]);
+
   // Update column
   const handleUpdateColumn = useCallback((idx, updates) => {
     setSelectedColumns(prev => prev.map((col, i) =>
@@ -278,6 +297,7 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
+                onEdgeClick={onEdgeClick}
                 nodeTypes={nodeTypes}
                 fitView
                 minZoom={0.2}
@@ -351,6 +371,17 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
           </div>
         </div>
       </div>
+
+      {/* Edge Configuration Modal */}
+      {selectedEdge && (
+        <EdgeConfigPanel
+          edge={selectedEdge}
+          tables={nodes}
+          onUpdate={handleEdgeUpdate}
+          onClose={() => setSelectedEdge(null)}
+        />
+      )}
     </div>
   );
 }
+```
