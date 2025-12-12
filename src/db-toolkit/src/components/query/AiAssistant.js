@@ -1,7 +1,7 @@
 /**
  * AI Assistant panel for Query Editor
  */
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bot,
@@ -38,6 +38,77 @@ export function AiAssistant({
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  // Scope for schema context: 'table' | 'schema' | 'all'
+  const [schemaScope, setSchemaScope] = useState('all');
+
+  const extractTableFromQuery = (query) => {
+    if (!query) return null;
+    const match = query.match(/FROM\s+(?:([\w"]+)\.)?([\w"]+)/i);
+    if (match) {
+      const table = match[2]?.replace(/"/g, '');
+      return table || null;
+    }
+    return null;
+  };
+
+  const buildSchemaContext = useMemo(() => {
+    const normalizeColumns = (cols = []) =>
+      (cols || []).map(col => ({
+        name: col.name || col.column_name,
+        type: col.type || col.data_type,
+      }));
+
+    const tableMap = {};
+    const targetTable = extractTableFromQuery(currentQuery);
+
+    if (!schemaContext) return { tables: tableMap };
+
+    const addTable = (tableName, tableDef = {}) => {
+      if (!tableName || tableMap[tableName]) return;
+      tableMap[tableName] = {
+        columns: normalizeColumns(tableDef.columns || []),
+        sample_data: tableDef.sample_data || [],
+      };
+    };
+
+    if (schemaContext.schemas) {
+      const schemas = Object.values(schemaContext.schemas);
+      const selectedSchema = () => {
+        if (schemaScope === 'schema' && targetTable) {
+          return schemas.find(s => s.tables && s.tables[targetTable]) || schemas[0];
+        }
+        return schemas[0];
+      };
+
+      schemas.forEach(s => {
+        Object.entries(s.tables || {}).forEach(([tableName, tableDef]) => {
+          if (schemaScope === 'table' && targetTable) {
+            if (tableName === targetTable) addTable(tableName, tableDef);
+          } else if (schemaScope === 'schema') {
+            if (selectedSchema() === s) addTable(tableName, tableDef);
+          } else {
+            addTable(tableName, tableDef);
+          }
+        });
+      });
+    } else if (schemaContext.tables) {
+      Object.entries(schemaContext.tables || {}).forEach(([tableName, tableDef]) => {
+        if (schemaScope === 'table' && targetTable) {
+          if (tableName === targetTable) addTable(tableName, tableDef);
+        } else {
+          addTable(tableName, tableDef);
+        }
+      });
+    } else {
+      // Fallback: if schemaContext is already a map of tables
+      Object.entries(schemaContext || {}).forEach(([tableName, tableDef]) => {
+        addTable(tableName, tableDef);
+      });
+    }
+
+    return { tables: tableMap };
+  }, [schemaContext, schemaScope, currentQuery]);
 
   // Auto-scroll to latest message
   useEffect(() => {
@@ -87,8 +158,11 @@ export function AiAssistant({
     }
 
     const input = naturalLanguage.trim();
-    const userMessage = { role: 'user', content: input, type: 'text' };
-    onChatUpdate([...chatHistory, userMessage]);
+    const userMessage = { id: `user-${Date.now()}`, role: 'user', content: input, type: 'text' };
+    const baseHistory = [...chatHistory, userMessage];
+    const loadingId = `assistant-${Date.now()}`;
+    const loadingMessage = { id: loadingId, role: 'assistant', content: 'Generating...', type: 'loading' };
+    onChatUpdate([...baseHistory, loadingMessage]);
 
     // Check if it's a conversational input
     if (!isQueryRequest(input)) {
@@ -106,8 +180,8 @@ export function AiAssistant({
       const lowerInput = input.toLowerCase();
       let response = responses[lowerInput] || 'I\'m here to help you generate SQL queries. Try describing what data you want to retrieve from your database.';
 
-      const assistantMessage = { role: 'assistant', content: response, type: 'text' };
-      onChatUpdate([...chatHistory, userMessage, assistantMessage]);
+      const assistantMessage = { id: loadingId, role: 'assistant', content: response, type: 'text' };
+      onChatUpdate([...baseHistory, assistantMessage]);
       setNaturalLanguage('');
       return;
     }
@@ -115,32 +189,32 @@ export function AiAssistant({
     // Generate SQL for query requests
     try {
       // Check if schema is valid
-      if (!schemaContext || !schemaContext.tables || schemaContext.tables.error || schemaContext.tables.success === false) {
+      if (!buildSchemaContext || !buildSchemaContext.tables || Object.keys(buildSchemaContext.tables).length === 0) {
         const errorMsg = 'Cannot generate query: Database schema not loaded. Please reconnect to the database.';
         const assistantMessage = { role: 'assistant', content: errorMsg, type: 'error' };
-        onChatUpdate([...chatHistory, userMessage, assistantMessage]);
+        onChatUpdate([...baseHistory, assistantMessage]);
         toast.error(errorMsg);
         setNaturalLanguage('');
         return;
       }
 
-      console.log('Generating query with schema:', schemaContext);
-      const result = await generateQuery(input, schemaContext);
+      console.log('Generating query with schema:', buildSchemaContext);
+      const result = await generateQuery(input, buildSchemaContext);
       if (result.success && result.sql) {
-        const assistantMessage = { role: 'assistant', content: result.sql, type: 'sql' };
-        onChatUpdate([...chatHistory, userMessage, assistantMessage]);
+        const assistantMessage = { id: loadingId, role: 'assistant', content: result.sql, type: 'sql' };
+        onChatUpdate([...baseHistory, assistantMessage]);
         onQueryGenerated(result.sql);
         toast.success('Query generated successfully');
         setNaturalLanguage('');
       } else {
         const errorMessage = { role: 'assistant', content: result.error || 'Failed to generate query', type: 'error' };
-        onChatUpdate([...chatHistory, userMessage, errorMessage]);
+        onChatUpdate([...baseHistory, errorMessage]);
         toast.error(result.error || 'Failed to generate query');
         setNaturalLanguage('');
       }
     } catch (err) {
       const errorMessage = { role: 'assistant', content: err.message, type: 'error' };
-      onChatUpdate([...chatHistory, userMessage, errorMessage]);
+      onChatUpdate([...baseHistory, errorMessage]);
       toast.error(err.message);
       setNaturalLanguage('');
     }
@@ -165,6 +239,24 @@ export function AiAssistant({
         </button>
       </div>
 
+      {/* Scope controls */}
+      <div className="flex-shrink-0 px-4 py-2 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+        <span className="font-medium text-gray-700 dark:text-gray-200">Schema scope:</span>
+        {['table', 'schema', 'all'].map(scope => (
+          <button
+            key={scope}
+            onClick={() => setSchemaScope(scope)}
+            className={`px-2 py-1 rounded border text-xs transition ${
+              schemaScope === scope
+                ? 'border-green-500 text-green-600 dark:text-green-300 bg-green-50 dark:bg-green-900/20'
+                : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            {scope === 'table' ? 'Current table' : scope === 'schema' ? 'Schema' : 'All tables'}
+          </button>
+        ))}
+      </div>
+
       {/* Content */}
       <div ref={chatContainerRef} className="flex-1 p-4 overflow-y-auto min-h-0">
         <div className="space-y-3 mb-4">
@@ -174,16 +266,26 @@ export function AiAssistant({
             </div>
           ) : (
             chatHistory.map((msg, idx) => (
-              <div key={idx} className={`p-3 rounded-lg ${msg.role === 'user'
+              <div key={msg.id || idx} className={`p-3 rounded-lg ${msg.role === 'user'
                 ? 'bg-green-50 dark:bg-green-900/20 ml-4'
                 : 'bg-gray-50 dark:bg-gray-900 mr-4'
                 }`}>
                 <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                   {msg.role === 'user' ? 'You' : 'DBAssist'}
                 </div>
-                <div className={`text-sm ${msg.type === 'sql' ? 'font-mono bg-gray-800 dark:bg-gray-950 text-green-400 p-2 rounded' : 'text-gray-700 dark:text-gray-300'
+                <div className={`text-sm ${
+                  msg.type === 'sql'
+                    ? 'font-mono bg-gray-800 dark:bg-gray-950 text-green-400 p-2 rounded'
+                    : 'text-gray-700 dark:text-gray-300'
                   }`}>
-                  {msg.content}
+                  {msg.type === 'loading' ? (
+                    <span className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Streaming response...</span>
+                    </span>
+                  ) : (
+                    msg.content
+                  )}
                 </div>
               </div>
             ))

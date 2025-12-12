@@ -372,7 +372,7 @@ function QueryPage() {
                 console.log('Query optimized:', result);
               }}
               lastError={error}
-              schemaContext={{ tables: schema }}
+              schemaContext={schema}
               isVisible={showAiAssistant}
               onClose={() => setShowAiAssistant(false)}
               chatHistory={activeTab?.chatHistory || []}
