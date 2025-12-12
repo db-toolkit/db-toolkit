@@ -19,6 +19,7 @@ import { TableSelector } from './TableSelector';
 import { ColumnSelector } from './ColumnSelector';
 import { FilterBuilder } from './FilterBuilder';
 import { SQLPreview } from './SQLPreview';
+import { ErrorDisplay } from './ErrorDisplay';
 import { generateSQL, validateQuery, getJoinTypes } from '../../utils/queryBuilder';
 
 const nodeTypes = {
@@ -31,9 +32,10 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [filters, setFilters] = useState([]);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState([]);
 
   // Track added tables
-  const addedTables = useMemo(() => 
+  const addedTables = useMemo(() =>
     nodes.map(node => node.data.tableName),
     [nodes]
   );
@@ -60,32 +62,60 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
       filters,
       groupBy: [],
       orderBy: [],
-      limit: null
+      limit: null,
+      offset: null
     };
   }, [nodes, edges, selectedColumns, filters]);
 
-  // Generate SQL
-  const sql = useMemo(() => generateSQL(queryState), [queryState]);
+  // Generate SQL with parameters
+  const sqlResult = useMemo(() => generateSQL(queryState), [queryState]);
+  const sql = sqlResult.sql;
+  const params = sqlResult.params;
 
-  // Add table to canvas
+  // Add table to canvas with smart positioning
   const handleAddTable = useCallback((table) => {
+    // Smart grid-based positioning to avoid overlaps
+    const gridSize = 350; // Horizontal spacing
+    const rowHeight = 250; // Vertical spacing
+    const startX = 100;
+    const startY = 100;
+    const maxColumns = 3; // Max tables per row
+
+    const existingPositions = nodes.map(n => n.position);
+    let x = startX;
+    let y = startY;
+
+    // Find next available grid position
+    let positionFound = false;
+    for (let row = 0; row < 10 && !positionFound; row++) {
+      for (let col = 0; col < maxColumns && !positionFound; col++) {
+        x = startX + (col * gridSize);
+        y = startY + (row * rowHeight);
+
+        // Check if position is occupied (within 200px)
+        const isOccupied = existingPositions.some(p =>
+          Math.abs(p.x - x) < 200 && Math.abs(p.y - y) < 150
+        );
+
+        if (!isOccupied) {
+          positionFound = true;
+        }
+      }
+    }
+
     const newNode = {
       id: table.name,
       type: 'queryTable',
-      position: { 
-        x: Math.random() * 400 + 100, 
-        y: Math.random() * 300 + 100 
-      },
+      position: { x, y },
       data: {
         tableName: table.name,
         columns: table.columns,
-        selectedColumns: selectedColumns.map(c => `${c.table}.${c.name}`),
         onColumnToggle: handleColumnToggle,
         onRemove: handleRemoveTable
       }
     };
     setNodes(nds => [...nds, newNode]);
-  }, [selectedColumns, setNodes]);
+  }, [nodes, setNodes, handleColumnToggle, handleRemoveTable]);
 
   // Remove table from canvas
   const handleRemoveTable = useCallback((tableName) => {
@@ -102,7 +132,7 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
   const handleColumnToggle = useCallback((tableName, column) => {
     const columnName = column.name || column.column_name;
     if (!columnName) return;
-    
+
     const colId = `${tableName}.${columnName}`;
     setSelectedColumns(prev => {
       const exists = prev.find(c => `${c.table}.${c.name}` === colId);
@@ -149,7 +179,7 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
 
   // Update column
   const handleUpdateColumn = useCallback((idx, updates) => {
-    setSelectedColumns(prev => prev.map((col, i) => 
+    setSelectedColumns(prev => prev.map((col, i) =>
       i === idx ? { ...col, ...updates } : col
     ));
   }, []);
@@ -187,13 +217,19 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
   const handleExecute = async () => {
     const validation = validateQuery(queryState);
     if (!validation.valid) {
-      alert(validation.errors.join('\n'));
+      setValidationErrors(validation.errors);
       return;
     }
 
+    // Clear any previous errors
+    setValidationErrors([]);
     setIsExecuting(true);
+
     try {
-      await onExecuteQuery(sql);
+      // Pass SQL with parameters to execution handler
+      await onExecuteQuery(sql, params);
+    } catch (error) {
+      setValidationErrors([error.message || 'Failed to execute query']);
     } finally {
       setIsExecuting(false);
     }
@@ -213,8 +249,8 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
 
       <div className="flex-1 flex overflow-hidden">
         {/* Table Selector */}
-        <TableSelector 
-          schema={schema} 
+        <TableSelector
+          schema={schema}
           onAddTable={handleAddTable}
           addedTables={addedTables}
         />
@@ -246,10 +282,14 @@ export function QueryBuilder({ schema, onClose, onExecuteQuery }) {
               </ReactFlow>
             </div>
 
-            {/* SQL Preview */}
+            {/* SQL Preview with Error Display */}
             <div className="overflow-hidden">
-              <SQLPreview 
-                sql={sql} 
+              <ErrorDisplay
+                errors={validationErrors}
+                onDismiss={() => setValidationErrors([])}
+              />
+              <SQLPreview
+                sql={sql}
                 onExecute={handleExecute}
                 isExecuting={isExecuting}
               />

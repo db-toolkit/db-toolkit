@@ -3,52 +3,99 @@
  */
 
 /**
- * Generate SQL SELECT statement from query state
+ * Escape SQL identifiers (table and column names) to prevent injection
+ * @param {string} identifier - Table or column name
+ * @returns {string} Escaped identifier
+ */
+function escapeIdentifier(identifier) {
+  // Remove any existing quotes and escape special characters
+  return identifier.replace(/[^\w]/g, '');
+}
+
+/**
+ * Generate SQL SELECT statement from query state with parameterized values
+ * @param {Object} queryState - Query configuration
+ * @returns {Object} Object with sql string and params array
  */
 export function generateSQL(queryState) {
-  const { tables, joins, columns, filters, groupBy, orderBy, limit } = queryState;
+  const { tables, joins, columns, filters, groupBy, orderBy, limit, offset } = queryState;
 
   if (!tables.length || !columns.length) {
-    return '';
+    return { sql: '', params: [] };
   }
 
+  const params = [];
+  let paramIndex = 1;
   let sql = 'SELECT ';
 
   // Columns
   sql += columns.map(col => {
-    let colStr = `${col.table}.${col.name}`;
+    const table = escapeIdentifier(col.table);
+    const name = escapeIdentifier(col.name);
+    let colStr = `${table}.${name}`;
+
     if (col.aggregate) {
-      colStr = `${col.aggregate}(${colStr})`;
+      const aggregate = escapeIdentifier(col.aggregate);
+      colStr = `${aggregate}(${colStr})`;
     }
     if (col.alias) {
-      colStr += ` AS ${col.alias}`;
+      const alias = escapeIdentifier(col.alias);
+      colStr += ` AS ${alias}`;
     }
     return colStr;
   }).join(', ');
 
   // FROM
-  sql += `\nFROM ${tables[0].name}`;
+  sql += `\nFROM ${escapeIdentifier(tables[0].name)}`;
 
   // JOINs
   joins.forEach(join => {
-    sql += `\n${join.type} ${join.targetTable} ON ${join.sourceTable}.${join.sourceColumn} = ${join.targetTable}.${join.targetColumn}`;
+    const joinType = join.type || 'INNER JOIN';
+    const sourceTable = escapeIdentifier(join.sourceTable);
+    const targetTable = escapeIdentifier(join.targetTable);
+    const sourceColumn = escapeIdentifier(join.sourceColumn);
+    const targetColumn = escapeIdentifier(join.targetColumn);
+
+    sql += `\n${joinType} ${targetTable} ON ${sourceTable}.${sourceColumn} = ${targetTable}.${targetColumn}`;
   });
 
   // WHERE
   if (filters.length > 0) {
     sql += '\nWHERE ';
     sql += filters.map((filter, idx) => {
-      let condition = `${filter.table}.${filter.column} ${filter.operator} `;
+      const table = escapeIdentifier(filter.table);
+      const column = escapeIdentifier(filter.column);
+      let condition = `${table}.${column} ${filter.operator} `;
+
       if (filter.operator === 'IN') {
-        condition += `(${filter.value})`;
+        // Handle IN operator with multiple values
+        const values = Array.isArray(filter.value) ? filter.value : filter.value.split(',').map(v => v.trim());
+        const placeholders = values.map(() => {
+          params.push(values[paramIndex - 1]);
+          return `$${paramIndex++}`;
+        }).join(', ');
+        condition += `(${placeholders})`;
       } else if (filter.operator === 'BETWEEN') {
-        condition += `${filter.value[0]} AND ${filter.value[1]}`;
+        // Handle BETWEEN operator
+        const values = Array.isArray(filter.value) ? filter.value : [filter.value[0], filter.value[1]];
+        params.push(values[0]);
+        const placeholder1 = `$${paramIndex++}`;
+        params.push(values[1]);
+        const placeholder2 = `$${paramIndex++}`;
+        condition += `${placeholder1} AND ${placeholder2}`;
       } else if (filter.operator === 'IS NULL' || filter.operator === 'IS NOT NULL') {
-        condition = `${filter.table}.${filter.column} ${filter.operator}`;
+        // No value needed for NULL checks
+        condition = `${table}.${column} ${filter.operator}`;
+      } else if (filter.operator === 'LIKE') {
+        // Handle LIKE operator
+        params.push(filter.value);
+        condition += `$${paramIndex++}`;
       } else {
-        condition += typeof filter.value === 'string' ? `'${filter.value}'` : filter.value;
+        // Standard operators (=, !=, >, <, >=, <=)
+        params.push(filter.value);
+        condition += `$${paramIndex++}`;
       }
-      
+
       if (idx < filters.length - 1) {
         condition += ` ${filter.logic || 'AND'} `;
       }
@@ -57,21 +104,37 @@ export function generateSQL(queryState) {
   }
 
   // GROUP BY
-  if (groupBy.length > 0) {
-    sql += '\nGROUP BY ' + groupBy.map(col => `${col.table}.${col.name}`).join(', ');
+  if (groupBy && groupBy.length > 0) {
+    sql += '\nGROUP BY ' + groupBy.map(col => {
+      const table = escapeIdentifier(col.table);
+      const name = escapeIdentifier(col.name);
+      return `${table}.${name}`;
+    }).join(', ');
   }
 
   // ORDER BY
-  if (orderBy.length > 0) {
-    sql += '\nORDER BY ' + orderBy.map(col => `${col.table}.${col.name} ${col.direction}`).join(', ');
+  if (orderBy && orderBy.length > 0) {
+    sql += '\nORDER BY ' + orderBy.map(col => {
+      const table = escapeIdentifier(col.table);
+      const name = escapeIdentifier(col.name);
+      const direction = col.direction === 'DESC' ? 'DESC' : 'ASC';
+      return `${table}.${name} ${direction}`;
+    }).join(', ');
   }
 
   // LIMIT
   if (limit) {
-    sql += `\nLIMIT ${limit}`;
+    params.push(parseInt(limit));
+    sql += `\nLIMIT $${paramIndex++}`;
   }
 
-  return sql;
+  // OFFSET
+  if (offset) {
+    params.push(parseInt(offset));
+    sql += `\nOFFSET $${paramIndex++}`;
+  }
+
+  return { sql, params };
 }
 
 /**

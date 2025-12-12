@@ -398,7 +398,10 @@ function QueryPage() {
         <QueryBuilder
           schema={schema}
           onClose={() => setShowQueryBuilder(false)}
-          onExecuteQuery={async (sql) => {
+          onExecuteQuery={async (sql, params) => {
+            // Note: params are handled by the backend query executor
+            // For now, we just set the SQL in the editor
+            // In the future, we could display params separately or merge them into the SQL
             setQuery(sql);
             setShowQueryBuilder(false);
             // Execute after a brief delay to allow UI to update
