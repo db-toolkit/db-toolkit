@@ -2,6 +2,7 @@
  * Workspace Context Provider
  */
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const WorkspaceContext = createContext(null);
 
@@ -13,6 +14,8 @@ export function WorkspaceProvider({ children }) {
     const [workspaces, setWorkspaces] = useState([]);
     const [activeWorkspaceId, setActiveWorkspaceId] = useState(null);
     const [loading, setLoading] = useState(true);
+    const location = useLocation();
+    const navigate = useNavigate();
 
     // Load workspaces on mount
     useEffect(() => {
@@ -82,7 +85,13 @@ export function WorkspaceProvider({ children }) {
 
     const switchWorkspace = useCallback((workspaceId) => {
         setActiveWorkspaceId(workspaceId);
-    }, []);
+        
+        // Restore workspace's last active route
+        const workspace = workspaces.find(w => w.id === workspaceId);
+        if (workspace?.state?.activeRoute) {
+            navigate(workspace.state.activeRoute);
+        }
+    }, [workspaces, navigate]);
 
     const updateWorkspaceState = useCallback(async (workspaceId, stateUpdates) => {
         try {
@@ -104,6 +113,15 @@ export function WorkspaceProvider({ children }) {
     const getActiveWorkspace = useCallback(() => {
         return workspaces.find(w => w.id === activeWorkspaceId);
     }, [workspaces, activeWorkspaceId]);
+
+    // Save active route when location changes
+    useEffect(() => {
+        if (activeWorkspaceId && location.pathname) {
+            updateWorkspaceState(activeWorkspaceId, {
+                activeRoute: location.pathname
+            });
+        }
+    }, [location.pathname, activeWorkspaceId]);
 
     const value = {
         workspaces,
