@@ -1,8 +1,7 @@
 /**
  * Individual Workspace Tab Component
  */
-import { X } from 'lucide-react';
-import { Database } from 'lucide-react';
+import { X, Database } from 'lucide-react';
 
 export function WorkspaceTab({ workspace, isActive, onClick, onClose }) {
     const handleClose = (e) => {

@@ -10,6 +10,7 @@ import { SettingsModal } from '../settings/SettingsModal';
 import { KeyboardShortcutsModal } from './KeyboardShortcutsModal';
 import { ReportIssueModal } from './ReportIssueModal';
 import { Tooltip } from './Tooltip';
+import { WorkspaceTabBar } from '../workspace/WorkspaceTabBar';
 
 
 function Layout({ children }) {
@@ -119,6 +120,7 @@ function Layout({ children }) {
                 </button>
               </Tooltip>
             </header>
+            <WorkspaceTabBar />
             <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-800">
               {children}
             </main>
@@ -140,6 +142,7 @@ function Layout({ children }) {
                 </button>
               </Tooltip>
             </header>
+            <WorkspaceTabBar />
             <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-800">
               {children}
             </main>
