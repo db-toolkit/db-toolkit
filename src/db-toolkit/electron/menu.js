@@ -103,11 +103,6 @@ function createMenu(mainWindow, isDev = false) {
           click: () => mainWindow.webContents.send('menu-action', 'toggle-sidebar')
         },
         {
-          label: 'Toggle Terminal',
-          accelerator: 'CmdOrCtrl+`',
-          click: () => mainWindow.webContents.send('menu-action', 'toggle-terminal')
-        },
-        {
           label: 'Toggle AI Assistant',
           accelerator: 'CmdOrCtrl+Shift+A',
           click: () => mainWindow.webContents.send('menu-action', 'toggle-ai')
@@ -187,11 +182,6 @@ function createMenu(mainWindow, isDev = false) {
           click: () => mainWindow.webContents.send('menu-action', 'open-analytics')
         },
         { type: 'separator' },
-        {
-          label: 'Terminal',
-          accelerator: 'CmdOrCtrl+`',
-          click: () => mainWindow.webContents.send('menu-action', 'toggle-terminal')
-        },
         {
           label: 'Command Palette',
           accelerator: 'CmdOrCtrl+K',

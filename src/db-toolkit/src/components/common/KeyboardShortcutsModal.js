@@ -13,7 +13,6 @@ export function KeyboardShortcutsModal({ isOpen, onClose }) {
         { keys: ['Ctrl/Cmd', 'T'], description: 'New Query Tab' },
         { keys: ['Ctrl/Cmd', 'W'], description: 'Close Tab' },
         { keys: ['Ctrl/Cmd', 'B'], description: 'Toggle Sidebar' },
-        { keys: ['Ctrl/Cmd', '`'], description: 'Toggle Terminal' },
         { keys: ['Ctrl/Cmd', 'Shift', 'D'], description: 'Toggle Dark Mode' },
         { keys: ['F1'], description: 'Open Documentation' },
         { keys: ['Ctrl/Cmd', '/'], description: 'Keyboard Shortcuts' },
