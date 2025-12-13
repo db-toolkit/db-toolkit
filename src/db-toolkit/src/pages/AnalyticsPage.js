@@ -39,6 +39,14 @@ function AnalyticsPage() {
   // Use ref to store connectionId to prevent losing it on re-renders
   const connectionIdRef = useRef(connectionId);
 
+  // Mount/unmount detection
+  useEffect(() => {
+    console.log("[AnalyticsPage] COMPONENT MOUNTED");
+    return () => {
+      console.log("[AnalyticsPage] COMPONENT UNMOUNTING");
+    };
+  }, []);
+
   useEffect(() => {
     connectionIdRef.current = connectionId;
     console.log("[AnalyticsPage] connectionId changed:", connectionId);
@@ -124,8 +132,15 @@ function AnalyticsPage() {
       await connectToDatabase(id, true);
       const conn = connections.find((c) => c.id === id);
       console.log("[AnalyticsPage] Setting connectionId:", id);
+      console.log("[AnalyticsPage] Connection object:", conn);
       setConnectionId(id);
       setConnectionName(conn?.name || "");
+      console.log(
+        "[AnalyticsPage] About to save to workspace - id:",
+        id,
+        "name:",
+        conn?.name,
+      );
       setWorkspaceState("analyticsConnectionId", id);
       setWorkspaceState("analyticsConnectionName", conn?.name || "");
       console.log("[AnalyticsPage] Connection saved to workspace state");
