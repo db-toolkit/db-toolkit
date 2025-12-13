@@ -1,7 +1,7 @@
 /**
  * Analytics page for database monitoring
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Database, Download } from "lucide-react";
@@ -36,19 +36,24 @@ function AnalyticsPage() {
   const [connectionName, setConnectionName] = useState("");
   const [connecting, setConnecting] = useState(null);
 
+  // Use ref to store connectionId to prevent losing it on re-renders
+  const connectionIdRef = useRef(connectionId);
+
+  useEffect(() => {
+    connectionIdRef.current = connectionId;
+  }, [connectionId]);
+
   // Sync with workspace state when workspace changes
-  // Only depends on activeWorkspaceId to avoid re-running when getWorkspaceState changes
   useEffect(() => {
     const savedConnectionId = getWorkspaceState("analyticsConnectionId");
     const savedConnectionName = getWorkspaceState("analyticsConnectionName");
 
     // Only update if we don't already have a connectionId (prevents overwriting on re-render)
-    if (!connectionId && savedConnectionId) {
+    if (!connectionIdRef.current && savedConnectionId) {
       setConnectionId(savedConnectionId);
       setConnectionName(savedConnectionName || "");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeWorkspaceId]);
+  }, [activeWorkspaceId, getWorkspaceState]);
   const [timeRange, setTimeRange] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
   const [planModal, setPlanModal] = useState({

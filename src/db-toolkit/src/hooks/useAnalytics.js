@@ -96,8 +96,8 @@ export function useAnalytics(connectionId) {
     // Initial fetch
     fetchAnalytics();
 
-    // Set up polling for real-time updates (every 5 seconds)
-    intervalRef.current = setInterval(fetchAnalytics, 5000);
+    // Set up polling for real-time updates (every 2 seconds)
+    intervalRef.current = setInterval(fetchAnalytics, 2000);
 
     // Set up health checks (every 30 seconds)
     healthCheckRef.current = setInterval(checkConnectionHealth, 30000);
