@@ -47,11 +47,40 @@ export async function dropTable(tableName, connectionId, onSuccess, toast) {
             const dbType = await getDbType(connectionId);
             
             if (dbType === 'sqlite') {
-                if (toast) {
-                    toast.error(
-                        `Cannot drop table "${tableName}" - it has foreign key constraints. ` +
-                        `SQLite requires manually dropping dependent tables first.`
-                    );
+                const forceDelete = window.confirm(
+                    `Cannot drop table "${tableName}" because it has foreign key constraints.\n\n` +
+                    `Do you want to FORCE delete (temporarily disables foreign key checks)?\n\n` +
+                    `WARNING: This may leave orphaned data in dependent tables.\n\n` +
+                    `Click OK to force delete, or Cancel to abort.`
+                );
+
+                if (forceDelete) {
+                    try {
+                        // Disable foreign keys, drop table, re-enable foreign keys
+                        const forceQuery = `PRAGMA foreign_keys = OFF; DROP TABLE IF EXISTS ${tableName}; PRAGMA foreign_keys = ON;`;
+                        const forceResult = await window.electron.ipcRenderer.invoke('query:execute', connectionId, {
+                            query: forceQuery,
+                            limit: 0,
+                            offset: 0
+                        });
+
+                        if (forceResult.data && !forceResult.data.success) {
+                            throw new Error(forceResult.data.error || 'Force delete failed');
+                        }
+
+                        if (toast) {
+                            toast.success(`Table "${tableName}" force deleted`);
+                        }
+                        
+                        if (onSuccess) {
+                            onSuccess();
+                        }
+                    } catch (forceError) {
+                        console.error('Force delete error:', forceError);
+                        if (toast) {
+                            toast.error(`Failed to force delete table: ${forceError.message}`);
+                        }
+                    }
                 }
             } else {
                 const cascade = window.confirm(
