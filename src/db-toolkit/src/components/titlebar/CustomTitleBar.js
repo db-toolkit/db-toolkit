@@ -36,7 +36,7 @@ export function CustomTitleBar({ onToggleSidebar }) {
     <div className="flex items-center h-10 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 select-none">
       {/* Drag region */}
       <div
-        className="flex-1 flex items-center"
+        className="flex-1 flex items-center h-full"
         style={{ WebkitAppRegion: "drag" }}
       >
         {/* Sidebar toggle (left side) */}
