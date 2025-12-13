@@ -37,9 +37,15 @@ export function WorkspaceTabBar() {
   };
 
   return (
-    <div className="flex items-center gap-0 min-w-0 flex-1">
+    <div className="flex items-center gap-0 min-w-0 flex-1 relative">
       {/* Workspace Tabs - Scrollable Container */}
-      <div className="flex items-center overflow-x-auto overflow-y-hidden min-w-0 flex-1 scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+      <div
+        className="flex items-center overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent"
+        style={{
+          width: "calc(100% - 40px)", // Reserve space for + button
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
         {workspaces.map((workspace) => (
           <WorkspaceTab
             key={workspace.id}
@@ -53,10 +59,10 @@ export function WorkspaceTabBar() {
         ))}
       </div>
 
-      {/* New Workspace Button - Sticky/Fixed */}
+      {/* New Workspace Button - Fixed to right */}
       <button
         onClick={handleNewWorkspace}
-        className="sticky right-0 flex items-center gap-1 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-shrink-0 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
+        className="absolute right-0 flex items-center gap-1 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
         style={{ WebkitAppRegion: "no-drag" }}
         title="Open new workspace"
       >
