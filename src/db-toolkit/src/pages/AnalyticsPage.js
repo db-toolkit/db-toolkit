@@ -33,6 +33,7 @@ function AnalyticsPage() {
   const [connecting, setConnecting] = useState(null);
 
   // Sync with workspace state when workspace changes
+  // Only depends on activeWorkspaceId to avoid re-running when getWorkspaceState changes
   useEffect(() => {
     console.log(
       "[AnalyticsPage] Workspace sync effect triggered, activeWorkspaceId:",
@@ -44,9 +45,14 @@ function AnalyticsPage() {
       savedConnectionId,
       savedConnectionName,
     });
-    setConnectionId(savedConnectionId || null);
-    setConnectionName(savedConnectionName || "");
-  }, [activeWorkspaceId, getWorkspaceState]);
+
+    // Only update if we don't already have a connectionId (prevents overwriting on re-render)
+    if (!connectionId && savedConnectionId) {
+      setConnectionId(savedConnectionId);
+      setConnectionName(savedConnectionName || "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeWorkspaceId]);
   const [timeRange, setTimeRange] = useState(1);
   const [planModal, setPlanModal] = useState({
     isOpen: false,
