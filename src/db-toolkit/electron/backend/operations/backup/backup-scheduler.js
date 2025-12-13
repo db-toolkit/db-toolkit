@@ -11,6 +11,7 @@ class BackupScheduler {
   constructor() {
     this.timer = null;
     this.backupManager = new BackupManager();
+    this.runningSchedules = new Set(); // Track running backups
   }
 
   start() {
@@ -49,6 +50,14 @@ class BackupScheduler {
   }
 
   async executeSchedule(schedule) {
+    // Check if backup is already running for this schedule
+    if (this.runningSchedules.has(schedule.id)) {
+      logger.info(`Backup already running for schedule: ${schedule.name}`);
+      return;
+    }
+
+    this.runningSchedules.add(schedule.id);
+
     try {
       logger.info(`Executing scheduled backup: ${schedule.name}`);
 
@@ -57,6 +66,14 @@ class BackupScheduler {
         logger.error(`Connection not found for schedule: ${schedule.name}`);
         return;
       }
+
+      // Update next_run BEFORE starting backup to prevent duplicate triggers
+      const lastRun = new Date();
+      const nextRun = this.calculateNextRun(schedule.schedule, lastRun);
+      await backupStorage.updateSchedule(schedule.id, {
+        last_run: lastRun.toISOString(),
+        next_run: nextRun.toISOString()
+      });
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
       const backupName = `${schedule.name}_${timestamp}`;
@@ -72,19 +89,14 @@ class BackupScheduler {
         schedule.backup_path
       );
 
-      const lastRun = new Date();
-      const nextRun = this.calculateNextRun(schedule.schedule, lastRun);
-
-      await backupStorage.updateSchedule(schedule.id, {
-        last_run: lastRun.toISOString(),
-        next_run: nextRun.toISOString()
-      });
-
+      // Apply retention policy AFTER backup completes
       await this.applyRetentionPolicy(schedule);
 
       logger.info(`Scheduled backup completed: ${schedule.name}`);
     } catch (error) {
       logger.error(`Error executing schedule ${schedule.name}:`, error);
+    } finally {
+      this.runningSchedules.delete(schedule.id);
     }
   }
 
