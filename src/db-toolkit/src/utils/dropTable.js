@@ -4,10 +4,12 @@
 
 async function getDbType(connectionId) {
     try {
-        const connections = await window.electron.ipcRenderer.invoke('connections:list');
+        const result = await window.electron.ipcRenderer.invoke('connections:getAll');
+        const connections = result.data || result;
         const conn = connections.find(c => c.id === connectionId);
         return conn?.db_type || 'postgres';
     } catch (error) {
+        console.error('Failed to get db type:', error);
         return 'postgres';
     }
 }
