@@ -20,6 +20,10 @@ import { QueryPlanModal } from "../components/analytics/QueryPlanModal";
 import { SlowQueryLog } from "../components/analytics/SlowQueryLog";
 import { TableStats } from "../components/analytics/TableStats";
 import { ConnectionPoolStats } from "../components/analytics/ConnectionPoolStats";
+import { AnalyticsTabs } from "../components/analytics/AnalyticsTabs";
+import { TimeRangePicker } from "../components/analytics/TimeRangePicker";
+import { QueryPerformance } from "../components/analytics/QueryPerformance";
+import { AlertsPanel } from "../components/analytics/AlertsPanel";
 import { pageTransition } from "../utils/animations";
 
 function AnalyticsPage() {
@@ -46,6 +50,7 @@ function AnalyticsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeWorkspaceId]);
   const [timeRange, setTimeRange] = useState(1);
+  const [activeTab, setActiveTab] = useState("overview");
   const [planModal, setPlanModal] = useState({
     isOpen: false,
     query: "",
@@ -215,15 +220,11 @@ function AnalyticsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-4">
-                <select
+                <TimeRangePicker
                   value={timeRange}
-                  onChange={(e) => setTimeRange(Number(e.target.value))}
-                  className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                >
-                  <option value={1}>Last 1 hour</option>
-                  <option value={2}>Last 2 hours</option>
-                  <option value={3}>Last 3 hours</option>
-                </select>
+                  onChange={setTimeRange}
+                  showCompare={false}
+                />
                 <Button
                   variant="secondary"
                   size="sm"
@@ -256,6 +257,12 @@ function AnalyticsPage() {
             </div>
           </div>
 
+          <AnalyticsTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            alertCount={0}
+          />
+
           <div className="flex-1 overflow-auto p-6">
             {connectionLost ? (
               <div className="text-center py-12">
@@ -270,26 +277,64 @@ function AnalyticsPage() {
               </div>
             ) : analytics ? (
               <>
-                <div className="space-y-6">
-                  <AnalyticsStats analytics={analytics} history={history} />
-                  <AnalyticsCharts history={history} timeRange={timeRange} />
-                  {poolStats && <ConnectionPoolStats stats={poolStats} />}
-                  {analytics.query_stats && (
-                    <QueryStats stats={analytics.query_stats} />
-                  )}
-                  <CurrentQueries
-                    queries={analytics.current_queries}
-                    onKill={killQuery}
-                    onViewPlan={handleViewPlan}
-                  />
-                  <LongRunningQueries
-                    queries={analytics.long_running_queries}
-                    onKill={killQuery}
-                  />
-                  <BlockedQueries queries={analytics.blocked_queries} />
-                  <SlowQueryLog queries={slowQueries} />
-                  <TableStats stats={tableStats} />
-                </div>
+                {activeTab === "overview" && (
+                  <div className="space-y-6">
+                    <AnalyticsStats analytics={analytics} history={history} />
+                    <AnalyticsCharts history={history} timeRange={timeRange} />
+                    {analytics.query_stats && (
+                      <QueryStats stats={analytics.query_stats} />
+                    )}
+                    {poolStats && <ConnectionPoolStats stats={poolStats} />}
+                  </div>
+                )}
+
+                {activeTab === "performance" && (
+                  <div className="space-y-6">
+                    <AnalyticsStats analytics={analytics} history={history} />
+                    <AnalyticsCharts history={history} timeRange={timeRange} />
+                    {poolStats && <ConnectionPoolStats stats={poolStats} />}
+                  </div>
+                )}
+
+                {activeTab === "queries" && (
+                  <div className="space-y-6">
+                    <QueryPerformance
+                      queries={analytics.current_queries || []}
+                      slowQueries={slowQueries}
+                    />
+                    <CurrentQueries
+                      queries={analytics.current_queries}
+                      onKill={killQuery}
+                      onViewPlan={handleViewPlan}
+                    />
+                    <LongRunningQueries
+                      queries={analytics.long_running_queries}
+                      onKill={killQuery}
+                    />
+                    <BlockedQueries queries={analytics.blocked_queries} />
+                    <SlowQueryLog queries={slowQueries} />
+                  </div>
+                )}
+
+                {activeTab === "tables" && (
+                  <div className="space-y-6">
+                    <TableStats stats={tableStats} />
+                  </div>
+                )}
+
+                {activeTab === "connections" && (
+                  <div className="space-y-6">
+                    <AnalyticsStats analytics={analytics} history={history} />
+                    <AnalyticsCharts history={history} timeRange={timeRange} />
+                    {poolStats && <ConnectionPoolStats stats={poolStats} />}
+                  </div>
+                )}
+
+                {activeTab === "alerts" && (
+                  <div className="space-y-6">
+                    <AlertsPanel analytics={analytics} />
+                  </div>
+                )}
                 <QueryPlanModal
                   isOpen={planModal.isOpen}
                   onClose={() =>
