@@ -238,7 +238,7 @@ function DataExplorerPage() {
         setData([]);
         setColumns([]);
       }
-    });
+    }, toast);
   };
 
   const totalPages = Math.ceil(totalCount / pageSize);

@@ -57,7 +57,7 @@ function SchemaPage() {
       if (selectedTable?.schema === schemaName && selectedTable?.table === tableName) {
         setSelectedTable(null);
       }
-    });
+    }, toast);
   };
 
   const handleAnalyzeSchema = async (forceRefresh = false) => {
