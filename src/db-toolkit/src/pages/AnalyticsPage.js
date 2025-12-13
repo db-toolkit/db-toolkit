@@ -1,7 +1,7 @@
 /**
  * Analytics page for database monitoring
  */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Database, Download } from "lucide-react";
@@ -36,45 +36,17 @@ function AnalyticsPage() {
   const [connectionName, setConnectionName] = useState("");
   const [connecting, setConnecting] = useState(null);
 
-  // Use ref to store connectionId to prevent losing it on re-renders
-  const connectionIdRef = useRef(connectionId);
-
-  // Mount/unmount detection
-  useEffect(() => {
-    console.log("[AnalyticsPage] COMPONENT MOUNTED");
-    return () => {
-      console.log("[AnalyticsPage] COMPONENT UNMOUNTING");
-    };
-  }, []);
-
-  useEffect(() => {
-    connectionIdRef.current = connectionId;
-    console.log("[AnalyticsPage] connectionId changed:", connectionId);
-  }, [connectionId]);
-
   // Sync with workspace state when workspace changes
   useEffect(() => {
-    console.log("[AnalyticsPage] Workspace sync effect triggered");
-    console.log("  activeWorkspaceId:", activeWorkspaceId);
-    console.log("  connectionIdRef.current:", connectionIdRef.current);
-
     const savedConnectionId = getWorkspaceState("analyticsConnectionId");
     const savedConnectionName = getWorkspaceState("analyticsConnectionName");
 
-    console.log("  savedConnectionId from workspace:", savedConnectionId);
-    console.log("  savedConnectionName from workspace:", savedConnectionName);
-
     // Only update if we don't already have a connectionId (prevents overwriting on re-render)
-    if (!connectionIdRef.current && savedConnectionId) {
-      console.log("[AnalyticsPage] Restoring connection from workspace state");
+    if (!connectionId && savedConnectionId) {
       setConnectionId(savedConnectionId);
       setConnectionName(savedConnectionName || "");
-    } else if (!connectionIdRef.current && !savedConnectionId) {
-      console.log(
-        "[AnalyticsPage] WARNING: No connectionId in state or workspace!",
-      );
     }
-  }, [activeWorkspaceId, getWorkspaceState]);
+  }, [activeWorkspaceId, getWorkspaceState, connectionId]);
   const [timeRange, setTimeRange] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
   const [planModal, setPlanModal] = useState({
@@ -126,39 +98,21 @@ function AnalyticsPage() {
   };
 
   const handleConnect = async (id) => {
-    console.log("[AnalyticsPage] handleConnect called with id:", id);
     setConnecting(id);
     try {
       await connectToDatabase(id, true);
       const conn = connections.find((c) => c.id === id);
-      console.log("[AnalyticsPage] Setting connectionId:", id);
-      console.log("[AnalyticsPage] Connection object:", conn);
       setConnectionId(id);
       setConnectionName(conn?.name || "");
-      console.log(
-        "[AnalyticsPage] About to save to workspace - id:",
-        id,
-        "name:",
-        conn?.name,
-      );
       setWorkspaceState("analyticsConnectionId", id);
       setWorkspaceState("analyticsConnectionName", conn?.name || "");
-      console.log("[AnalyticsPage] Connection saved to workspace state");
       toast.success("Connected successfully");
     } catch (err) {
-      console.error("[AnalyticsPage] Connection failed:", err);
       toast.error("Failed to connect");
     } finally {
       setConnecting(null);
     }
   };
-
-  console.log(
-    "[AnalyticsPage] Render - connectionId:",
-    connectionId,
-    "connections.length:",
-    connections.length,
-  );
 
   if (!connectionId) {
     if (connections.length === 0) {

@@ -255,34 +255,14 @@ export function WorkspaceProvider({ children }) {
   const getWorkspaceState = useCallback(
     (key) => {
       const workspace = workspaces.find((w) => w.id === activeWorkspaceId);
-      const value = workspace?.state?.[key];
-      console.log(`[WorkspaceProvider] getWorkspaceState("${key}"):`, {
-        activeWorkspaceId,
-        workspaceFound: !!workspace,
-        hasState: !!workspace?.state,
-        value,
-        allWorkspaces: workspaces.map((w) => ({
-          id: w.id,
-          hasState: !!w.state,
-        })),
-      });
-      return value;
+      return workspace?.state?.[key];
     },
     [workspaces, activeWorkspaceId],
   );
 
   const setWorkspaceState = useCallback(
     (key, value) => {
-      console.log(`[WorkspaceProvider] setWorkspaceState("${key}"):`, {
-        activeWorkspaceId,
-        value,
-      });
-      if (!activeWorkspaceId) {
-        console.warn(
-          "[WorkspaceProvider] setWorkspaceState called with no activeWorkspaceId",
-        );
-        return;
-      }
+      if (!activeWorkspaceId) return;
 
       // Update in-memory immediately
       setWorkspaces((prev) =>
