@@ -1,1 +1,38 @@
 /* App-specific styles */
+
+/* Custom scrollbar for workspace tabs */
+.scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #9ca3af;
+    border-radius: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+/* Dark mode scrollbar */
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #4b5563;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+/* Hide scrollbar for Firefox but keep functionality */
+.scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #9ca3af transparent;
+}
+
+.dark .scrollbar-thin {
+    scrollbar-color: #4b5563 transparent;
+}
