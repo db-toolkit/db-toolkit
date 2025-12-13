@@ -16,6 +16,7 @@ import { ColumnFilter } from '../components/data-explorer/ColumnFilter';
 import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { Tooltip } from '../components/common/Tooltip';
 import { pageTransition } from '../utils/animations';
+import { dropTable } from '../utils/dropTable';
 import api from '../services/api';
 
 function DataExplorerPage() {
@@ -229,6 +230,17 @@ function DataExplorerPage() {
     }
   };
 
+  const handleDropTable = async (schema, table) => {
+    await dropTable(`${schema}.${table}`, connectionId, () => {
+      fetchSchemaTree();
+      if (selectedTable?.schema === schema && selectedTable?.table === table) {
+        setSelectedTable(null);
+        setData([]);
+        setColumns([]);
+      }
+    });
+  };
+
   const totalPages = Math.ceil(totalCount / pageSize);
 
   const breadcrumbItems = [];
@@ -398,6 +410,7 @@ function DataExplorerPage() {
               selectedTable={selectedTable}
               onSelectTable={handleSelectTable}
               onRefreshTable={handleRefresh}
+              onDropTable={handleDropTable}
             />
           )}
         </div>

@@ -8,7 +8,7 @@ import { ContextMenu, useContextMenu } from '../common/ContextMenu';
 import { getTableContextMenuItems } from '../../utils/contextMenuActions';
 import { useToast } from '../../contexts/ToastContext';
 
-export function TableSelector({ schema, selectedTable, onSelectTable, onRefreshTable }) {
+export function TableSelector({ schema, selectedTable, onSelectTable, onRefreshTable, onDropTable }) {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 300);
   const contextMenu = useContextMenu();
@@ -91,7 +91,7 @@ export function TableSelector({ schema, selectedTable, onSelectTable, onRefreshT
           tableName: contextMenu.data.tableName,
           tableData: contextMenu.data.tableData,
           onRefresh: onRefreshTable,
-          onDrop: null,
+          onDrop: onDropTable,
           toast
         }) : []}
       />
