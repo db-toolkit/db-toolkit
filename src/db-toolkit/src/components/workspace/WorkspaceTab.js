@@ -16,6 +16,7 @@ export function WorkspaceTab({
   onClose,
   onUpdate,
   workspaces,
+  onCloseMultiple,
 }) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
@@ -218,13 +219,15 @@ export function WorkspaceTab({
             Close
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
               setShowContextMenu(false);
               // Close all except this one
-              const otherWorkspaces = workspaces.filter(
-                (w) => w.id !== workspace.id,
-              );
-              otherWorkspaces.forEach((w) => onClose(w.id));
+              const otherWorkspaceIds = workspaces
+                .filter((w) => w.id !== workspace.id)
+                .map((w) => w.id);
+              if (onCloseMultiple) {
+                await onCloseMultiple(otherWorkspaceIds);
+              }
             }}
             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
           >
@@ -232,10 +235,13 @@ export function WorkspaceTab({
             Close Others
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
               setShowContextMenu(false);
               // Close all workspaces
-              workspaces.forEach((w) => onClose(w.id));
+              const allWorkspaceIds = workspaces.map((w) => w.id);
+              if (onCloseMultiple) {
+                await onCloseMultiple(allWorkspaceIds);
+              }
             }}
             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
           >

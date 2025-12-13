@@ -12,6 +12,7 @@ export function WorkspaceTabBar() {
     activeWorkspaceId,
     switchWorkspace,
     closeWorkspace,
+    closeMultipleWorkspaces,
     createWorkspace,
     updateWorkspace,
   } = useWorkspace();
@@ -53,6 +54,7 @@ export function WorkspaceTabBar() {
             isActive={workspace.id === activeWorkspaceId}
             onClick={handleTabClick}
             onClose={handleCloseTab}
+            onCloseMultiple={closeMultipleWorkspaces}
             onUpdate={updateWorkspace}
             workspaces={workspaces}
           />
