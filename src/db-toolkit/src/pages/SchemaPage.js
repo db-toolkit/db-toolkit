@@ -14,6 +14,7 @@ import { CsvImportModal } from '../components/csv';
 import { SchemaAiPanel } from '../components/schema/SchemaAiPanel';
 import { ERDiagram } from '../components/schema/ERDiagram';
 import { ReactFlowProvider } from 'reactflow';
+import { dropTable } from '../utils/dropTable';
 
 function SchemaPage() {
   const { connectionId } = useParams();
@@ -51,13 +52,12 @@ function SchemaPage() {
   };
 
   const handleDropTable = async (schemaName, tableName) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to drop table "${schemaName}.${tableName}"?\n\nThis action cannot be undone!`
-    );
-    
-    if (confirmed) {
-      toast.error('Drop table functionality not yet implemented. Use Query Editor to execute DROP TABLE.');
-    }
+    await dropTable(`${schemaName}.${tableName}`, connectionId, () => {
+      refreshSchema();
+      if (selectedTable?.schema === schemaName && selectedTable?.table === tableName) {
+        setSelectedTable(null);
+      }
+    });
   };
 
   const handleAnalyzeSchema = async (forceRefresh = false) => {
