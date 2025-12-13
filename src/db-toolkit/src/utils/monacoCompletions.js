@@ -1,6 +1,7 @@
 /**
  * Monaco Editor SQL completion provider utilities
  */
+import { getSQLFunctionCompletions } from './sqlFunctions';
 
 /**
  * Parse schema data into completion items
@@ -137,6 +138,7 @@ export function createSQLCompletionProvider(getSchema, monaco, recentTracker) {
   const provider = {
     cachedSuggestions: [],
     cachedKeywords: getSQLKeywords(monaco),
+    cachedFunctions: getSQLFunctionCompletions(monaco),
     triggerCharacters: ['.', ' '],
     recentTracker,
 
@@ -173,8 +175,12 @@ export function createSQLCompletionProvider(getSchema, monaco, recentTracker) {
       // Filter suggestions by context
       const filteredSuggestions = filterByContext(this.cachedSuggestions, context, monaco);
 
-      // Combine keywords and schema suggestions
-      const allSuggestions = [...this.cachedKeywords, ...filteredSuggestions].map(s => ({
+      // Combine keywords, functions, and schema suggestions
+      const allSuggestions = [
+        ...this.cachedKeywords,
+        ...this.cachedFunctions,
+        ...filteredSuggestions
+      ].map(s => ({
         ...s,
         range
       }));
