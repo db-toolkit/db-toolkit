@@ -87,7 +87,7 @@ This guide outlines the complete implementation of a native, database-agnostic m
 
 **File Naming Convention**:
 - Format: `V{version}_{timestamp}_{name}.sql`
-- Example: `V001_20250114_create_users_table.sql`
+- Example: `V001_20260114_create_users_table.sql`
 - Version: Zero-padded sequential number
 - Timestamp: YYYYMMDDHHmmss format
 - Name: Snake_case description
@@ -98,7 +98,7 @@ This guide outlines the complete implementation of a native, database-agnostic m
 -- Version: 001
 -- Database: postgresql
 -- Author: system
--- Created: 2025-01-14 20:00:00
+-- Created: 2026-01-14 20:00:00
 -- Description: Initial users table with authentication fields
 
 -- === UP Migration ===
@@ -179,9 +179,9 @@ DROP TABLE IF EXISTS users;
 ```
 project-root/
 ├── migrations/
-│   ├── V001_20250114_create_users.sql
-│   ├── V002_20250114_add_roles.sql
-│   ├── V003_20250115_add_indexes.sql
+│   ├── V001_20260114_create_users.sql
+│   ├── V002_20260114_add_roles.sql
+│   ├── V003_20260115_add_indexes.sql
 │   └── ...
 ├── .migration-config.json
 └── .migration-lock
