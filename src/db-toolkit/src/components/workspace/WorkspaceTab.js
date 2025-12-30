@@ -124,13 +124,15 @@ export function WorkspaceTab({
   return (
     <div
       onClick={() => onClick(workspace.id)}
+      onContextMenu={handleContextMenu}
       className={`
         group flex items-center gap-2 px-3 py-2 cursor-pointer transition-all
-        border-b-2 min-w-[120px] max-w-[200px] flex-shrink-0
+        min-w-[120px] max-w-[200px] flex-shrink-0 h-full
+        border-r border-gray-200 dark:border-gray-700
         ${
           isActive
-            ? "border-green-500 bg-white dark:bg-gray-800"
-            : "border-transparent bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+            ? "bg-white dark:bg-gray-800 border-b-2 border-b-green-500"
+            : "bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 border-b-2 border-b-transparent"
         }
       `}
       style={{ WebkitAppRegion: "no-drag" }}
@@ -169,7 +171,6 @@ export function WorkspaceTab({
         />
       ) : (
         <span
-          onContextMenu={handleContextMenu}
           className={`
         text-sm font-medium truncate flex-1
         ${isActive ? "text-gray-900 dark:text-gray-100" : "text-gray-600 dark:text-gray-400"}
