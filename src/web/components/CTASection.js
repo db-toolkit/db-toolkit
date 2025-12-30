@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Download, ArrowRight } from 'lucide-react';
+import { Download, ArrowRight, Star } from 'lucide-react';
 import { fadeInUp } from '@/utils/motion';
 import { detectPlatform, getDownloadUrl } from '@/utils/detectPlatform';
 
@@ -104,16 +104,19 @@ export default function CTASection() {
               ) : (
                 <>
                   <Download size={20} />
-                  Download Now
+                  Download
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </button>
             <a
-              href="/downloads"
+              href="https://github.com/Adelodunpeter25/db-toolkit"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 px-8 py-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold"
             >
-              View All Platforms
+              <Star size={20} />
+              Star on GitHub
             </a>
           </motion.div>
 
