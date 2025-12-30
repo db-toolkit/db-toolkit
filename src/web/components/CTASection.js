@@ -91,24 +91,14 @@ export default function CTASection() {
             viewport={{ once: true }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
           >
-            <button
-              onClick={() => handleDownload(downloadUrl)}
-              disabled={downloading}
-              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
+            <a
+              href="/downloads"
+              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold"
             >
-              {downloading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                  Downloading...
-                </>
-              ) : (
-                <>
-                  <Download size={20} />
-                  Download
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
+              <Download size={20} />
+              Download
+              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </a>
             <a
               href="https://github.com/Adelodunpeter25/db-toolkit"
               target="_blank"
