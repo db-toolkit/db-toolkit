@@ -20,8 +20,8 @@ wheels/
 IMPLEMENTATION_PLAN.md
 MIGRATION.md
 AUTO_DOCUMENTATION.md
-db-toolkit-electron/DATABASE_MIGRATIONS.md
-db-toolkit-electron/AI.md
+DATABASE_MIGRATIONS.md
+AI.md
 
 # Frontend (Node.js)
 node_modules/
