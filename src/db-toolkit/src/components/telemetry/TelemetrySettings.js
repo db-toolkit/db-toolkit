@@ -13,6 +13,16 @@ export function TelemetrySettings() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showData, setShowData] = useState(false);
+  
+  // Sub-telemetry toggles
+  const [subTelemetry, setSubTelemetry] = useState({
+    featureUsage: true,
+    sessionDuration: true,
+    appVersion: true,
+    osInfo: true,
+    databaseTypes: true,
+    workspaceUsage: true
+  });
 
   useEffect(() => {
     loadReport();
@@ -42,6 +52,13 @@ export function TelemetrySettings() {
     }
   };
 
+  const handleSubToggle = (key) => {
+    setSubTelemetry(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -69,6 +86,132 @@ export function TelemetrySettings() {
             </label>
           </div>
         </div>
+
+        {enabled && (
+          <div className="mt-6 space-y-4">
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+              <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+                Select which analytics to share:
+              </h4>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={subTelemetry.featureUsage}
+                        onChange={() => handleSubToggle('featureUsage')}
+                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        Feature Usage
+                      </span>
+                    </label>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      Which features you use most frequently
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={subTelemetry.sessionDuration}
+                        onChange={() => handleSubToggle('sessionDuration')}
+                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        Session Duration
+                      </span>
+                    </label>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      How long you use the application
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={subTelemetry.appVersion}
+                        onChange={() => handleSubToggle('appVersion')}
+                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        App Version
+                      </span>
+                    </label>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      Which version of DB Toolkit you're using
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={subTelemetry.osInfo}
+                        onChange={() => handleSubToggle('osInfo')}
+                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        OS Information
+                      </span>
+                    </label>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      Your operating system and architecture
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={subTelemetry.databaseTypes}
+                        onChange={() => handleSubToggle('databaseTypes')}
+                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        Database Types
+                      </span>
+                    </label>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      Which database types you connect to
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={subTelemetry.workspaceUsage}
+                        onChange={() => handleSubToggle('workspaceUsage')}
+                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        Workspace Usage
+                      </span>
+                    </label>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      How many workspaces you use
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );
