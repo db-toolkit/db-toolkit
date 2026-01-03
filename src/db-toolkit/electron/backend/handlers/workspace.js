@@ -131,6 +131,18 @@ function registerWorkspaceHandlers() {
             if (result.success && result.workspaces.length > 0) {
                 const manager = getWorkspaceManager();
                 manager.loadWorkspaces(result.workspaces);
+                
+                // Load individual workspace states
+                for (const workspace of result.workspaces) {
+                    const stateResult = await storage.loadWorkspaceState(workspace.id);
+                    if (stateResult.success && stateResult.state) {
+                        manager.updateWorkspaceState(workspace.id, stateResult.state);
+                    }
+                }
+                
+                // Return workspaces with their states
+                const workspacesWithStates = manager.getAllWorkspaces();
+                return { success: true, workspaces: workspacesWithStates };
             }
 
             return result;
