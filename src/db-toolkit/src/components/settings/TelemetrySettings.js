@@ -216,3 +216,4 @@ export function TelemetrySettings() {
     </div>
   );
 }
+}
