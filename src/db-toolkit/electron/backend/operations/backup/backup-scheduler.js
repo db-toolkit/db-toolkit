@@ -89,8 +89,8 @@ class BackupScheduler {
         schedule.backup_path
       );
 
-      // Apply retention policy AFTER backup completes
-      await this.applyRetentionPolicy(schedule);
+      // Retention policy is now applied in backup-manager after backup completion
+      logger.info(`Scheduled backup started: ${schedule.name}`);
 
       logger.info(`Scheduled backup completed: ${schedule.name}`);
     } catch (error) {

@@ -95,6 +95,21 @@ class BackupManager {
         connection_name: config.name, 
         progress: 100 
       });
+      
+      // Apply retention policy after backup completion
+      if (backup.schedule_id) {
+        const { backupScheduler } = require('./backup/backup-scheduler');
+        try {
+          const backupStorage = require('../storage/backup-storage');
+          const schedule = await backupStorage.getSchedule(backup.schedule_id);
+          if (schedule) {
+            await backupScheduler.applyRetentionPolicy(schedule);
+          }
+        } catch (error) {
+          const { logger } = require('../utils/logger');
+          logger.error('Failed to apply retention policy after backup completion:', error);
+        }
+      }
     } catch (error) {
       await backupStorage.updateBackup(backup.id, {
         status: 'failed',
