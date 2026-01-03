@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { useWorkspace } from "./WorkspaceProvider";
 import { WorkspaceTab } from "./WorkspaceTab";
 import { useNavigate } from "react-router-dom";
+import { createWorkspaceWithEffect, switchWorkspaceWithEffect } from "../../utils/workspaceUtils";
 
 export function WorkspaceTabBar() {
   const {
@@ -19,18 +20,11 @@ export function WorkspaceTabBar() {
   const navigate = useNavigate();
 
   const handleNewWorkspace = async () => {
-    const newWorkspace = await createWorkspace(
-      null,
-      `Workspace ${workspaces.length + 1}`,
-      null,
-    );
-    if (newWorkspace) {
-      navigate("/");
-    }
+    await createWorkspaceWithEffect(createWorkspace, navigate, workspaces);
   };
 
   const handleTabClick = (workspaceId) => {
-    switchWorkspace(workspaceId);
+    switchWorkspaceWithEffect(workspaceId, switchWorkspace);
   };
 
   const handleCloseTab = async (workspaceId) => {

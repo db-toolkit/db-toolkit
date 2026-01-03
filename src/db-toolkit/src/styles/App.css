@@ -1,5 +1,21 @@
 /* App-specific styles */
 
+/* Workspace transition blink effect */
+.workspace-transition-blink {
+  animation: workspaceBlink 0.3s ease-in-out;
+}
+
+@keyframes workspaceBlink {
+  0%, 100% { 
+    opacity: 1; 
+    background-color: transparent;
+  }
+  50% { 
+    opacity: 0.8;
+    background-color: rgba(34, 197, 94, 0.1); /* Subtle green flash */
+  }
+}
+
 /* Custom scrollbar for workspace tabs */
 .scrollbar-thin::-webkit-scrollbar {
     height: 4px;
