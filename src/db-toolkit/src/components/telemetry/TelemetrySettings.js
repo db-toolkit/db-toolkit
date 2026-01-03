@@ -48,7 +48,7 @@ export function TelemetrySettings() {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              Telemetry & Analytics
+              Telemetry
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               Help improve DB Toolkit by sharing anonymous usage data
