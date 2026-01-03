@@ -41,12 +41,12 @@ function AnalyticsPage() {
     const savedConnectionId = getWorkspaceState("analyticsConnectionId");
     const savedConnectionName = getWorkspaceState("analyticsConnectionName");
 
-    // Only update if we don't already have a connectionId (prevents overwriting on re-render)
-    if (!connectionId && savedConnectionId) {
+    // Always update when workspace changes to ensure state is restored
+    if (savedConnectionId) {
       setConnectionId(savedConnectionId);
       setConnectionName(savedConnectionName || "");
     }
-  }, [activeWorkspaceId, getWorkspaceState, connectionId]);
+  }, [activeWorkspaceId, getWorkspaceState]);
   const [timeRange, setTimeRange] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
   const [planModal, setPlanModal] = useState({
