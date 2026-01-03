@@ -11,12 +11,14 @@ import { AppearanceSettings } from '../components/settings/AppearanceSettings';
 import { QuerySettings } from '../components/settings/QuerySettings';
 import { EditorSettings } from '../components/settings/EditorSettings';
 import { ConnectionSettings } from '../components/settings/ConnectionSettings';
+import { TelemetrySettings } from '../components/telemetry/TelemetrySettings';
 
 const tabs = [
   { id: 'appearance', label: 'Appearance', icon: Palette },
   { id: 'query', label: 'Query Defaults', icon: Code },
   { id: 'editor', label: 'Editor', icon: Settings },
   { id: 'connection', label: 'Connection', icon: Database },
+  { id: 'telemetry', label: 'Telemetry', icon: RotateCcw },
 ];
 
 function SettingsPage() {
@@ -122,6 +124,9 @@ function SettingsPage() {
             )}
             {activeTab === 'connection' && (
               <ConnectionSettings settings={localSettings} onChange={handleChange} />
+            )}
+            {activeTab === 'telemetry' && (
+              <TelemetrySettings />
             )}
           </div>
         </div>
