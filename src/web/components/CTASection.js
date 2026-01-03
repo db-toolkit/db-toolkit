@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Download, ArrowRight, Star } from 'lucide-react';
-import { fadeInUp } from '@/utils/motion';
-import { detectPlatform, getDownloadUrl } from '@/utils/detectPlatform';
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Download, ArrowRight, Star } from "lucide-react";
+import { fadeInUp } from "@/utils/motion";
+import { detectPlatform, getDownloadUrl } from "@/utils/detectPlatform";
 
 export default function CTASection() {
-  const [downloadUrl, setDownloadUrl] = useState('/downloads');
+  const [downloadUrl, setDownloadUrl] = useState("/downloads");
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
@@ -19,9 +19,9 @@ export default function CTASection() {
 
   const handleDownload = (url) => {
     setDownloading(true);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = '';
+    link.download = "";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -39,7 +39,7 @@ export default function CTASection() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
           className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-100/30 to-transparent rounded-full blur-3xl motion-reduce:animate-none"
         />
@@ -51,11 +51,10 @@ export default function CTASection() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
           className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-100/30 to-transparent rounded-full blur-3xl motion-reduce:animate-none"
         />
-
       </div>
       <div className="relative container mx-auto px-6">
         <motion.div
@@ -97,10 +96,13 @@ export default function CTASection() {
             >
               <Download size={20} />
               Download
-              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight
+                size={20}
+                className="group-hover:translate-x-1 transition-transform"
+              />
             </a>
             <a
-              href="https://github.com/Adelodunpeter25/db-toolkit"
+              href="https://github.com/db-toolkit/db-toolkit"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-8 py-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold"
@@ -109,8 +111,6 @@ export default function CTASection() {
               Star on GitHub
             </a>
           </motion.div>
-
-
         </motion.div>
       </div>
     </section>
