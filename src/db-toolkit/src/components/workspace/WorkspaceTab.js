@@ -128,11 +128,12 @@ export function WorkspaceTab({
       className={`
         group flex items-center gap-2 px-3 py-2 cursor-pointer transition-all
         min-w-[120px] max-w-[200px] flex-shrink-0 h-full
-        border-r border-gray-200 dark:border-gray-700
+        border border-gray-300 dark:border-gray-600 border-r border-t border-b-2
+        rounded-t-sm mr-px
         ${
           isActive
-            ? "bg-white dark:bg-gray-800 border-b-2 border-b-green-500"
-            : "bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 border-b-2 border-b-transparent"
+            ? "bg-white dark:bg-gray-800 border-b-green-500 border-b-2"
+            : "bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 border-b-transparent border-b-2"
         }
       `}
       style={{ WebkitAppRegion: "no-drag" }}
