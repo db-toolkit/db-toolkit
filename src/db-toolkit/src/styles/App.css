@@ -2,7 +2,7 @@
 
 /* Workspace transition blink effect */
 .workspace-transition-blink {
-  animation: workspaceBlink 0.3s ease-in-out;
+  animation: workspaceBlink 0.15s ease-in-out;
 }
 
 @keyframes workspaceBlink {

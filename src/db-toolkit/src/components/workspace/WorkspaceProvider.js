@@ -330,13 +330,21 @@ export function WorkspaceProvider({ children }) {
     };
   }, []);
 
-  const updateWorkspace = useCallback(async (workspaceId, updates) => {
+  const updateWorkspace = useCallback(async (workspaceId, updates, options = {}) => {
     try {
       const result = await ipc.updateWorkspace(workspaceId, updates);
       if (result.success) {
         setWorkspaces((prev) =>
           prev.map((w) => (w.id === workspaceId ? result.workspace : w)),
         );
+        
+        // Prevent workspace switch effect for rename operations
+        if (!options.preventTransition) {
+          document.body.classList.add('workspace-transition-blink');
+          setTimeout(() => {
+            document.body.classList.remove('workspace-transition-blink');
+          }, 150);
+        }
       }
       return result.success;
     } catch (error) {

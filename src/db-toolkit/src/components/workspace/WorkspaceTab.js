@@ -88,19 +88,26 @@ export function WorkspaceTab({
   const handleRename = async () => {
     setShowContextMenu(false);
     setIsRenaming(true);
+    // Focus input after state update
+    setTimeout(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }, 0);
   };
 
   const handleRenameSubmit = async () => {
     if (newName.trim() && newName !== workspace.connectionName) {
-      await onUpdate(workspace.id, { connectionName: newName.trim() });
+      await onUpdate(workspace.id, { connectionName: newName.trim() }, { preventTransition: true });
     }
     setIsRenaming(false);
   };
 
   const handleRenameKeyDown = (e) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       handleRenameSubmit();
     } else if (e.key === "Escape") {
+      e.preventDefault();
       setNewName(workspace.connectionName);
       setIsRenaming(false);
     }
@@ -167,7 +174,7 @@ export function WorkspaceTab({
           onChange={(e) => setNewName(e.target.value)}
           onBlur={handleRenameSubmit}
           onKeyDown={handleRenameKeyDown}
-          className="text-sm font-medium flex-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-green-500 rounded px-1 outline-none"
+          className="text-sm font-medium flex-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-green-500 rounded px-1 py-0.5 outline-none h-6"
           onClick={(e) => e.stopPropagation()}
         />
       ) : (

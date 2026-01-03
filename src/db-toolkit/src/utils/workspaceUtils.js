@@ -17,7 +17,7 @@ export const createWorkspaceWithEffect = async (createWorkspace, navigate, works
       // Remove blink effect after animation completes
       setTimeout(() => {
         document.body.classList.remove('workspace-transition-blink');
-      }, 300);
+      }, 150);
       
       return newWorkspace;
     }
@@ -39,7 +39,7 @@ export const switchWorkspaceWithEffect = async (workspaceId, switchWorkspace) =>
     // Remove blink effect after animation
     setTimeout(() => {
       document.body.classList.remove('workspace-transition-blink');
-    }, 300);
+    }, 150);
   } catch (error) {
     console.error('Failed to switch workspace:', error);
   }
