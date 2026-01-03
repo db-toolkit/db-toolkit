@@ -5,8 +5,8 @@
 
 import { useState, useEffect } from "react";
 import { useTelemetry } from "../../hooks/useTelemetry";
-import { Button } from "./Button";
-import { Card } from "./Card";
+import { Button } from "../common/Button";
+import { Card } from "../common/Card";
 
 export function TelemetrySettings() {
   const { enabled, status, enableTelemetry, getTelemetryReport, clearTelemetryData } = useTelemetry();
