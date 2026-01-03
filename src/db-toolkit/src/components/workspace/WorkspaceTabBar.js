@@ -38,23 +38,25 @@ export function WorkspaceTabBar() {
   };
 
   return (
-    <div className="flex items-center h-full">
+    <div className="flex items-center w-full h-full overflow-hidden">
       {/* Workspace Tabs - Scrollable Container */}
-      <div className="flex items-center overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent flex-1 min-w-0 h-full"
+      <div className="flex items-center overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent flex-1 min-w-0"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
-        {workspaces.map((workspace) => (
-          <WorkspaceTab
-            key={workspace.id}
-            workspace={workspace}
-            isActive={workspace.id === activeWorkspaceId}
-            onClick={handleTabClick}
-            onClose={handleCloseTab}
-            onCloseMultiple={closeMultipleWorkspaces}
-            onUpdate={updateWorkspace}
-            workspaces={workspaces}
-          />
-        ))}
+        <div className="flex items-center h-full">
+          {workspaces.map((workspace) => (
+            <WorkspaceTab
+              key={workspace.id}
+              workspace={workspace}
+              isActive={workspace.id === activeWorkspaceId}
+              onClick={handleTabClick}
+              onClose={handleCloseTab}
+              onCloseMultiple={closeMultipleWorkspaces}
+              onUpdate={updateWorkspace}
+              workspaces={workspaces}
+            />
+          ))}
+        </div>
       </div>
 
       {/* New Workspace Button - Fixed to right */}
