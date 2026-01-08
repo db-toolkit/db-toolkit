@@ -2,6 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { HashRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { useWorkspaceShortcuts } from './hooks/useWorkspaceShortcuts';
 import { useBackupWebSocket } from './websockets/useBackupWebSocket';
+import { useTelemetry } from './hooks/useTelemetry';
 import Layout from './components/common/Layout';
 import SplashScreen from './components/common/SplashScreen';
 import { Spinner } from './components/common/Spinner';
@@ -29,8 +30,18 @@ function WorkspaceWrapper() {
 
 function AppContent() {
   const navigate = useNavigate();
+  const { trackSession } = useTelemetry();
   useMenuActions();
   useBackupWebSocket(() => {}); // Global listener for backup notifications
+
+  // Track session start/end
+  useEffect(() => {
+    trackSession('start');
+    
+    return () => {
+      trackSession('end');
+    };
+  }, [trackSession]);
 
   useEffect(() => {
     const sessionState = JSON.parse(localStorage.getItem('session-state') || '{}');
