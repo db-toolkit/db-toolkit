@@ -17,8 +17,7 @@ export function TelemetrySettings() {
   const [subTelemetry, setSubTelemetry] = useState({
     featureUsage: true,
     sessionDuration: true,
-    appVersion: true,
-    osInfo: true,
+    systemInfo: true,
     databaseTypes: true,
     workspaceUsage: true
   });
@@ -93,118 +92,109 @@ export function TelemetrySettings() {
               </h4>
               
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div>
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={subTelemetry.featureUsage}
-                        onChange={() => handleSubToggle('featureUsage')}
-                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                      />
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        Feature Usage
-                      </span>
-                    </label>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      Feature Usage
+                    </span>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                       Which features you use most frequently
                     </p>
                   </div>
+                  <button
+                    onClick={() => handleSubToggle('featureUsage')}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                      subTelemetry.featureUsage ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      subTelemetry.featureUsage ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div>
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={subTelemetry.sessionDuration}
-                        onChange={() => handleSubToggle('sessionDuration')}
-                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                      />
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        Session Duration
-                      </span>
-                    </label>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      Session Duration
+                    </span>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                       How long you use the application
                     </p>
                   </div>
+                  <button
+                    onClick={() => handleSubToggle('sessionDuration')}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                      subTelemetry.sessionDuration ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      subTelemetry.sessionDuration ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div>
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={subTelemetry.appVersion}
-                        onChange={() => handleSubToggle('appVersion')}
-                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                      />
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        App Version
-                      </span>
-                    </label>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      System Information
+                    </span>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Which version of DB Toolkit you're using
+                      App version, OS, and architecture
                     </p>
                   </div>
+                  <button
+                    onClick={() => handleSubToggle('systemInfo')}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                      subTelemetry.systemInfo ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      subTelemetry.systemInfo ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div>
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={subTelemetry.osInfo}
-                        onChange={() => handleSubToggle('osInfo')}
-                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                      />
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        OS Information
-                      </span>
-                    </label>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Your operating system and architecture
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={subTelemetry.databaseTypes}
-                        onChange={() => handleSubToggle('databaseTypes')}
-                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                      />
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        Database Types
-                      </span>
-                    </label>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      Database Types
+                    </span>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                       Which database types you connect to
                     </p>
                   </div>
+                  <button
+                    onClick={() => handleSubToggle('databaseTypes')}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                      subTelemetry.databaseTypes ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      subTelemetry.databaseTypes ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div>
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={subTelemetry.workspaceUsage}
-                        onChange={() => handleSubToggle('workspaceUsage')}
-                        className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                      />
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        Workspace Usage
-                      </span>
-                    </label>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      Workspace Usage
+                    </span>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                       How many workspaces you use
                     </p>
                   </div>
+                  <button
+                    onClick={() => handleSubToggle('workspaceUsage')}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                      subTelemetry.workspaceUsage ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      subTelemetry.workspaceUsage ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
                 </div>
               </div>
             </div>
