@@ -6,7 +6,6 @@
 import { useState, useEffect } from "react";
 import { useTelemetry } from "../../hooks/useTelemetry";
 import { Button } from "../common/Button";
-import { Card } from "../common/Card";
 
 export function TelemetrySettings() {
   const { enabled, status, enableTelemetry, getTelemetryReport, clearTelemetryData } = useTelemetry();
@@ -61,7 +60,7 @@ export function TelemetrySettings() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -212,7 +211,7 @@ export function TelemetrySettings() {
             </div>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }
