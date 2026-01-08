@@ -2,7 +2,7 @@
  * Settings modal with tabbed interface
  */
 import { useState } from 'react';
-import { X, Palette, Code, Settings as SettingsIcon, Database, RotateCcw, Layout } from 'lucide-react';
+import { X, Palette, Code, Settings as SettingsIcon, Database, RotateCcw, Layout, BarChart3 } from 'lucide-react';
 import { useSettings } from '../../hooks/useSettings';
 import { useToast } from '../../contexts/ToastContext';
 import { Button } from '../common/Button';
@@ -11,6 +11,7 @@ import { QuerySettings } from './QuerySettings';
 import { EditorSettings } from './EditorSettings';
 import { ConnectionSettings } from './ConnectionSettings';
 import { WorkspaceSettings } from './WorkspaceSettings';
+import { TelemetrySettings } from './TelemetrySettings';
 
 const tabs = [
   { id: 'appearance', label: 'Appearance', icon: Palette },
@@ -18,6 +19,7 @@ const tabs = [
   { id: 'editor', label: 'Editor', icon: SettingsIcon },
   { id: 'connection', label: 'Connection', icon: Database },
   { id: 'workspace', label: 'Workspace', icon: Layout },
+  { id: 'telemetry', label: 'Telemetry', icon: BarChart3 },
 ];
 
 export function SettingsModal({ isOpen, onClose }) {
@@ -108,6 +110,9 @@ export function SettingsModal({ isOpen, onClose }) {
           )}
           {activeTab === 'workspace' && (
             <WorkspaceSettings settings={localSettings} onChange={handleChange} />
+          )}
+          {activeTab === 'telemetry' && (
+            <TelemetrySettings settings={localSettings} onChange={handleChange} />
           )}
         </div>
 
