@@ -71,19 +71,18 @@ export function TelemetrySettings() {
             </p>
           </div>
           
-          <div className="flex items-center">
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={enabled}
-                onChange={handleToggleTelemetry}
-                className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-              />
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                Enable Telemetry
-              </span>
-            </label>
-          </div>
+          <button
+            onClick={handleToggleTelemetry}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+              enabled ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                enabled ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
         </div>
 
         {enabled && (
