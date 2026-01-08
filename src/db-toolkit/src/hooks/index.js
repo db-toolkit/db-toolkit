@@ -8,3 +8,5 @@ export { useAnalytics } from './useAnalytics';
 export { useRequestDeduplication, useOptimizedCallback, useOptimizedMemo, usePerformanceMonitor } from './usePerformance';
 export { useSchemaAI } from './useSchemaAI';
 export { useAiAssistant } from './useAiAssistant';
+export { useQueryTabs } from './useQueryTabs';
+export { useQueryAutoFix } from './useQueryAutoFix';
