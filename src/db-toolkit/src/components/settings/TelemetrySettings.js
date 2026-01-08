@@ -4,40 +4,17 @@
  */
 
 import { useState, useEffect } from "react";
+import { Eye, Trash2 } from "lucide-react";
 import { useTelemetry } from "../../hooks/useTelemetry";
 import { Button } from "../common/Button";
+import { TelemetryDataModal } from "./TelemetryDataModal";
 
 export function TelemetrySettings() {
   const { enabled, preferences, enableTelemetry, updatePreferences, getTelemetryReport, clearTelemetryData } = useTelemetry();
-  const [report, setReport] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    loadReport();
-  }, [enabled]);
-
-  const loadReport = async () => {
-    if (enabled) {
-      setLoading(true);
-      const data = await getTelemetryReport();
-      setReport(data);
-      setLoading(false);
-    }
-  };
+  const [showDataModal, setShowDataModal] = useState(false);
 
   const handleToggleTelemetry = async () => {
     await enableTelemetry(!enabled);
-  };
-
-  const handleClearData = async () => {
-    const confirmed = window.confirm(
-      'This will delete all telemetry data. This action cannot be undone. Are you sure?'
-    );
-    
-    if (confirmed) {
-      await clearTelemetryData();
-      setReport(null);
-    }
   };
 
   const handleSubToggle = async (key) => {
@@ -186,9 +163,28 @@ export function TelemetrySettings() {
                 </div>
               </div>
             </div>
+
+            {/* Data Management Buttons */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4 flex gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowDataModal(true)}
+              >
+                <Eye size={16} className="mr-2" />
+                View My Data
+              </Button>
+            </div>
           </div>
         )}
       </div>
+
+      <TelemetryDataModal
+        isOpen={showDataModal}
+        onClose={() => setShowDataModal(false)}
+        getTelemetryReport={getTelemetryReport}
+        clearTelemetryData={clearTelemetryData}
+      />
     </div>
   );
 }
