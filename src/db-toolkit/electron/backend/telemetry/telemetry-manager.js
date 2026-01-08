@@ -18,7 +18,9 @@ class TelemetryManager {
       workspaceUsage: true
     };
     this.events = [];
-    this.configPath = path.join(require('os').homedir(), '.db-toolkit', 'telemetry.json');
+    const baseDir = path.join(require('os').homedir(), '.db-toolkit');
+    this.configPath = path.join(baseDir, 'telemetry.json');
+    this.dataPath = path.join(baseDir, 'telemetry-data.json');
     this.uploadEndpoint = null; // Will be configured
     this.maxEvents = 100; // Batch size
     this.uploadInterval = 24 * 60 * 60 * 1000; // 24 hours
@@ -37,8 +39,9 @@ class TelemetryManager {
       this.lastUpload = config.lastUpload || 0;
       
       if (this.enabled) {
-        // Load any pending events
-        this.events = config.pendingEvents || [];
+        // Load any pending events from separate data file
+        const data = await this.loadData();
+        this.events = data.pendingEvents || [];
         this.startBatchProcessor();
       }
       
@@ -161,6 +164,11 @@ class TelemetryManager {
   addEvent(event) {
     this.events.push(event);
     
+    // Save data periodically (every 10 events) to avoid too frequent writes
+    if (this.events.length % 10 === 0) {
+      this.saveData();
+    }
+    
     if (this.events.length >= this.maxEvents) {
       this.uploadBatch();
     }
@@ -214,6 +222,7 @@ class TelemetryManager {
       this.events = [];
       this.lastUpload = Date.now();
       await this.saveConfig();
+      await this.saveData();
 
     } catch (error) {
       console.error('Telemetry upload failed:', error);
@@ -249,7 +258,7 @@ class TelemetryManager {
   }
 
   /**
-   * Save configuration
+   * Save configuration (settings only)
    */
   async saveConfig() {
     try {
@@ -260,13 +269,30 @@ class TelemetryManager {
         enabled: this.enabled,
         preferences: this.preferences,
         endpoint: this.uploadEndpoint,
-        lastUpload: this.lastUpload,
-        pendingEvents: this.events
+        lastUpload: this.lastUpload
       };
       
       await fs.writeFile(this.configPath, JSON.stringify(config, null, 2));
     } catch (error) {
       console.error('Failed to save telemetry config:', error);
+    }
+  }
+
+  /**
+   * Save telemetry data (events only)
+   */
+  async saveData() {
+    try {
+      const configDir = path.dirname(this.dataPath);
+      await fs.mkdir(configDir, { recursive: true });
+      
+      const data = {
+        pendingEvents: this.events
+      };
+      
+      await fs.writeFile(this.dataPath, JSON.stringify(data, null, 2));
+    } catch (error) {
+      console.error('Failed to save telemetry data:', error);
     }
   }
 
@@ -279,6 +305,18 @@ class TelemetryManager {
       return JSON.parse(data);
     } catch (error) {
       return { enabled: false };
+    }
+  }
+
+  /**
+   * Load telemetry data
+   */
+  async loadData() {
+    try {
+      const data = await fs.readFile(this.dataPath, 'utf8');
+      return JSON.parse(data);
+    } catch (error) {
+      return { pendingEvents: [] };
     }
   }
 
@@ -326,6 +364,7 @@ class TelemetryManager {
     this.events = [];
     this.lastUpload = 0;
     await this.saveConfig();
+    await this.saveData();
   }
 }
 
