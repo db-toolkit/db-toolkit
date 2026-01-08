@@ -48,7 +48,7 @@ function AnalyticsPage() {
       setConnectionId(null);
       setConnectionName("");
     }
-  }, [activeWorkspaceId, getWorkspaceState]);
+  }, [activeWorkspaceId]);
   const [timeRange, setTimeRange] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
   const [planModal, setPlanModal] = useState({
