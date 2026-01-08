@@ -41,6 +41,22 @@ function registerTelemetryHandlers() {
     });
 
     /**
+     * Update telemetry preferences
+     */
+    ipcMain.handle('telemetry:setPreferences', async (event, preferences) => {
+        try {
+            const service = getTelemetryService();
+            const result = await service.setPreferences(preferences);
+            
+            logger.info('Telemetry preferences updated');
+            return result;
+        } catch (error) {
+            logger.error('Failed to set telemetry preferences:', error);
+            return { success: false, error: error.message };
+        }
+    });
+
+    /**
      * Get telemetry status
      */
     ipcMain.handle('telemetry:getStatus', async () => {

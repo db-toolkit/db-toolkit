@@ -10,6 +10,13 @@ const crypto = require('crypto');
 class TelemetryManager {
   constructor() {
     this.enabled = false;
+    this.preferences = {
+      featureUsage: true,
+      sessionDuration: true,
+      systemInfo: true,
+      databaseTypes: true,
+      workspaceUsage: true
+    };
     this.events = [];
     this.configPath = path.join(require('os').homedir(), '.db-toolkit', 'telemetry.json');
     this.uploadEndpoint = null; // Will be configured
@@ -25,6 +32,7 @@ class TelemetryManager {
     try {
       const config = await this.loadConfig();
       this.enabled = config.enabled || false;
+      this.preferences = config.preferences || this.preferences;
       this.uploadEndpoint = config.endpoint || null;
       this.lastUpload = config.lastUpload || 0;
       
@@ -34,7 +42,7 @@ class TelemetryManager {
         this.startBatchProcessor();
       }
       
-      return { success: true, enabled: this.enabled };
+      return { success: true, enabled: this.enabled, preferences: this.preferences };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -57,10 +65,19 @@ class TelemetryManager {
   }
 
   /**
+   * Update telemetry preferences
+   */
+  async setPreferences(preferences) {
+    this.preferences = { ...this.preferences, ...preferences };
+    await this.saveConfig();
+    return { success: true, preferences: this.preferences };
+  }
+
+  /**
    * Track feature usage event
    */
   trackFeatureUsage(feature, metadata = {}) {
-    if (!this.enabled) return;
+    if (!this.enabled || !this.preferences.featureUsage) return;
     
     const event = {
       type: 'feature_usage',
@@ -76,14 +93,17 @@ class TelemetryManager {
    * Track session duration
    */
   trackSessionStart() {
-    if (!this.enabled) return;
+    if (!this.enabled || !this.preferences.sessionDuration) return;
+    
+    const metadata = {};
+    if (this.preferences.systemInfo) {
+      metadata.appVersion = this.getAppVersion();
+      metadata.os = this.getOSInfo();
+    }
     
     const event = {
       type: 'session_start',
-      metadata: this.anonymize({
-        appVersion: this.getAppVersion(),
-        os: this.getOSInfo()
-      }),
+      metadata: this.anonymize(metadata),
       timestamp: Date.now()
     };
     
@@ -92,7 +112,7 @@ class TelemetryManager {
   }
 
   trackSessionEnd() {
-    if (!this.enabled || !this.currentSessionStart) return;
+    if (!this.enabled || !this.preferences.sessionDuration || !this.currentSessionStart) return;
     
     const duration = Date.now() - this.currentSessionStart;
     const event = {
@@ -109,7 +129,7 @@ class TelemetryManager {
    * Track database type usage
    */
   trackDatabaseUsage(dbType, operation) {
-    if (!this.enabled) return;
+    if (!this.enabled || !this.preferences.databaseTypes) return;
     
     const event = {
       type: 'database_usage',
@@ -124,7 +144,7 @@ class TelemetryManager {
    * Track workspace usage patterns
    */
   trackWorkspaceUsage(action, count) {
-    if (!this.enabled) return;
+    if (!this.enabled || !this.preferences.workspaceUsage) return;
     
     const event = {
       type: 'workspace_usage',
@@ -238,6 +258,7 @@ class TelemetryManager {
       
       const config = {
         enabled: this.enabled,
+        preferences: this.preferences,
         endpoint: this.uploadEndpoint,
         lastUpload: this.lastUpload,
         pendingEvents: this.events
@@ -292,6 +313,7 @@ class TelemetryManager {
   getStatus() {
     return {
       enabled: this.enabled,
+      preferences: this.preferences,
       pendingEvents: this.events.length,
       lastUpload: this.lastUpload
     };

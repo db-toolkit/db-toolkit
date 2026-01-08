@@ -59,6 +59,18 @@ class TelemetryService {
   }
 
   /**
+   * Update telemetry preferences
+   */
+  async setPreferences(preferences) {
+    try {
+      return await this.manager.setPreferences(preferences);
+    } catch (error) {
+      console.error('Failed to set telemetry preferences:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Feature usage tracking
    */
   trackFeatureUsage(feature, action, metadata = {}) {

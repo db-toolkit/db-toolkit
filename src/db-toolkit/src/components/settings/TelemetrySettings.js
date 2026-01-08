@@ -8,23 +8,13 @@ import { useTelemetry } from "../../hooks/useTelemetry";
 import { Button } from "../common/Button";
 
 export function TelemetrySettings() {
-  const { enabled, status, enableTelemetry, getTelemetryReport, clearTelemetryData } = useTelemetry();
+  const { enabled, preferences, enableTelemetry, updatePreferences, getTelemetryReport, clearTelemetryData } = useTelemetry();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showData, setShowData] = useState(false);
-  
-  // Sub-telemetry toggles
-  const [subTelemetry, setSubTelemetry] = useState({
-    featureUsage: true,
-    sessionDuration: true,
-    systemInfo: true,
-    databaseTypes: true,
-    workspaceUsage: true
-  });
 
   useEffect(() => {
     loadReport();
-  }, [enabled, getTelemetryReport]);
+  }, [enabled]);
 
   const loadReport = async () => {
     if (enabled) {
@@ -50,11 +40,9 @@ export function TelemetrySettings() {
     }
   };
 
-  const handleSubToggle = (key) => {
-    setSubTelemetry(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+  const handleSubToggle = async (key) => {
+    const newPreferences = { ...preferences, [key]: !preferences[key] };
+    await updatePreferences(newPreferences);
   };
 
   return (
@@ -104,11 +92,11 @@ export function TelemetrySettings() {
                   <button
                     onClick={() => handleSubToggle('featureUsage')}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                      subTelemetry.featureUsage ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                      preferences.featureUsage ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   >
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      subTelemetry.featureUsage ? 'translate-x-6' : 'translate-x-1'
+                      preferences.featureUsage ? 'translate-x-6' : 'translate-x-1'
                     }`} />
                   </button>
                 </div>
@@ -125,11 +113,11 @@ export function TelemetrySettings() {
                   <button
                     onClick={() => handleSubToggle('sessionDuration')}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                      subTelemetry.sessionDuration ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                      preferences.sessionDuration ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   >
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      subTelemetry.sessionDuration ? 'translate-x-6' : 'translate-x-1'
+                      preferences.sessionDuration ? 'translate-x-6' : 'translate-x-1'
                     }`} />
                   </button>
                 </div>
@@ -146,11 +134,11 @@ export function TelemetrySettings() {
                   <button
                     onClick={() => handleSubToggle('systemInfo')}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                      subTelemetry.systemInfo ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                      preferences.systemInfo ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   >
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      subTelemetry.systemInfo ? 'translate-x-6' : 'translate-x-1'
+                      preferences.systemInfo ? 'translate-x-6' : 'translate-x-1'
                     }`} />
                   </button>
                 </div>
@@ -167,11 +155,11 @@ export function TelemetrySettings() {
                   <button
                     onClick={() => handleSubToggle('databaseTypes')}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                      subTelemetry.databaseTypes ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                      preferences.databaseTypes ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   >
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      subTelemetry.databaseTypes ? 'translate-x-6' : 'translate-x-1'
+                      preferences.databaseTypes ? 'translate-x-6' : 'translate-x-1'
                     }`} />
                   </button>
                 </div>
@@ -188,11 +176,11 @@ export function TelemetrySettings() {
                   <button
                     onClick={() => handleSubToggle('workspaceUsage')}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                      subTelemetry.workspaceUsage ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                      preferences.workspaceUsage ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   >
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      subTelemetry.workspaceUsage ? 'translate-x-6' : 'translate-x-1'
+                      preferences.workspaceUsage ? 'translate-x-6' : 'translate-x-1'
                     }`} />
                   </button>
                 </div>

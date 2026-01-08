@@ -7,6 +7,13 @@ import { useState, useEffect } from 'react';
 
 export function useTelemetry() {
   const [enabled, setEnabled] = useState(false);
+  const [preferences, setPreferences] = useState({
+    featureUsage: true,
+    sessionDuration: true,
+    systemInfo: true,
+    databaseTypes: true,
+    workspaceUsage: true
+  });
   const [status, setStatus] = useState(null);
 
   // Initialize on mount
@@ -19,6 +26,9 @@ export function useTelemetry() {
       const result = await window.electron.ipcRenderer.invoke('telemetry:getStatus');
       if (result.success) {
         setEnabled(result.status.enabled);
+        if (result.status.preferences) {
+          setPreferences(result.status.preferences);
+        }
         setStatus(result.status);
       }
     } catch (error) {
@@ -34,6 +44,17 @@ export function useTelemetry() {
       }
     } catch (error) {
       console.error('Failed to enable telemetry:', error);
+    }
+  };
+
+  const updatePreferences = async (newPreferences) => {
+    try {
+      const result = await window.electron.ipcRenderer.invoke('telemetry:setPreferences', newPreferences);
+      if (result.success) {
+        setPreferences(result.preferences);
+      }
+    } catch (error) {
+      console.error('Failed to update telemetry preferences:', error);
     }
   };
 
@@ -92,8 +113,10 @@ export function useTelemetry() {
 
   return {
     enabled,
+    preferences,
     status,
     enableTelemetry,
+    updatePreferences,
     trackFeature,
     trackDatabase,
     trackSession,
