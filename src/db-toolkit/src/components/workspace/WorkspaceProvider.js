@@ -12,6 +12,7 @@ import {
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useWorkspaceIPC } from "../../hooks/useWorkspaceIPC";
+import { useTelemetry } from "../../hooks/useTelemetry";
 
 const WorkspaceContext = createContext(null);
 
@@ -23,6 +24,7 @@ export function WorkspaceProvider({ children }) {
   const [workspacesEnabled, setWorkspacesEnabled] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+  const { trackWorkspace } = useTelemetry();
   const ipc = useWorkspaceIPC();
 
   // Load settings to get maxWorkspaces and enabled status
@@ -108,6 +110,7 @@ export function WorkspaceProvider({ children }) {
         if (result.success) {
           setWorkspaces((prev) => [...prev, result.workspace]);
           setActiveWorkspaceId(result.workspace.id);
+          trackWorkspace('create', workspaces.length + 1);
           return result.workspace;
         }
 
@@ -150,6 +153,7 @@ export function WorkspaceProvider({ children }) {
 
         if (result.success) {
           setWorkspaces((prev) => prev.filter((w) => w.id !== workspaceId));
+          trackWorkspace('close', workspaces.length - 1);
         }
 
         return result.success;
