@@ -93,20 +93,7 @@ export function useQueryAutoFix(connectionId, query, error, schema, toast) {
   const handleAcceptFix = useCallback(
     (setQuery) => {
       if (fixSuggestion) {
-        let finalQuery = "";
-
-        // Add explanation as SQL comments if present
-        if (fixSuggestion.explanation) {
-          const explanationLines = fixSuggestion.explanation.split("\n");
-          const commentedExplanation = explanationLines
-            .map((line) => `-- ${line}`)
-            .join("\n");
-          finalQuery = `${commentedExplanation}\n\n${fixSuggestion.fixed}`;
-        } else {
-          finalQuery = fixSuggestion.fixed;
-        }
-
-        setQuery(finalQuery);
+        setQuery(fixSuggestion.fixed);
         setFixSuggestion(null);
       }
     },
