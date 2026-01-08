@@ -36,18 +36,17 @@ function AnalyticsPage() {
   const [connectionName, setConnectionName] = useState("");
   const [connecting, setConnecting] = useState(null);
 
-  // Create workspace-specific state keys
-  const getWorkspaceStateKey = (key) => `${activeWorkspaceId}_${key}`;
-
   // Sync with workspace state when workspace changes
   useEffect(() => {
-    const savedConnectionId = getWorkspaceState(getWorkspaceStateKey("analyticsConnectionId"));
-    const savedConnectionName = getWorkspaceState(getWorkspaceStateKey("analyticsConnectionName"));
+    const savedConnectionId = getWorkspaceState("analyticsConnectionId");
+    const savedConnectionName = getWorkspaceState("analyticsConnectionName");
 
-    // Always update when workspace changes to ensure state is restored
     if (savedConnectionId) {
       setConnectionId(savedConnectionId);
       setConnectionName(savedConnectionName || "");
+    } else {
+      setConnectionId(null);
+      setConnectionName("");
     }
   }, [activeWorkspaceId, getWorkspaceState]);
   const [timeRange, setTimeRange] = useState(1);
@@ -107,8 +106,8 @@ function AnalyticsPage() {
       const conn = connections.find((c) => c.id === id);
       setConnectionId(id);
       setConnectionName(conn?.name || "");
-      setWorkspaceState(getWorkspaceStateKey("analyticsConnectionId"), id);
-      setWorkspaceState(getWorkspaceStateKey("analyticsConnectionName"), conn?.name || "");
+      setWorkspaceState("analyticsConnectionId", id);
+      setWorkspaceState("analyticsConnectionName", conn?.name || "");
       toast.success("Connected successfully");
     } catch (err) {
       toast.error("Failed to connect");
