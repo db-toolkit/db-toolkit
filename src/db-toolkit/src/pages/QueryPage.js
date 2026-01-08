@@ -1,43 +1,53 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import { useWorkspace } from '../components/workspace/WorkspaceProvider';
-import { Download, Plus, X, Bot, Loader2, Workflow } from 'lucide-react';
-import { ContextMenu, useContextMenu } from '../components/common/ContextMenu';
-import { Edit3 } from 'lucide-react';
-import Split from 'react-split';
-import { useQuery, useSchema } from '../hooks';
-import { useAiAssistant } from '../hooks/useAiAssistant';
-import { useSettingsContext } from '../contexts/SettingsContext';
-import { Button } from '../components/common/Button';
-import { connectionsAPI } from '../services/api';
-import { useToast } from '../contexts/ToastContext';
-import { ErrorMessage } from '../components/common/ErrorMessage';
-import { QueryEditor } from '../components/query/QueryEditor';
-import { QueryResultsPanel } from '../components/query/QueryResultsPanel';
-import { CsvExportModal } from '../components/csv';
-import { AiAssistant } from '../components/query/AiAssistant';
-import { QueryBuilder } from '../components/query-builder/QueryBuilder';
-import { cacheService } from '../services/indexedDB';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import { useWorkspace } from "../components/workspace/WorkspaceProvider";
+import { Download, Plus, X, Bot, Loader2, Workflow } from "lucide-react";
+import { ContextMenu, useContextMenu } from "../components/common/ContextMenu";
+import { Edit3 } from "lucide-react";
+import Split from "react-split";
+import { useQuery, useSchema } from "../hooks";
+import { useAiAssistant } from "../hooks/useAiAssistant";
+import { useSettingsContext } from "../contexts/SettingsContext";
+import { Button } from "../components/common/Button";
+import { connectionsAPI } from "../services/api";
+import { useToast } from "../contexts/ToastContext";
+import { QueryEditor } from "../components/query/QueryEditor";
+import { QueryResultsPanel } from "../components/query/QueryResultsPanel";
+import { CsvExportModal } from "../components/csv";
+import { AiAssistant } from "../components/query/AiAssistant";
+import { QueryBuilder } from "../components/query-builder/QueryBuilder";
+import { cacheService } from "../services/indexedDB";
 
 function QueryPage() {
   const { connectionId } = useParams();
   const location = useLocation();
   const { activeWorkspace, setHasUnsavedChanges } = useWorkspace();
-  const initialQuery = location.state?.initialQuery || '';
-  const [tabs, setTabs] = useState([{ id: 1, name: 'Query 1', query: initialQuery, result: null, executionTime: 0, error: null, chatHistory: [], saved: !initialQuery }]);
+  const initialQuery = location.state?.initialQuery || "";
+  const [tabs, setTabs] = useState([
+    {
+      id: 1,
+      name: "Query 1",
+      query: initialQuery,
+      result: null,
+      executionTime: 0,
+      error: null,
+      chatHistory: [],
+      saved: !initialQuery,
+    },
+  ]);
   const [activeTabId, setActiveTabId] = useState(1);
   const [showExport, setShowExport] = useState(false);
   const [showAiAssistant, setShowAiAssistant] = useState(false);
   const [showQueryBuilder, setShowQueryBuilder] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
   const [editingTabId, setEditingTabId] = useState(null);
-  const [editingTabName, setEditingTabName] = useState('');
+  const [editingTabName, setEditingTabName] = useState("");
   const { loading, executeQuery } = useQuery(connectionId);
   const { schema, fetchSchemaTree } = useSchema(connectionId);
   const toast = useToast();
 
-  const activeTab = tabs.find(t => t.id === activeTabId);
-  const query = activeTab?.query || '';
+  const activeTab = tabs.find((t) => t.id === activeTabId);
+  const query = activeTab?.query || "";
   const result = activeTab?.result || null;
   const executionTime = activeTab?.executionTime || 0;
   const error = activeTab?.error || null;
@@ -65,7 +75,7 @@ function QueryPage() {
           localStorage.removeItem(`query-tabs-${connectionId}`);
         }
       } catch (err) {
-        console.error('Failed to load saved tabs:', err);
+        console.error("Failed to load saved tabs:", err);
       }
     };
     loadTabs();
@@ -74,18 +84,23 @@ function QueryPage() {
   // Auto-save tabs to IndexedDB
   useEffect(() => {
     const timer = setTimeout(() => {
-      cacheService.setQueryTabs(connectionId, { tabs, activeTabId }).catch(err => {
-        console.error('Failed to save tabs:', err);
-        // Fallback to localStorage
-        localStorage.setItem(`query-tabs-${connectionId}`, JSON.stringify({ tabs, activeTabId }));
-      });
+      cacheService
+        .setQueryTabs(connectionId, { tabs, activeTabId })
+        .catch((err) => {
+          console.error("Failed to save tabs:", err);
+          // Fallback to localStorage
+          localStorage.setItem(
+            `query-tabs-${connectionId}`,
+            JSON.stringify({ tabs, activeTabId }),
+          );
+        });
     }, 1000);
     return () => clearTimeout(timer);
   }, [tabs, activeTabId, connectionId]);
 
   // Track unsaved changes
   useEffect(() => {
-    const hasUnsaved = tabs.some(t => !t.saved && t.query.trim());
+    const hasUnsaved = tabs.some((t) => !t.saved && t.query.trim());
     if (activeWorkspace) {
       setHasUnsavedChanges(activeWorkspace.id, hasUnsaved);
     }
@@ -109,9 +124,11 @@ function QueryPage() {
           retries--;
           console.error(`Reconnection attempt failed (${3 - retries}/3):`, err);
           if (retries > 0) {
-            await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
+            await new Promise((resolve) =>
+              setTimeout(resolve, 1000 * (4 - retries)),
+            );
           } else {
-            toast.error('Failed to reconnect after 3 attempts');
+            toast.error("Failed to reconnect after 3 attempts");
           }
         }
       }
@@ -122,21 +139,41 @@ function QueryPage() {
     reconnect();
   }, [connectionId, fetchSchemaTree, toast]);
 
-  const setQuery = useCallback((newQuery) => {
-    setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, query: newQuery, error: null, saved: false } : t));
-    setFixSuggestion(null);
-  }, [activeTabId]);
+  const setQuery = useCallback(
+    (newQuery) => {
+      setTabs((prev) =>
+        prev.map((t) =>
+          t.id === activeTabId
+            ? { ...t, query: newQuery, error: null, saved: false }
+            : t,
+        ),
+      );
+      setFixSuggestion(null);
+    },
+    [activeTabId],
+  );
 
   const addTab = () => {
-    const newId = Math.max(...tabs.map(t => t.id)) + 1;
-    setTabs(prev => [...prev, { id: newId, name: `Query ${newId}`, query: '', result: null, executionTime: 0, error: null, chatHistory: [] }]);
+    const newId = Math.max(...tabs.map((t) => t.id)) + 1;
+    setTabs((prev) => [
+      ...prev,
+      {
+        id: newId,
+        name: `Query ${newId}`,
+        query: "",
+        result: null,
+        executionTime: 0,
+        error: null,
+        chatHistory: [],
+      },
+    ]);
     setActiveTabId(newId);
   };
 
   const closeTab = (id) => {
     if (tabs.length === 1) return;
-    const index = tabs.findIndex(t => t.id === id);
-    const newTabs = tabs.filter(t => t.id !== id);
+    const index = tabs.findIndex((t) => t.id === id);
+    const newTabs = tabs.filter((t) => t.id !== id);
     setTabs(newTabs);
     if (activeTabId === id) {
       setActiveTabId(newTabs[Math.max(0, index - 1)].id);
@@ -145,11 +182,13 @@ function QueryPage() {
 
   const renameTab = (id, newName) => {
     if (newName && newName.trim()) {
-      setTabs(prev => prev.map(t => t.id === id ? { ...t, name: newName.trim() } : t));
-      toast.success('Tab renamed');
+      setTabs((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, name: newName.trim() } : t)),
+      );
+      toast.success("Tab renamed");
     }
     setEditingTabId(null);
-    setEditingTabName('');
+    setEditingTabName("");
   };
 
   const startRenaming = (id, currentName) => {
@@ -158,12 +197,23 @@ function QueryPage() {
   };
 
   const closeOtherTabs = (id) => {
-    setTabs(prev => prev.filter(t => t.id === id));
+    setTabs((prev) => prev.filter((t) => t.id === id));
     setActiveTabId(id);
   };
 
   const closeAllTabs = () => {
-    setTabs([{ id: 1, name: 'Query 1', query: '', result: null, executionTime: 0, error: null, chatHistory: [], saved: true }]);
+    setTabs([
+      {
+        id: 1,
+        name: "Query 1",
+        query: "",
+        result: null,
+        executionTime: 0,
+        error: null,
+        chatHistory: [],
+        saved: true,
+      },
+    ]);
     setActiveTabId(1);
   };
 
@@ -178,19 +228,39 @@ function QueryPage() {
     const startTime = Date.now();
     setFixSuggestion(null); // Clear previous suggestions
     // Clear previous error
-    setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, error: null } : t));
+    setTabs((prev) =>
+      prev.map((t) => (t.id === activeTabId ? { ...t, error: null } : t)),
+    );
 
     try {
       const limit = settings?.default_query_limit || 1000;
       const timeout = settings?.default_query_timeout || 30;
       const queryResult = await executeQuery(query, limit, 0, timeout);
       const time = Date.now() - startTime;
-      setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, result: queryResult, executionTime: time, error: null, saved: true } : t));
+      setTabs((prev) =>
+        prev.map((t) =>
+          t.id === activeTabId
+            ? {
+                ...t,
+                result: queryResult,
+                executionTime: time,
+                error: null,
+                saved: true,
+              }
+            : t,
+        ),
+      );
     } catch (err) {
-      console.error('Query failed:', err);
+      console.error("Query failed:", err);
       const errorMsg = err.response?.data?.detail || err.message;
       const time = Date.now() - startTime;
-      setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, error: errorMsg, executionTime: time } : t));
+      setTabs((prev) =>
+        prev.map((t) =>
+          t.id === activeTabId
+            ? { ...t, error: errorMsg, executionTime: time }
+            : t,
+        ),
+      );
     }
   };
 
@@ -201,13 +271,14 @@ function QueryPage() {
     const tables = {};
     if (!schema) return tables;
 
-    const normalizeColumns = (cols) => (cols || []).map(col => ({
-      name: col.name || col.column_name,
-      type: col.type || col.data_type,
-    }));
+    const normalizeColumns = (cols) =>
+      (cols || []).map((col) => ({
+        name: col.name || col.column_name,
+        type: col.type || col.data_type,
+      }));
 
     if (schema.schemas) {
-      Object.values(schema.schemas).forEach(s => {
+      Object.values(schema.schemas).forEach((s) => {
         if (s.tables) {
           Object.entries(s.tables).forEach(([tableName, tableDef]) => {
             tables[tableName] = {
@@ -244,27 +315,27 @@ function QueryPage() {
       isFixingRef.current = true;
       setIsFixingError(true);
       try {
-        console.log('Auto-fix effect triggered for error:', error);
-        toast.info('Attempting to auto-fix query error...');
+        console.log("Auto-fix effect triggered for error:", error);
+        toast.info("Attempting to auto-fix query error...");
 
         const tables = buildSchemaContext();
 
         const fixResult = await fixQueryError(query, error, tables);
 
         if (fixResult && fixResult.fixed_query) {
-          console.log('AI Auto-Fix success:', fixResult);
-          toast.success('AI found a fix!');
+          console.log("AI Auto-Fix success:", fixResult);
+          toast.success("AI found a fix!");
           setFixSuggestion({
             original: query,
             fixed: fixResult.fixed_query,
-            explanation: fixResult.explanation
+            explanation: fixResult.explanation,
           });
         } else {
-          console.warn('AI Auto-Fix returned no fixed query');
-          toast.error('AI could not find a fix.');
+          console.warn("AI Auto-Fix returned no fixed query");
+          toast.error("AI could not find a fix.");
         }
       } catch (aiErr) {
-        console.error('Auto-fix failed:', aiErr);
+        console.error("Auto-fix failed:", aiErr);
         toast.error(`Auto-fix failed: ${aiErr.message}`);
       } finally {
         isFixingRef.current = false;
@@ -278,14 +349,14 @@ function QueryPage() {
 
   const handleAcceptFix = () => {
     if (fixSuggestion) {
-      let finalQuery = '';
+      let finalQuery = "";
 
       // Add explanation as SQL comments if present
       if (fixSuggestion.explanation) {
-        const explanationLines = fixSuggestion.explanation.split('\n');
+        const explanationLines = fixSuggestion.explanation.split("\n");
         const commentedExplanation = explanationLines
-          .map(line => `-- ${line}`)
-          .join('\n');
+          .map((line) => `-- ${line}`)
+          .join("\n");
         finalQuery = `${commentedExplanation}\n\n${fixSuggestion.fixed}`;
       } else {
         finalQuery = fixSuggestion.fixed;
@@ -305,13 +376,21 @@ function QueryPage() {
       {reconnecting && (
         <div className="flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800">
           <Loader2 className="w-4 h-4 animate-spin text-green-600 dark:text-green-400" />
-          <span className="text-sm text-green-700 dark:text-green-300">Reconnecting to database...</span>
+          <span className="text-sm text-green-700 dark:text-green-300">
+            Reconnecting to database...
+          </span>
         </div>
       )}
 
-      <div className="flex-shrink-0 flex justify-between items-center px-6 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700" style={{ opacity: reconnecting ? 0.5 : 1, pointerEvents: reconnecting ? 'none' : 'auto' }}>
+      <div
+        className="flex-shrink-0 flex justify-between items-center px-6 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+        style={{
+          opacity: reconnecting ? 0.5 : 1,
+          pointerEvents: reconnecting ? "none" : "auto",
+        }}
+      >
         <div className="flex items-center gap-2 flex-1 overflow-x-auto">
-          {tabs.map(tab => (
+          {tabs.map((tab) => (
             <div
               key={tab.id}
               onClick={() => setActiveTabId(tab.id)}
@@ -319,10 +398,11 @@ function QueryPage() {
                 e.preventDefault();
                 tabContextMenu.open(e, { tabId: tab.id });
               }}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-t cursor-pointer transition ${activeTabId === tab.id
-                ? 'bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-t cursor-pointer transition ${
+                activeTabId === tab.id
+                  ? "bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+              }`}
             >
               {editingTabId === tab.id ? (
                 <input
@@ -331,19 +411,27 @@ function QueryPage() {
                   onChange={(e) => setEditingTabName(e.target.value)}
                   onBlur={() => renameTab(tab.id, editingTabName)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') renameTab(tab.id, editingTabName);
-                    if (e.key === 'Escape') { setEditingTabId(null); setEditingTabName(''); }
+                    if (e.key === "Enter") renameTab(tab.id, editingTabName);
+                    if (e.key === "Escape") {
+                      setEditingTabId(null);
+                      setEditingTabName("");
+                    }
                   }}
                   onClick={(e) => e.stopPropagation()}
                   autoFocus
                   className="text-sm font-medium bg-white dark:bg-gray-900 border border-green-500 rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-green-500 min-w-[80px]"
                 />
               ) : (
-                <span className="text-sm font-medium whitespace-nowrap">{tab.name}</span>
+                <span className="text-sm font-medium whitespace-nowrap">
+                  {tab.name}
+                </span>
               )}
               {tabs.length > 1 && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); closeTab(tab.id); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    closeTab(tab.id);
+                  }}
                   className="hover:text-red-600 dark:hover:text-red-400"
                 >
                   <X size={14} />
@@ -389,8 +477,6 @@ function QueryPage() {
         </div>
       </div>
 
-
-
       <div className="flex-1 min-h-0 flex relative">
         <Split
           sizes={showAiAssistant ? [75, 25] : [100, 0]}
@@ -398,8 +484,8 @@ function QueryPage() {
           gutterSize={showAiAssistant ? 8 : 0}
           className="flex h-full w-full"
           gutterStyle={() => ({
-            display: showAiAssistant ? 'flex' : 'none',
-            width: showAiAssistant ? '8px' : '0px',
+            display: showAiAssistant ? "flex" : "none",
+            width: showAiAssistant ? "8px" : "0px",
           })}
         >
           <div className="h-full w-full flex flex-col overflow-hidden">
@@ -435,20 +521,26 @@ function QueryPage() {
                   isFixingError={isFixingError}
                   onFixError={(errorMsg) => {
                     // Manually trigger the auto-fix logic
-                    setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, error: errorMsg } : t));
+                    setTabs((prev) =>
+                      prev.map((t) =>
+                        t.id === activeTabId ? { ...t, error: errorMsg } : t,
+                      ),
+                    );
                   }}
                 />
               </div>
             </Split>
           </div>
 
-          <div className={`h-full flex flex-col overflow-hidden ${showAiAssistant ? '' : 'hidden'}`}>
+          <div
+            className={`h-full flex flex-col overflow-hidden ${showAiAssistant ? "" : "hidden"}`}
+          >
             <AiAssistant
               connectionId={connectionId}
               currentQuery={query}
               onQueryGenerated={setQuery}
               onQueryOptimized={(result) => {
-                console.log('Query optimized:', result);
+                console.log("Query optimized:", result);
               }}
               lastError={error}
               schemaContext={schema}
@@ -456,9 +548,13 @@ function QueryPage() {
               onClose={() => setShowAiAssistant(false)}
               chatHistory={activeTab?.chatHistory || []}
               onChatUpdate={(newHistory) => {
-                setTabs(prev => prev.map(t =>
-                  t.id === activeTabId ? { ...t, chatHistory: newHistory.slice(-10) } : t
-                ));
+                setTabs((prev) =>
+                  prev.map((t) =>
+                    t.id === activeTabId
+                      ? { ...t, chatHistory: newHistory.slice(-10) }
+                      : t,
+                  ),
+                );
               }}
             />
           </div>
@@ -493,41 +589,49 @@ function QueryPage() {
         isOpen={tabContextMenu.isOpen}
         position={tabContextMenu.position}
         onClose={tabContextMenu.close}
-        items={tabContextMenu.data ? [
-          {
-            label: 'Rename Tab',
-            icon: <Edit3 size={16} />,
-            onClick: () => {
-              const tabId = tabContextMenu.data.tabId;
-              const currentName = tabs.find(t => t.id === tabId)?.name;
-              startRenaming(tabId, currentName);
-            }
-          },
-          { separator: true },
-          {
-            label: 'Close Tab',
-            icon: <X size={16} />,
-            onClick: () => closeTab(tabContextMenu.data.tabId),
-            disabled: tabs.length === 1
-          },
-          {
-            label: 'Close Other Tabs',
-            icon: <X size={16} />,
-            onClick: () => closeOtherTabs(tabContextMenu.data.tabId),
-            disabled: tabs.length === 1
-          },
-          {
-            label: 'Close All Tabs',
-            icon: <X size={16} />,
-            danger: true,
-            onClick: () => {
-              if (window.confirm('Close all tabs? Unsaved changes will be lost.')) {
-                closeAllTabs();
-                toast.success('All tabs closed');
-              }
-            }
-          }
-        ] : []}
+        items={
+          tabContextMenu.data
+            ? [
+                {
+                  label: "Rename Tab",
+                  icon: <Edit3 size={16} />,
+                  onClick: () => {
+                    const tabId = tabContextMenu.data.tabId;
+                    const currentName = tabs.find((t) => t.id === tabId)?.name;
+                    startRenaming(tabId, currentName);
+                  },
+                },
+                { separator: true },
+                {
+                  label: "Close Tab",
+                  icon: <X size={16} />,
+                  onClick: () => closeTab(tabContextMenu.data.tabId),
+                  disabled: tabs.length === 1,
+                },
+                {
+                  label: "Close Other Tabs",
+                  icon: <X size={16} />,
+                  onClick: () => closeOtherTabs(tabContextMenu.data.tabId),
+                  disabled: tabs.length === 1,
+                },
+                {
+                  label: "Close All Tabs",
+                  icon: <X size={16} />,
+                  danger: true,
+                  onClick: () => {
+                    if (
+                      window.confirm(
+                        "Close all tabs? Unsaved changes will be lost.",
+                      )
+                    ) {
+                      closeAllTabs();
+                      toast.success("All tabs closed");
+                    }
+                  },
+                },
+              ]
+            : []
+        }
       />
     </div>
   );
