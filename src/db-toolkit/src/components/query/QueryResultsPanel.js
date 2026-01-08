@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Table, MessageSquare, History, Clock, Bot } from 'lucide-react';
+import { Table, MessageSquare, History, Clock, Bot, Loader2 } from 'lucide-react';
 import { EditableTable } from '../data/EditableTable';
 import { QueryHistory } from './QueryHistory';
 
-export function QueryResultsPanel({ connectionId, result, executionTime, onSelectQuery, onRefresh, currentQuery, onFixError }) {
+export function QueryResultsPanel({ connectionId, result, executionTime, onSelectQuery, onRefresh, currentQuery, onFixError, isFixingError }) {
   const [activeTab, setActiveTab] = useState('results');
   const [displayLimit, setDisplayLimit] = useState(() => {
     return parseInt(localStorage.getItem('query-display-limit') || '100');
@@ -93,10 +93,20 @@ export function QueryResultsPanel({ connectionId, result, executionTime, onSelec
                     <p className="text-red-700 dark:text-red-300 text-sm whitespace-pre-wrap mb-4">{result.error}</p>
                     <button
                       onClick={() => onFixError && onFixError(result.error)}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors text-sm font-medium"
+                      disabled={isFixingError}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <Bot size={16} />
-                      Fix with AI
+                      {isFixingError ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Fixing...
+                        </>
+                      ) : (
+                        <>
+                          <Bot size={16} />
+                          Fix with AI
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

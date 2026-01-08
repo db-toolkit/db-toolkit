@@ -194,6 +194,7 @@ function QueryPage() {
     }
   };
 
+  const [isFixingError, setIsFixingError] = useState(false);
   const isFixingRef = useRef(false);
 
   const buildSchemaContext = useCallback(() => {
@@ -241,6 +242,7 @@ function QueryPage() {
       if (!error || !query || fixSuggestion || isFixingRef.current) return;
 
       isFixingRef.current = true;
+      setIsFixingError(true);
       try {
         console.log('Auto-fix effect triggered for error:', error);
         toast.info('Attempting to auto-fix query error...');
@@ -266,6 +268,7 @@ function QueryPage() {
         toast.error(`Auto-fix failed: ${aiErr.message}`);
       } finally {
         isFixingRef.current = false;
+        setIsFixingError(false);
       }
     };
 
@@ -429,6 +432,7 @@ function QueryPage() {
                   onSelectQuery={setQuery}
                   onRefresh={handleExecute}
                   currentQuery={query}
+                  isFixingError={isFixingError}
                   onFixError={(errorMsg) => {
                     // Manually trigger the auto-fix logic
                     setTabs(prev => prev.map(t => t.id === activeTabId ? { ...t, error: errorMsg } : t));
