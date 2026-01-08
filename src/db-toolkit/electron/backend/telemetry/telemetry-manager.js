@@ -170,12 +170,15 @@ class TelemetryManager {
    * Save config helper
    */
   async _saveConfig() {
-    await this.storage.saveConfig({
+    const config = {
       enabled: this.enabled,
       preferences: this.preferences,
-      endpoint: this.uploadEndpoint,
       lastUpload: this.lastUpload
-    });
+    };
+    if (this.uploadEndpoint) {
+      config.endpoint = this.uploadEndpoint;
+    }
+    await this.storage.saveConfig(config);
   }
 
   // Proxy methods to tracker
