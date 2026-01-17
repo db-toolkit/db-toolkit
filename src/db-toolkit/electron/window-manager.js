@@ -7,12 +7,16 @@ const path = require('path');
 
 function createWindow() {
   const iconPath = path.join(__dirname, '../build/icons/icon.png');
+  const isMac = process.platform === 'darwin';
   
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
     title: 'DB Toolkit',
     icon: iconPath,
+    frame: false,
+    titleBarStyle: isMac ? 'hiddenInset' : undefined,
+    trafficLightPosition: isMac ? { x: 10, y: 10 } : undefined,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

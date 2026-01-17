@@ -7,6 +7,8 @@ import { WorkspaceTabBar } from "../workspace/WorkspaceTabBar";
 import { Tooltip } from "../common/Tooltip";
 
 export function CustomTitleBar({ onToggleSidebar }) {
+  const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+  const isWindows = navigator.platform.toUpperCase().indexOf("WIN") >= 0;
   const [workspacesEnabled, setWorkspacesEnabled] = useState(null);
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export function CustomTitleBar({ onToggleSidebar }) {
       >
         {/* Sidebar toggle (left side) */}
         <div
-          className="flex items-center px-4"
+          className={`flex items-center px-4 ${isMac ? "ml-16" : ""}`}
           style={{ WebkitAppRegion: "no-drag" }}
         >
           <Tooltip text="Toggle sidebar" position="right">
@@ -66,6 +68,30 @@ export function CustomTitleBar({ onToggleSidebar }) {
           </div>
         )}
       </div>
+
+      {/* Windows controls (right side) */}
+      {isWindows && (
+        <div className="flex items-center h-full" style={{ WebkitAppRegion: "no-drag" }}>
+          <button
+            onClick={() => window.electron.ipcRenderer.invoke('window:minimize')}
+            className="h-full px-4 hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center justify-center"
+          >
+            <span className="text-gray-700 dark:text-gray-300 text-lg leading-none">−</span>
+          </button>
+          <button
+            onClick={() => window.electron.ipcRenderer.invoke('window:maximize')}
+            className="h-full px-4 hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center justify-center"
+          >
+            <span className="text-gray-700 dark:text-gray-300 text-lg leading-none">□</span>
+          </button>
+          <button
+            onClick={() => window.electron.ipcRenderer.invoke('window:close')}
+            className="h-full px-4 hover:bg-red-600 hover:text-white transition flex items-center justify-center"
+          >
+            <span className="text-gray-700 dark:text-gray-300 hover:text-white text-lg leading-none">×</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
