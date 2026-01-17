@@ -3,16 +3,18 @@
  * Shows query performance distribution, slowest queries, and frequency analysis
  */
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
+  LazyBarChart as BarChart,
+  LazyBar as Bar,
+  LazyXAxis as XAxis,
+  LazyYAxis as YAxis,
+  LazyCartesianGrid as CartesianGrid,
+  LazyTooltip as Tooltip,
+  LazyResponsiveContainer as ResponsiveContainer,
+} from "../common/LazyRecharts";
 import { useEffect, useState } from "react";
+
+// Cell is not lazy-loaded as it's a small component
+import { Cell } from "recharts";
 import { Zap, TrendingUp, Clock, AlertTriangle } from "lucide-react";
 
 export function QueryPerformance({ queries = [], slowQueries = [] }) {

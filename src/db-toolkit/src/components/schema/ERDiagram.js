@@ -2,13 +2,14 @@
  * Interactive ER Diagram component
  */
 import { useCallback, useMemo, useState, useEffect } from 'react';
-import ReactFlow, {
-  MiniMap,
-  Controls,
-  Background,
+import {
+  LazyReactFlow as ReactFlow,
+  LazyMiniMap as MiniMap,
+  LazyControls as Controls,
+  LazyBackground as Background,
   useNodesState,
   useEdgesState
-} from 'reactflow';
+} from '../common/LazyReactFlow';
 import 'reactflow/dist/style.css';
 import { useToast } from '../../contexts/ToastContext';
 import TableNode from './TableNode';

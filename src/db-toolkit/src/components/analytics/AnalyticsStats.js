@@ -2,7 +2,7 @@
  * Analytics statistics cards with sparklines and trends
  */
 import { Activity, Zap, Clock, HardDrive } from "lucide-react";
-import { LineChart, Line, ResponsiveContainer } from "recharts";
+import { LazyLineChart as LineChart, LazyLine as Line, LazyResponsiveContainer as ResponsiveContainer } from "../common/LazyRecharts";
 import { useEffect, useState } from "react";
 
 export function AnalyticsStats({ analytics, history = [] }) {

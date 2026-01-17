@@ -2,15 +2,15 @@
  * Analytics charts with Recharts - Enhanced pgAdmin-style graph
  */
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+  LazyLineChart as LineChart,
+  LazyLine as Line,
+  LazyXAxis as XAxis,
+  LazyYAxis as YAxis,
+  LazyCartesianGrid as CartesianGrid,
+  LazyTooltip as Tooltip,
+  LazyLegend as Legend,
+  LazyResponsiveContainer as ResponsiveContainer,
+} from "../common/LazyRecharts";
 import { useEffect, useState } from "react";
 import { Activity } from "lucide-react";
 

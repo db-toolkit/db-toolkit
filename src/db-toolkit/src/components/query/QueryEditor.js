@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { Play } from 'lucide-react';
-import Editor from '@monaco-editor/react';
+import Editor from '../common/LazyMonacoEditor';
 import { format } from 'sql-formatter';
 import { Button } from '../common/Button';
 import { useTheme } from '../../contexts/ThemeContext';

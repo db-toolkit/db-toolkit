@@ -2,13 +2,11 @@
  * Query statistics by type - DonutChart with enhanced visualization
  */
 import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+  LazyTooltip as Tooltip,
+  LazyLegend as Legend,
+  LazyResponsiveContainer as ResponsiveContainer,
+} from "../common/LazyRecharts";
+import { PieChart, Pie, Cell } from "recharts"; // Keep these non-lazy as they're small
 import { useEffect, useState } from "react";
 import { PieChart as PieChartIcon } from "lucide-react";
 
