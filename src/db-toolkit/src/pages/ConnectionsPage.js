@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Plus, Database, Search } from 'lucide-react';
@@ -26,9 +26,7 @@ function ConnectionsPage() {
   const { connections, loading, error, connectedIds, createConnection, updateConnection, deleteConnection, connectToDatabase } = useConnections();
   const { sessionState, restoreSession } = useSession();
 
-
-
-  const handleConnect = async (id) => {
+  const handleConnect = useCallback(async (id) => {
     try {
       const response = await connectToDatabase(id);
       if (response.success === false) {
@@ -43,9 +41,9 @@ function ConnectionsPage() {
       setShowErrorModal(true);
       setModalError(err.message);
     }
-  };
+  }, [connectToDatabase, toast, navigate]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = useCallback(async (id) => {
     if (window.confirm('Delete this connection?')) {
       try {
         await deleteConnection(id);
@@ -54,9 +52,9 @@ function ConnectionsPage() {
         toast.error('Delete failed');
       }
     }
-  };
+  }, [deleteConnection, toast]);
 
-  const handleSave = async (data) => {
+  const handleSave = useCallback(async (data) => {
     try {
       if (data.id) {
         const { id, ...updateData } = data;
@@ -71,17 +69,27 @@ function ConnectionsPage() {
     } catch (err) {
       toast.error(data.id ? 'Failed to update connection' : 'Failed to create connection');
     }
-  };
+  }, [updateConnection, createConnection, toast]);
 
-  const handleEdit = (connection) => {
+  const handleEdit = useCallback((connection) => {
     setEditingConnection(connection);
     setShowModal(true);
-  };
+  }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setShowModal(false);
     setEditingConnection(null);
-  };
+  }, []);
+
+  // Memoize filtered connections to avoid re-filtering on every render
+  const filteredConnections = useMemo(() => {
+    const searchLower = debouncedSearch.toLowerCase();
+    return connections.filter(conn => 
+      conn.name.toLowerCase().includes(searchLower) ||
+      conn.db_type.toLowerCase().includes(searchLower) ||
+      (conn.host && conn.host.toLowerCase().includes(searchLower))
+    );
+  }, [connections, debouncedSearch]);
 
   if (loading) return <LoadingState fullScreen message="Loading connections..." />;
   
@@ -89,12 +97,6 @@ function ConnectionsPage() {
     <div className="p-8">
       <ErrorMessage message={error} />
     </div>
-  );
-
-  const filteredConnections = connections.filter(conn => 
-    conn.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-    conn.db_type.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-    (conn.host && conn.host.toLowerCase().includes(debouncedSearch.toLowerCase()))
   );
 
   return (
