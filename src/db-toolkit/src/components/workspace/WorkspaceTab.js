@@ -1,8 +1,9 @@
 /**
  * Individual Workspace Tab Component
  */
-import { X, Database, Edit2, Trash2, Palette } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { X, Database } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { WorkspaceContextMenu } from "./WorkspaceContextMenu";
 
 const ipc = {
   invoke: (channel, ...args) =>
@@ -123,10 +124,28 @@ export function WorkspaceTab({
     setShowColorPicker(false);
   };
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     setShowContextMenu(false);
     onClose(workspace.id);
-  };
+  }, [workspace.id, onClose]);
+
+  const handleCloseOthers = useCallback(async () => {
+    setShowContextMenu(false);
+    const otherWorkspaceIds = workspaces
+      .filter((w) => w.id !== workspace.id)
+      .map((w) => w.id);
+    if (onCloseMultiple) {
+      await onCloseMultiple(otherWorkspaceIds);
+    }
+  }, [workspace.id, workspaces, onCloseMultiple]);
+
+  const handleCloseAll = useCallback(async () => {
+    setShowContextMenu(false);
+    const allWorkspaceIds = workspaces.map((w) => w.id);
+    if (onCloseMultiple) {
+      await onCloseMultiple(allWorkspaceIds);
+    }
+  }, [workspaces, onCloseMultiple]);
 
   return (
     <div
@@ -201,63 +220,18 @@ export function WorkspaceTab({
 
       {/* Context Menu */}
       {showContextMenu && (
-        <div
-          ref={menuRef}
-          className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 z-50 min-w-[150px]"
-          style={{ left: menuPosition.x, top: menuPosition.y }}
-        >
-          <button
-            onClick={handleRename}
-            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <Edit2 size={14} />
-            Rename
-          </button>
-          <button
-            onClick={handleChangeColor}
-            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <Palette size={14} />
-            Change Color
-          </button>
-          <button
-            onClick={handleDelete}
-            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <Trash2 size={14} />
-            Close
-          </button>
-          <button
-            onClick={async () => {
-              setShowContextMenu(false);
-              // Close all except this one
-              const otherWorkspaceIds = workspaces
-                .filter((w) => w.id !== workspace.id)
-                .map((w) => w.id);
-              if (onCloseMultiple) {
-                await onCloseMultiple(otherWorkspaceIds);
-              }
-            }}
-            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <X size={14} />
-            Close Others
-          </button>
-          <button
-            onClick={async () => {
-              setShowContextMenu(false);
-              // Close all workspaces
-              const allWorkspaceIds = workspaces.map((w) => w.id);
-              if (onCloseMultiple) {
-                await onCloseMultiple(allWorkspaceIds);
-              }
-            }}
-            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <X size={14} />
-            Close All
-          </button>
-        </div>
+        <WorkspaceContextMenu
+          menuRef={menuRef}
+          menuPosition={menuPosition}
+          workspace={workspace}
+          workspaces={workspaces}
+          onRename={handleRename}
+          onChangeColor={handleChangeColor}
+          onDelete={handleDelete}
+          onCloseOthers={handleCloseOthers}
+          onCloseAll={handleCloseAll}
+          onClose={() => setShowContextMenu(false)}
+        />
       )}
 
       {/* Color Picker */}
