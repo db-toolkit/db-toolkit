@@ -7,11 +7,18 @@ import { Database } from 'lucide-react';
 import { Button } from '../common/Button';
 import { pageTransition } from '../../utils/animations';
 
-export const ConnectionSelector = memo(function ConnectionSelector({ connections, connecting, onConnect }) {
+export const ConnectionSelector = memo(function ConnectionSelector({ 
+  connections, 
+  connecting, 
+  onConnect,
+  title = "Data Explorer",
+  description = "Select a connection to explore data",
+  buttonText = "Connect & Explore"
+}) {
   return (
     <motion.div className="p-8" {...pageTransition}>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Data Explorer</h2>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">Select a connection to explore data</p>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{title}</h2>
+      <p className="text-gray-600 dark:text-gray-400 mb-6">{description}</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {connections.map((conn) => (
           <div
@@ -35,7 +42,7 @@ export const ConnectionSelector = memo(function ConnectionSelector({ connections
               disabled={connecting === conn.id}
               className="w-full !text-white"
             >
-              {connecting === conn.id ? 'Connecting...' : 'Connect & Explore'}
+              {connecting === conn.id ? 'Connecting...' : buttonText}
             </Button>
           </div>
         ))}

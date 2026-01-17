@@ -8,6 +8,7 @@ import { Database, Download } from "lucide-react";
 import { useConnections, useAnalytics } from "../hooks";
 import { useToast } from "../contexts/ToastContext";
 import { useWorkspace } from "../components/workspace/WorkspaceProvider";
+import { ConnectionSelector } from "../components/data-explorer/ConnectionSelector";
 import { Button } from "../components/common/Button";
 
 import { AnalyticsStats } from "../components/analytics/AnalyticsStats";
@@ -140,51 +141,14 @@ function AnalyticsPage() {
     }
 
     return (
-      <motion.div className="p-8" {...pageTransition}>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-          Database Analytics
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Select a connection to view analytics
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {connections.map((conn) => (
-            <div
-              key={conn.id}
-              className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-lg hover:border-green-400 dark:hover:border-green-500 transition-all duration-200"
-            >
-              <div className="flex items-start gap-3 mb-4">
-                <Database
-                  className="text-green-600 dark:text-green-400 mt-1"
-                  size={24}
-                />
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {conn.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {conn.db_type}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    {conn.db_type === "sqlite"
-                      ? conn.database.split("/").pop()
-                      : `${conn.host}:${conn.port}`}
-                  </p>
-                </div>
-              </div>
-              <Button
-                variant="success"
-                size="sm"
-                onClick={() => handleConnect(conn.id)}
-                disabled={connecting === conn.id}
-                className="w-full !text-white"
-              >
-                {connecting === conn.id ? "Connecting..." : "Connect & Monitor"}
-              </Button>
-            </div>
-          ))}
-        </div>
-      </motion.div>
+      <ConnectionSelector
+        connections={connections}
+        connecting={connecting}
+        onConnect={handleConnect}
+        title="Database Analytics"
+        description="Select a connection to view analytics"
+        buttonText="Connect & Monitor"
+      />
     );
   }
 
