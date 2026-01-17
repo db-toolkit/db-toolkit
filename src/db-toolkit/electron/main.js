@@ -20,8 +20,10 @@ app.whenReady().then(async () => {
   const mainWindow = createWindow();
   createMenu(mainWindow, !app.isPackaged);
   
-  // Start background tasks
-  startBackgroundTasks();
+  // Defer background tasks to not compete with window rendering
+  setTimeout(() => {
+    startBackgroundTasks();
+  }, 3000);
   
   // Restore previous session
   await restoreSession();
