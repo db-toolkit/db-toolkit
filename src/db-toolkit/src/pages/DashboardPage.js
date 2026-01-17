@@ -2,16 +2,21 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Database, FileText, HardDrive, Plus, ArrowRight, Activity } from 'lucide-react';
 import { useConnections } from '../hooks';
+import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
+import { ConnectionModal } from '../components/connections/ConnectionModal';
+
 const ipc = {
   invoke: (channel, ...args) => window.electron.ipcRenderer.invoke(channel, ...args)
 };
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { connections, loading } = useConnections();
+  const toast = useToast();
+  const { connections, loading, createConnection } = useConnections();
   const [stats, setStats] = useState({ queries: 0, backups: 0 });
   const [recentActivity, setRecentActivity] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -53,6 +58,16 @@ export default function DashboardPage() {
   };
 
   const activeConnections = connections.filter(c => c.status === 'connected');
+
+  const handleSaveConnection = async (connectionData) => {
+    try {
+      await createConnection(connectionData);
+      toast.success('Connection created successfully');
+      setShowModal(false);
+    } catch (err) {
+      toast.error(err.message || 'Failed to create connection');
+    }
+  };
 
   if (loading) {
     return (
@@ -113,7 +128,7 @@ export default function DashboardPage() {
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
-          <Button onClick={() => navigate('/connections')}>
+          <Button onClick={() => setShowModal(true)}>
             <Plus size={16} className="mr-1" /> New Connection
           </Button>
           <Button variant="secondary" onClick={() => navigate('/query/new')}>
@@ -142,7 +157,7 @@ export default function DashboardPage() {
               <span>Run queries and manage your data</span>
             </li>
           </ol>
-          <Button onClick={() => navigate('/connections')}>
+          <Button onClick={() => setShowModal(true)}>
             Get Started <ArrowRight size={16} className="ml-1" />
           </Button>
         </div>
@@ -205,6 +220,12 @@ export default function DashboardPage() {
           </div>
         </>
       )}
+
+      <ConnectionModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={handleSaveConnection}
+      />
     </div>
   );
 }
