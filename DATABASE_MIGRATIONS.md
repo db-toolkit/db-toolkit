@@ -2,35 +2,36 @@
 
 ## Overview
 
-This guide outlines the implementation of database migrations for DB Toolkit using **dbmate** - a lightweight, framework-agnostic migration tool. Instead of building a custom migration engine from scratch (6-8 months), we'll integrate the battle-tested dbmate CLI and wrap it with a beautiful UI.
+This guide outlines the implementation of database migrations for DB Toolkit using **dbmate** (for SQL databases) and **migrate-mongo** (for MongoDB) - lightweight, framework-agnostic migration tools. Instead of building a custom migration engine from scratch (6-8 months), we'll integrate these battle-tested CLIs and wrap them with a beautiful UI.
 
-## Why dbmate?
+## Why dbmate + migrate-mongo?
 
 ### Key Advantages
 - **Production-ready**: Battle-tested by thousands of projects
-- **Language-agnostic**: Works with any framework or language
-- **Simple**: Plain SQL migrations, no DSL to learn
-- **Fast**: Single binary, no dependencies
+- **Language-agnostic**: Works with any framework or language (Go, Node.js, Python, Ruby, PHP, Rust, C++, Java, etc.)
+- **Simple**: Plain SQL/JavaScript migrations, no DSL to learn
+- **Fast**: Single binaries, no dependencies
 - **Reliable**: Atomic transactions, automatic rollbacks
-- **Multi-database**: PostgreSQL, MySQL, SQLite, ClickHouse, BigQuery, Spanner
+- **Multi-database**: PostgreSQL, MySQL, SQLite, ClickHouse, BigQuery, Spanner, MongoDB
 
 ### What We Get for Free
 - ✅ Migration versioning (timestamp-based)
 - ✅ Up/down migrations
-- ✅ Transaction support
+- ✅ Transaction support (SQL databases)
 - ✅ Schema dumps (`schema.sql`)
 - ✅ Database creation/dropping
 - ✅ Wait for database ready
 - ✅ Environment variable support
 - ✅ Migration status tracking
 - ✅ Rollback capability
+- ✅ MongoDB collection/index management
 
 ### What We Build
-- 🎨 Beautiful UI for migration management
+- 🎨 Beautiful unified UI for all database types
 - 🔄 Visual migration timeline
-- 📝 Migration editor with syntax highlighting
+- 📝 Migration editor with syntax highlighting (SQL + JavaScript)
 - 🔍 Schema diff viewer
-- 🎯 Migration templates
+- 🎯 Migration templates (SQL + MongoDB)
 - 👥 Team collaboration features
 - 📊 Migration analytics
 
@@ -49,36 +50,56 @@ This guide outlines the implementation of database migrations for DB Toolkit usi
                           ↓
 ┌─────────────────────────────────────────────────────────┐
 │              Migration Service Layer                     │
-│  (Node.js wrapper around dbmate CLI)                    │
+│  (Node.js wrapper around dbmate + migrate-mongo)        │
 └─────────────────────────────────────────────────────────┘
                           │
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│                  dbmate CLI                             │
-│  (Bundled binary for each platform)                     │
-└─────────────────────────────────────────────────────────┘
-                          │
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│              Database (PostgreSQL/MySQL/SQLite)         │
-└─────────────────────────────────────────────────────────┘
+                ┌─────────┴─────────┐
+                ↓                   ↓
+┌───────────────────────┐  ┌───────────────────────┐
+│    dbmate CLI         │  │  migrate-mongo CLI    │
+│  (SQL databases)      │  │  (MongoDB)            │
+└───────────────────────┘  └───────────────────────┘
+                │                   │
+                ↓                   ↓
+┌───────────────────────┐  ┌───────────────────────┐
+│  PostgreSQL/MySQL/    │  │     MongoDB           │
+│  SQLite/ClickHouse    │  │                       │
+└───────────────────────┘  └───────────────────────┘
 ```
+
+### Language Agnostic
+
+Both tools work with **any programming language or framework**:
+- **Go** applications
+- **Node.js** / JavaScript / TypeScript
+- **Python** (Django, Flask, FastAPI)
+- **Ruby** (Rails, Sinatra)
+- **PHP** (Laravel, Symfony)
+- **Rust** applications
+- **C++** applications
+- **Java** / Kotlin (Spring Boot)
+- **C#** / .NET
+- **Elixir** / Phoenix
+- And any other language!
+
+The migrations are just **plain SQL** (for dbmate) or **plain JavaScript** (for migrate-mongo), so they work regardless of your application's programming language.
 
 ---
 
 ## Implementation Phases
 
-## Phase 1: dbmate Integration (1-2 weeks)
+## Phase 1: Migration Tools Integration (1-2 weeks)
 
-### Task 1.1: Bundle dbmate Binary
-**Objective**: Include dbmate in the application
+### Task 1.1: Bundle Migration Binaries
+**Objective**: Include dbmate and migrate-mongo in the application
 
 **Steps**:
 1. Download dbmate binaries for all platforms (macOS, Windows, Linux)
-2. Store in `resources/bin/` directory
-3. Configure electron-builder to include binaries
-4. Add platform detection logic
-5. Set executable permissions on startup
+2. Install migrate-mongo via npm (bundled with app)
+3. Store dbmate in `resources/bin/` directory
+4. Configure electron-builder to include binaries
+5. Add platform detection logic
+6. Set executable permissions on startup
 
 **File Structure**:
 ```
@@ -89,38 +110,109 @@ resources/
 │   ├── dbmate-linux-amd64
 │   ├── dbmate-windows-amd64.exe
 │   └── ...
+node_modules/
+├── migrate-mongo/
+│   └── ...
 ```
 
-### Task 1.2: Create Migration Service
-**Objective**: Node.js wrapper for dbmate CLI
+### Task 1.2: Create Unified Migration Service
+**Objective**: Node.js wrapper for both dbmate and migrate-mongo
 
 **Features**:
-- Execute dbmate commands via child_process
-- Parse dbmate output
+- Detect database type (SQL vs MongoDB)
+- Route to appropriate migration tool
+- Execute commands via child_process
+- Parse output from both tools
 - Handle errors gracefully
-- Support all dbmate commands
+- Support all commands
 - Environment variable management
 
 **Service Methods**:
 ```javascript
 class MigrationService {
-  async new(name)              // Create new migration
-  async up()                   // Run pending migrations
-  async down()                 // Rollback last migration
-  async status()               // Get migration status
-  async create()               // Create database
-  async drop()                 // Drop database
-  async wait()                 // Wait for database
-  async dump()                 // Export schema
-  async load()                 // Load schema
+  // Common methods
+  async new(name, dbType)          // Create new migration
+  async up(dbType)                 // Run pending migrations
+  async down(dbType)               // Rollback last migration
+  async status(dbType)             // Get migration status
+  
+  // SQL-specific (dbmate)
+  async create()                   // Create database
+  async drop()                     // Drop database
+  async wait()                     // Wait for database
+  async dump()                     // Export schema
+  async load()                     // Load schema
+  
+  // MongoDB-specific (migrate-mongo)
+  async createCollection()         // Create collection
+  async createIndex()              // Create index
+  async validateSchema()           // Add validation rules
 }
 ```
 
-### Task 1.3: IPC Bridge
+### Task 1.3: MongoDB Migration Format
+**Objective**: Support JavaScript-based MongoDB migrations
+
+**Migration File Structure** (migrate-mongo):
+```javascript
+// migrations/20260117120000-create-users-collection.js
+
+module.exports = {
+  async up(db, client) {
+    // Create collection
+    await db.createCollection('users', {
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['email', 'name'],
+          properties: {
+            email: { bsonType: 'string' },
+            name: { bsonType: 'string' },
+            age: { bsonType: 'int', minimum: 0 }
+          }
+        }
+      }
+    });
+    
+    // Create indexes
+    await db.collection('users').createIndex({ email: 1 }, { unique: true });
+  },
+
+  async down(db, client) {
+    // Drop collection
+    await db.collection('users').drop();
+  }
+};
+```
+
+### Task 1.4: SQL Migration Format
+**Objective**: Support SQL-based migrations (dbmate)
+
+**Migration File Structure** (dbmate):
+```sql
+-- migrations/20260117120000_create_users_table.sql
+
+-- migrate:up
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  age INTEGER CHECK (age >= 0),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_users_email ON users(email);
+
+-- migrate:down
+DROP INDEX IF EXISTS idx_users_email;
+DROP TABLE IF EXISTS users;
+```
+
+### Task 1.5: IPC Bridge
 **Objective**: Connect UI to migration service
 
 **IPC Channels**:
-- `migration:new` - Create migration
+- `migration:new` - Create migration (SQL or MongoDB)
 - `migration:up` - Apply migrations
 - `migration:down` - Rollback migration
 - `migration:status` - Get status
@@ -128,22 +220,30 @@ class MigrationService {
 - `migration:read` - Read migration file
 - `migration:update` - Update migration file
 - `migration:delete` - Delete migration file
+- `migration:detect-type` - Detect database type
 
-### Task 1.4: Migration Storage
+### Task 1.6: Migration Storage
 **Objective**: Manage migration files per connection
 
 **Directory Structure**:
 ```
 ~/DB-Toolkit/
 ├── connections/
-│   ├── connection-1/
+│   ├── postgres-connection-1/
 │   │   ├── migrations/
 │   │   │   ├── 20260117120000_create_users.sql
 │   │   │   ├── 20260117130000_add_roles.sql
 │   │   │   └── ...
 │   │   ├── schema.sql
 │   │   └── .env
-│   ├── connection-2/
+│   ├── mongodb-connection-1/
+│   │   ├── migrations/
+│   │   │   ├── 20260117120000-create-users-collection.js
+│   │   │   ├── 20260117130000-add-indexes.js
+│   │   │   └── ...
+│   │   ├── migrate-mongo-config.js
+│   │   └── .env
+│   ├── mysql-connection-2/
 │   │   └── ...
 ```
 
@@ -172,21 +272,42 @@ class MigrationService {
 
 **Features**:
 - Monaco editor integration
-- SQL syntax highlighting
+- SQL syntax highlighting (for SQL databases)
+- JavaScript syntax highlighting (for MongoDB)
 - Auto-completion
 - Split view (up/down migrations)
 - Save and validate
-- Format SQL button
+- Format SQL/JavaScript button
+- Database-specific snippets
 
-**Editor Layout**:
+**Editor Layout (SQL)**:
 ```
 ┌─────────────────────────────────────────────────────┐
 │  Migration: create_users_table                      │
 │  Version: 20260117120000                            │
+│  Database: PostgreSQL                               │
 ├─────────────────────────────────────────────────────┤
 │  ┌─── UP Migration ───┐  ┌─── DOWN Migration ───┐ │
 │  │ CREATE TABLE users  │  │ DROP TABLE users     │ │
 │  │ ...                 │  │ ...                  │ │
+│  └─────────────────────┘  └──────────────────────┘ │
+├─────────────────────────────────────────────────────┤
+│  [Cancel]  [Save]  [Save & Run]                     │
+└─────────────────────────────────────────────────────┘
+```
+
+**Editor Layout (MongoDB)**:
+```
+┌─────────────────────────────────────────────────────┐
+│  Migration: create-users-collection                 │
+│  Version: 20260117120000                            │
+│  Database: MongoDB                                  │
+├─────────────────────────────────────────────────────┤
+│  ┌─── UP Function ────┐  ┌─── DOWN Function ────┐ │
+│  │ async up(db) {      │  │ async down(db) {     │ │
+│  │   await db.create   │  │   await db.drop      │ │
+│  │   ...               │  │   ...                │ │
+│  │ }                   │  │ }                    │ │
 │  └─────────────────────┘  └──────────────────────┘ │
 ├─────────────────────────────────────────────────────┤
 │  [Cancel]  [Save]  [Save & Run]                     │
@@ -274,7 +395,7 @@ class MigrationService {
 ### Task 3.2: Migration Templates
 **Objective**: Pre-built migration templates
 
-**Template Library**:
+**SQL Template Library** (PostgreSQL, MySQL, SQLite):
 - **Table Operations**
   - Create table
   - Drop table
@@ -300,7 +421,28 @@ class MigrationService {
   - Update data
   - Delete data
 
-**Template Format**:
+**MongoDB Template Library**:
+- **Collection Operations**
+  - Create collection
+  - Drop collection
+  - Rename collection
+  - Add validation schema
+
+- **Index Operations**
+  - Create single field index
+  - Create compound index
+  - Create text index
+  - Create geospatial index
+  - Drop index
+
+- **Document Operations**
+  - Add field to all documents
+  - Remove field from all documents
+  - Rename field
+  - Transform data
+  - Bulk insert
+
+**SQL Template Format**:
 ```sql
 -- migrate:up
 CREATE TABLE {{table_name}} (
@@ -311,6 +453,29 @@ CREATE TABLE {{table_name}} (
 
 -- migrate:down
 DROP TABLE IF EXISTS {{table_name}};
+```
+
+**MongoDB Template Format**:
+```javascript
+module.exports = {
+  async up(db, client) {
+    await db.createCollection('{{collection_name}}', {
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['{{required_field}}'],
+          properties: {
+            {{field_name}}: { bsonType: '{{field_type}}' }
+          }
+        }
+      }
+    });
+  },
+
+  async down(db, client) {
+    await db.collection('{{collection_name}}').drop();
+  }
+};
 ```
 
 ### Task 3.3: Migration Preview
