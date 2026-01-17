@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Split from "react-split";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Settings } from "lucide-react";
@@ -27,49 +27,55 @@ function Layout({ children }) {
     return saved ? parseInt(saved) : 20;
   });
 
+  const toggleSidebar = useCallback(() => setShowSidebar((prev) => !prev), []);
+  const openCommandPalette = useCallback(() => setShowCommandPalette(true), []);
+  const openKeyboardShortcuts = useCallback(() => setShowKeyboardShortcuts(true), []);
+  const openReportIssue = useCallback(() => setShowReportIssue(true), []);
+  const openSettings = useCallback(() => setShowSettings(true), []);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setShowCommandPalette(true);
+        openCommandPalette();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [openCommandPalette]);
 
   // Handle menu actions
   useEffect(() => {
-    const handleToggleSidebar = () => setShowSidebar((prev) => !prev);
-
-    const handleCommandPalette = () => setShowCommandPalette(true);
-    const handleKeyboardShortcuts = () => setShowKeyboardShortcuts(true);
-    const handleReportIssue = () => setShowReportIssue(true);
-    const handleFind = () => setShowCommandPalette(true);
-    const handlePreferences = () => setShowSettings(true);
-
-    window.addEventListener("menu:toggle-sidebar", handleToggleSidebar);
-
-    window.addEventListener("menu:command-palette", handleCommandPalette);
-    window.addEventListener("menu:keyboard-shortcuts", handleKeyboardShortcuts);
-    window.addEventListener("menu:report-issue", handleReportIssue);
-    window.addEventListener("menu:find", handleFind);
-    window.addEventListener("menu:preferences", handlePreferences);
+    window.addEventListener("menu:toggle-sidebar", toggleSidebar);
+    window.addEventListener("menu:command-palette", openCommandPalette);
+    window.addEventListener("menu:keyboard-shortcuts", openKeyboardShortcuts);
+    window.addEventListener("menu:report-issue", openReportIssue);
+    window.addEventListener("menu:find", openCommandPalette);
+    window.addEventListener("menu:preferences", openSettings);
 
     return () => {
-      window.removeEventListener("menu:toggle-sidebar", handleToggleSidebar);
-
-      window.removeEventListener("menu:command-palette", handleCommandPalette);
-      window.removeEventListener(
-        "menu:keyboard-shortcuts",
-        handleKeyboardShortcuts,
-      );
-      window.removeEventListener("menu:report-issue", handleReportIssue);
-      window.removeEventListener("menu:find", handleFind);
-      window.removeEventListener("menu:preferences", handlePreferences);
+      window.removeEventListener("menu:toggle-sidebar", toggleSidebar);
+      window.removeEventListener("menu:command-palette", openCommandPalette);
+      window.removeEventListener("menu:keyboard-shortcuts", openKeyboardShortcuts);
+      window.removeEventListener("menu:report-issue", openReportIssue);
+      window.removeEventListener("menu:find", openCommandPalette);
+      window.removeEventListener("menu:preferences", openSettings);
     };
-  }, []);
+  }, [toggleSidebar, openCommandPalette, openKeyboardShortcuts, openReportIssue, openSettings]);
+
+  // Memoize recent connections calculation
+  const recentConnections = useMemo(() => {
+    return connections
+      .map((conn) => ({
+        id: conn.id,
+        name: conn.name,
+        lastUsed: localStorage.getItem(`connection_time_${conn.id}`),
+      }))
+      .filter((conn) => conn.lastUsed)
+      .sort((a, b) => parseInt(b.lastUsed) - parseInt(a.lastUsed))
+      .slice(0, 5);
+  }, [connections]);
 
   useEffect(() => {
     const savedConnections = JSON.parse(
@@ -78,25 +84,18 @@ function Layout({ children }) {
     const savedQueries = JSON.parse(localStorage.getItem("query-tabs") || "[]");
     setConnections(savedConnections);
     setQueries(savedQueries);
-
-    // Update recent connections in menu
-    if (window.electron?.updateRecentConnections) {
-      const recent = savedConnections
-        .map((conn) => ({
-          id: conn.id,
-          name: conn.name,
-          lastUsed: localStorage.getItem(`connection_time_${conn.id}`),
-        }))
-        .filter((conn) => conn.lastUsed)
-        .sort((a, b) => parseInt(b.lastUsed) - parseInt(a.lastUsed))
-        .slice(0, 5);
-      window.electron.updateRecentConnections(recent);
-    }
   }, []);
+
+  useEffect(() => {
+    // Update recent connections in menu
+    if (window.electron?.updateRecentConnections && recentConnections.length > 0) {
+      window.electron.updateRecentConnections(recentConnections);
+    }
+  }, [recentConnections]);
 
   return (
     <div className="h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
-      <CustomTitleBar onToggleSidebar={() => setShowSidebar((prev) => !prev)} />
+      <CustomTitleBar onToggleSidebar={toggleSidebar} />
       <div className="flex h-full" style={{ height: "calc(100vh - 40px)" }}>
         {showSidebar && (
           <Split
