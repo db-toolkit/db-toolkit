@@ -1,119 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Modal } from '../common/Modal';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
 import { useSettingsContext } from '../../contexts/SettingsContext';
 import { useToast } from '../../contexts/ToastContext';
-import api from '../../services/api';
+import { useConnectionForm } from '../../hooks/useConnectionForm';
 
 export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
   const { settings } = useSettingsContext();
   const toast = useToast();
-  const [testing, setTesting] = useState(false);
   const [useUrl, setUseUrl] = useState(false);
   const [databaseUrl, setDatabaseUrl] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    db_type: settings?.default_db_type || 'postgresql',
-    host: 'localhost',
-    port: 5432,
-    database: '',
-    username: '',
-    password: '',
-    ssl_enabled: false,
-    ssl_mode: 'require',
-  });
+  
+  const {
+    formData,
+    setFormData,
+    hasChanges,
+    setHasChanges,
+    testing,
+    handleChange,
+    handleTest,
+    handleSubmit,
+    handleClose,
+  } = useConnectionForm(connection, isOpen, settings, onClose, onSave);
 
-  useEffect(() => {
-    if (isOpen) {
-      if (connection) {
-        setFormData({
-          name: connection.name || '',
-          db_type: connection.db_type || 'postgresql',
-          host: connection.host || 'localhost',
-          port: connection.port || 5432,
-          database: connection.database || '',
-          username: connection.username || '',
-          password: connection.password || '',
-          ssl_enabled: connection.ssl_enabled || false,
-          ssl_mode: connection.ssl_mode || 'require',
-        });
-        setHasChanges(false);
-      } else {
-        // Try to restore draft for new connections
-        const draft = localStorage.getItem('connection-draft');
-        if (draft) {
-          try {
-            setFormData(JSON.parse(draft));
-            setHasChanges(true);
-          } catch {
-            setFormData({
-              name: '',
-              db_type: settings?.default_db_type || 'postgresql',
-              host: 'localhost',
-              port: 5432,
-              database: '',
-              username: '',
-              password: '',
-            });
-            setHasChanges(false);
-          }
-        } else {
-          setFormData({
-            name: '',
-            db_type: settings?.default_db_type || 'postgresql',
-            host: 'localhost',
-            port: 5432,
-            database: '',
-            username: '',
-            password: '',
-            ssl_enabled: false,
-            ssl_mode: 'require',
-          });
-          setHasChanges(false);
-        }
-      }
-    }
-  }, [connection, isOpen, settings]);
-
-  const handleChange = (field, value) => {
-    const updated = { ...formData, [field]: value };
-    setFormData(updated);
-    setHasChanges(true);
-    
-    // Auto-save draft for new connections only
-    if (!connection) {
-      localStorage.setItem('connection-draft', JSON.stringify(updated));
-    }
-  };
-
-  const handleTest = async () => {
-    setTesting(true);
-    try {
-      // For existing connections, update first
-      if (connection) {
-        await api.put(`/connections/${connection.id}`, formData);
-      }
-      
-      // Test connection without creating duplicate
-      const response = await api.post('/connections/test', formData);
-      
-      if (response.data.success) {
-        toast.success('Connection test successful!');
-      } else {
-        toast.error(response.data.message || 'Connection test failed');
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.detail || 'Connection test failed');
-    } finally {
-      setTesting(false);
-    }
-  };
-
-  const parseConnectionUrl = (url) => {
+  const parseConnectionUrl = useCallback((url) => {
     try {
       if (!url.trim()) {
         toast.error('Database URL is required');
@@ -208,31 +121,33 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
       toast.error('Invalid database URL format. Expected: protocol://user:pass@host:port/database');
       return null;
     }
-  };
+  }, [setFormData, setUseUrl, toast]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await onSave(connection ? { ...formData, id: connection.id } : formData);
+  const handleDbTypeChange = useCallback((newType) => {
+    const defaultPorts = {
+      postgresql: 5432,
+      mysql: 3306,
+      mongodb: 27017,
+      sqlite: 0
+    };
     
-    // Clear draft after successful save
-    localStorage.removeItem('connection-draft');
-    setHasChanges(false);
-    onClose();
-  };
-  
-  const handleClose = () => {
-    if (hasChanges) {
-      if (window.confirm('You have unsaved changes. Discard them?')) {
-        if (!connection) {
-          localStorage.removeItem('connection-draft');
-        }
-        setHasChanges(false);
-        onClose();
-      }
-    } else {
-      onClose();
+    const updated = {
+      ...formData,
+      db_type: newType,
+      port: defaultPorts[newType],
+      ...(newType === 'sqlite' && {
+        host: '',
+        username: '',
+        password: ''
+      })
+    };
+    setFormData(updated);
+    setHasChanges(true);
+    
+    if (!connection) {
+      localStorage.setItem('connection-draft', JSON.stringify(updated));
     }
-  };
+  }, [formData, connection, setFormData, setHasChanges]);
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={connection ? 'Edit Connection' : 'New Connection'}>
@@ -254,32 +169,7 @@ export function ConnectionModal({ isOpen, onClose, onSave, connection }) {
             </label>
             <select
               value={formData.db_type}
-              onChange={(e) => {
-                const newType = e.target.value;
-                const defaultPorts = {
-                  postgresql: 5432,
-                  mysql: 3306,
-                  mongodb: 27017,
-                  sqlite: 0
-                };
-                
-                const updated = {
-                  ...formData,
-                  db_type: newType,
-                  port: defaultPorts[newType],
-                  ...(newType === 'sqlite' && {
-                    host: '',
-                    username: '',
-                    password: ''
-                  })
-                };
-                setFormData(updated);
-                setHasChanges(true);
-                
-                if (!connection) {
-                  localStorage.setItem('connection-draft', JSON.stringify(updated));
-                }
-              }}
+              onChange={(e) => handleDbTypeChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
               <option value="postgresql">PostgreSQL</option>
