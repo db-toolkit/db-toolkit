@@ -7,7 +7,6 @@ import { WorkspaceTabBar } from "../workspace/WorkspaceTabBar";
 import { Tooltip } from "../common/Tooltip";
 
 export function CustomTitleBar({ onToggleSidebar }) {
-  const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
   const [workspacesEnabled, setWorkspacesEnabled] = useState(null);
 
   useEffect(() => {
@@ -41,7 +40,7 @@ export function CustomTitleBar({ onToggleSidebar }) {
       >
         {/* Sidebar toggle (left side) */}
         <div
-          className={`flex items-center px-4 ${isMac ? "ml-16" : ""}`}
+          className="flex items-center px-4"
           style={{ WebkitAppRegion: "no-drag" }}
         >
           <Tooltip text="Toggle sidebar" position="right">
