@@ -20,14 +20,14 @@ export function WorkspaceProvider({ children }) {
   const [workspaces, setWorkspaces] = useState([]);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [maxWorkspaces, setMaxWorkspaces] = useState(10);
-  const [workspacesEnabled, setWorkspacesEnabled] = useState(true);
+  const [maxWorkspaces, setMaxWorkspaces] = useState(10); // Default value
+  const [workspacesEnabled, setWorkspacesEnabled] = useState(true); // Default value
   const location = useLocation();
   const navigate = useNavigate();
   const { trackFeature } = useTelemetry();
   const ipc = useWorkspaceIPC();
 
-  // Load settings to get maxWorkspaces and enabled status
+  // Load settings in background (non-blocking)
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -40,7 +40,7 @@ export function WorkspaceProvider({ children }) {
         console.error("Failed to load workspace settings:", error);
       }
     };
-    loadSettings();
+    loadSettings(); // Non-blocking - runs in background
   }, []);
 
   // Load workspaces on mount and create default if none exist (only if enabled)
