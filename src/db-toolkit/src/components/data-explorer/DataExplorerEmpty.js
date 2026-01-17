@@ -22,3 +22,5 @@ export function DataExplorerNoConnections({ onNavigate }) {
     </motion.div>
   );
 }
+
+export default DataExplorerNoConnections;

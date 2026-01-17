@@ -11,7 +11,7 @@ import { CellViewModal } from '../components/data-explorer/CellViewModal';
 import { ColumnFilter } from '../components/data-explorer/ColumnFilter';
 import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { Button } from '../components/common/Button';
-import { DataExplorerEmpty } from '../components/data-explorer/DataExplorerEmpty';
+import { DataExplorerNoConnections as DataExplorerEmpty } from '../components/data-explorer/DataExplorerEmpty';
 import { ConnectionSelector } from '../components/data-explorer/ConnectionSelector';
 import { DataExplorerToolbar } from '../components/data-explorer/DataExplorerToolbar';
 import { pageTransition } from '../utils/animations';
