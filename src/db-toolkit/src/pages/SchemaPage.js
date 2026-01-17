@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { RefreshCw, Code, FolderTree, Upload, Sparkles, Network } from 'lucide-react';
 import { useSchema } from '../hooks';
@@ -36,31 +36,29 @@ function SchemaPage() {
     });
   }, [fetchSchemaTree]);
 
-  const handleTableClick = (schemaName, tableName) => {
+  const handleTableClick = useCallback((schemaName, tableName) => {
     setSelectedTable({ schema: schemaName, table: tableName });
-  };
+  }, []);
 
-
-
-  const handleRefreshTable = async (schemaName, tableName) => {
+  const handleRefreshTable = useCallback(async (schemaName, tableName) => {
     try {
       await refreshSchema();
       toast.success(`Refreshed ${tableName}`);
     } catch (err) {
       toast.error('Failed to refresh table');
     }
-  };
+  }, [refreshSchema, toast]);
 
-  const handleDropTable = async (schemaName, tableName) => {
+  const handleDropTable = useCallback(async (schemaName, tableName) => {
     await dropTable(`${schemaName}.${tableName}`, connectionId, () => {
       refreshSchema();
       if (selectedTable?.schema === schemaName && selectedTable?.table === tableName) {
         setSelectedTable(null);
       }
     }, toast);
-  };
+  }, [connectionId, refreshSchema, selectedTable, toast]);
 
-  const handleAnalyzeSchema = async (forceRefresh = false) => {
+  const handleAnalyzeSchema = useCallback(async (forceRefresh = false) => {
     if (!schema?.schemas || Object.keys(schema.schemas).length === 0) {
       toast.error('No schema to analyze');
       return;
@@ -76,7 +74,7 @@ function SchemaPage() {
       console.error('Schema analysis error:', err);
       toast.error('Failed to analyze schema');
     }
-  };
+  }, [schema, analyzeSchema, toast]);
 
   if (loading) return <LoadingState fullScreen message="Loading schema..." />;
 

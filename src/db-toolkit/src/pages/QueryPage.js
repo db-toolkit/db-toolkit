@@ -1,7 +1,7 @@
 /**
  * Query Editor Page
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useWorkspace } from "../components/workspace/WorkspaceProvider";
 import { Download, Bot, Loader2, Workflow } from "lucide-react";
@@ -109,7 +109,7 @@ function QueryPage() {
     reconnect();
   }, [connectionId, fetchSchemaTree, toast]);
 
-  const handleExecute = async () => {
+  const handleExecute = useCallback(async () => {
     if (!query.trim()) return;
     const startTime = Date.now();
     clearFixSuggestion();
@@ -132,7 +132,7 @@ function QueryPage() {
       const time = Date.now() - startTime;
       updateActiveTab({ error: errorMsg, executionTime: time });
     }
-  };
+  }, [query, clearFixSuggestion, updateActiveTab, settings, executeQuery]);
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
