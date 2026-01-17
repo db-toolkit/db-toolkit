@@ -133,7 +133,7 @@ export function WorkspaceTab({
       onClick={() => onClick(workspace.id)}
       onContextMenu={handleContextMenu}
       className={`
-        group flex items-center gap-2 px-3 py-2 cursor-pointer transition-all
+        group flex items-center gap-2 px-3 py-1.5 cursor-pointer transition-all
         min-w-[120px] max-w-[200px] flex-shrink-0 h-full
         border border-gray-300 dark:border-gray-600 border-r border-t border-b-2
         rounded-md mr-1
