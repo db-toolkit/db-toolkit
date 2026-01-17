@@ -117,14 +117,13 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1800);
+    // Remove artificial delay - app is ready when React renders
+    setLoading(false);
 
     // Request notification permission
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
-
-    return () => clearTimeout(timer);
   }, []);
 
   if (loading) return <SplashScreen />;
