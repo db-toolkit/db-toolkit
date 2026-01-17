@@ -6,6 +6,7 @@ import { useWorkspace } from "./WorkspaceProvider";
 import { WorkspaceTab } from "./WorkspaceTab";
 import { useNavigate } from "react-router-dom";
 import { createWorkspaceWithEffect, switchWorkspaceWithEffect } from "../../utils/workspaceUtils";
+import { useCallback, useMemo } from "react";
 
 export function WorkspaceTabBar() {
   const {
@@ -19,17 +20,33 @@ export function WorkspaceTabBar() {
   } = useWorkspace();
   const navigate = useNavigate();
 
-  const handleNewWorkspace = async () => {
+  const handleNewWorkspace = useCallback(async () => {
     await createWorkspaceWithEffect(createWorkspace, navigate, workspaces);
-  };
+  }, [createWorkspace, navigate, workspaces]);
 
-  const handleTabClick = (workspaceId) => {
+  const handleTabClick = useCallback((workspaceId) => {
     switchWorkspaceWithEffect(workspaceId, switchWorkspace);
-  };
+  }, [switchWorkspace]);
 
-  const handleCloseTab = async (workspaceId) => {
+  const handleCloseTab = useCallback(async (workspaceId) => {
     await closeWorkspace(workspaceId);
-  };
+  }, [closeWorkspace]);
+
+  // Memoize workspace tabs to prevent unnecessary re-renders
+  const workspaceTabs = useMemo(() => {
+    return workspaces.map((workspace) => (
+      <WorkspaceTab
+        key={workspace.id}
+        workspace={workspace}
+        isActive={workspace.id === activeWorkspaceId}
+        onClick={handleTabClick}
+        onClose={handleCloseTab}
+        onCloseMultiple={closeMultipleWorkspaces}
+        onUpdate={updateWorkspace}
+        workspaces={workspaces}
+      />
+    ));
+  }, [workspaces, activeWorkspaceId, handleTabClick, handleCloseTab, closeMultipleWorkspaces, updateWorkspace]);
 
   return (
     <div className="flex items-center w-full h-full overflow-hidden">
@@ -42,18 +59,7 @@ export function WorkspaceTabBar() {
         }}
       >
         <div className="flex items-center h-full" style={{ minWidth: 'max-content' }}>
-          {workspaces.map((workspace) => (
-            <WorkspaceTab
-              key={workspace.id}
-              workspace={workspace}
-              isActive={workspace.id === activeWorkspaceId}
-              onClick={handleTabClick}
-              onClose={handleCloseTab}
-              onCloseMultiple={closeMultipleWorkspaces}
-              onUpdate={updateWorkspace}
-              workspaces={workspaces}
-            />
-          ))}
+          {workspaceTabs}
         </div>
       </div>
 
