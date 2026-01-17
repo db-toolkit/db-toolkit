@@ -1,7 +1,7 @@
 /**
  * Data grid component for displaying table data
  */
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { ChevronUp, ChevronDown, Eye, Check, X, Copy, Filter, FilterX } from 'lucide-react';
 import { ContextMenu, useContextMenu } from '../common/ContextMenu';
 import { useToast } from '../../contexts/ToastContext';
@@ -14,35 +14,35 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
   const headerContextMenu = useContextMenu();
   const toast = useToast();
 
-  const copyToClipboard = async (text) => {
+  const copyToClipboard = useCallback(async (text) => {
     try {
       await navigator.clipboard.writeText(text);
       toast.success('Copied to clipboard');
     } catch (err) {
       toast.error('Failed to copy');
     }
-  };
+  }, [toast]);
 
-  const handleSort = (column) => {
+  const handleSort = useCallback((column) => {
     const newOrder = sortColumn === column && sortOrder === 'ASC' ? 'DESC' : 'ASC';
     onSort(column, newOrder);
-  };
+  }, [sortColumn, sortOrder, onSort]);
 
-  const isTruncated = (value) => {
+  const isTruncated = useCallback((value) => {
     return typeof value === 'string' && value.endsWith('...');
-  };
+  }, []);
 
-  const startEdit = (rowIndex, colIndex, value) => {
+  const startEdit = useCallback((rowIndex, colIndex, value) => {
     setEditingCell({ rowIndex, colIndex });
     setEditValue(value !== null ? String(value) : '');
-  };
+  }, []);
 
-  const cancelEdit = () => {
+  const cancelEdit = useCallback(() => {
     setEditingCell(null);
     setEditValue('');
-  };
+  }, []);
 
-  const saveEdit = async (row, colIndex) => {
+  const saveEdit = useCallback(async (row, colIndex) => {
     if (!onCellUpdate) {
       cancelEdit();
       return;
@@ -57,9 +57,9 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
     } finally {
       setSaving(false);
     }
-  };
+  }, [onCellUpdate, columns, editValue, cancelEdit]);
 
-  const handleKeyDown = (e, row, colIndex) => {
+  const handleKeyDown = useCallback((e, row, colIndex) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       saveEdit(row, colIndex);
@@ -67,7 +67,29 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
       e.preventDefault();
       cancelEdit();
     }
-  };
+  }, [saveEdit, cancelEdit]);
+
+  // Memoize header cells to prevent re-rendering on every data change
+  const headerCells = useMemo(() => {
+    return columns.map((column) => (
+      <th
+        key={column}
+        onClick={() => handleSort(column)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          headerContextMenu.open(e, { column, colIndex: columns.indexOf(column) });
+        }}
+        className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+      >
+        <div className="flex items-center gap-2">
+          {column}
+          {sortColumn === column && (
+            sortOrder === 'ASC' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+          )}
+        </div>
+      </th>
+    ));
+  }, [columns, sortColumn, sortOrder, handleSort, headerContextMenu]);
 
   if (!data || data.length === 0) {
     return (
@@ -82,24 +104,7 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead className="bg-gray-50 dark:bg-gray-900 sticky top-0">
           <tr>
-            {columns.map((column) => (
-              <th
-                key={column}
-                onClick={() => handleSort(column)}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  headerContextMenu.open(e, { column, colIndex: columns.indexOf(column) });
-                }}
-                className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                <div className="flex items-center gap-2">
-                  {column}
-                  {sortColumn === column && (
-                    sortOrder === 'ASC' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
-                  )}
-                </div>
-              </th>
-            ))}
+            {headerCells}
           </tr>
         </thead>
         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
