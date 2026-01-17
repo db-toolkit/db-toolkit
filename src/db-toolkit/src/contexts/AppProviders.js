@@ -1,11 +1,11 @@
 /**
  * Combined app providers for optimized initialization
  */
-import { ErrorBoundary } from './components/common/ErrorBoundary';
-import { SettingsProvider } from './contexts/SettingsContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { NotificationProvider } from './contexts/NotificationContext';
-import { ToastProvider } from './contexts/ToastContext';
+import { ErrorBoundary } from '../components/common/ErrorBoundary';
+import { SettingsProvider } from './SettingsContext';
+import { ThemeProvider } from './ThemeContext';
+import { NotificationProvider } from './NotificationContext';
+import { ToastProvider } from './ToastContext';
 
 export function AppProviders({ children }) {
   return (
