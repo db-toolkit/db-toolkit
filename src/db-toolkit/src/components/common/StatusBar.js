@@ -79,7 +79,7 @@ function StatusBar() {
     };
 
     updateUptime();
-    const interval = setInterval(updateUptime, 1000);
+    const interval = setInterval(updateUptime, 5000); // Changed from 1000 to 5000
     return () => clearInterval(interval);
   }, []);
 
