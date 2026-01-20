@@ -254,9 +254,13 @@ function AnalyticsPage() {
 
                 {activeTab === "performance" && (
                   <div className="space-y-6">
-                    <AnalyticsStats analytics={analytics} history={history} />
+                    <QueryPerformance
+                      queries={analytics.current_queries || []}
+                      slowQueries={slowQueries}
+                    />
                     <AnalyticsCharts history={history} timeRange={timeRange} />
-                    {poolStats && <ConnectionPoolStats stats={poolStats} />}
+                    <SlowQueryLog queries={slowQueries} />
+                    <TableStats stats={tableStats} />
                   </div>
                 )}
 
@@ -288,9 +292,17 @@ function AnalyticsPage() {
 
                 {activeTab === "connections" && (
                   <div className="space-y-6">
-                    <AnalyticsStats analytics={analytics} history={history} />
-                    <AnalyticsCharts history={history} timeRange={timeRange} />
                     {poolStats && <ConnectionPoolStats stats={poolStats} />}
+                    <CurrentQueries
+                      queries={analytics.current_queries}
+                      onKill={killQuery}
+                      onViewPlan={handleViewPlan}
+                    />
+                    <LongRunningQueries
+                      queries={analytics.long_running_queries}
+                      onKill={killQuery}
+                    />
+                    <BlockedQueries queries={analytics.blocked_queries} />
                   </div>
                 )}
 
