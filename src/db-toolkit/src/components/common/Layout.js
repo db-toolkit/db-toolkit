@@ -113,7 +113,7 @@ function Layout({ children }) {
               <Sidebar />
             </div>
             <div className="flex-1 flex flex-col overflow-hidden">
-              <header className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-end items-center gap-2">
+              <header className="flex-shrink-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-end items-center gap-2">
                 <NotificationCenter />
                 <Tooltip text="Application settings">
                   <button
@@ -136,7 +136,7 @@ function Layout({ children }) {
         )}
         {!showSidebar && (
           <div className="flex-1 flex flex-col overflow-hidden">
-            <header className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-end items-center gap-2">
+            <header className="flex-shrink-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-end items-center gap-2">
               <NotificationCenter />
               <Tooltip text="Application settings">
                 <button
