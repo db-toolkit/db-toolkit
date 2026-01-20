@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Database, Download } from "lucide-react";
 import { useConnections, useAnalytics } from "../hooks";
+import { useAnalyticsConnection } from "../hooks/useAnalyticsConnection";
+import { useAnalyticsData } from "../hooks/useAnalyticsData";
 import { useToast } from "../contexts/ToastContext";
 import { useWorkspace } from "../components/workspace/WorkspaceProvider";
 import { ConnectionSelector } from "../components/data-explorer/ConnectionSelector";
@@ -33,34 +35,26 @@ function AnalyticsPage() {
   const { getWorkspaceState, setWorkspaceState, activeWorkspaceId } =
     useWorkspace();
   const toast = useToast();
-  const [connectionId, setConnectionId] = useState(null);
-  const [connectionName, setConnectionName] = useState("");
-  const [connecting, setConnecting] = useState(null);
 
-  // Sync with workspace state when workspace changes
-  useEffect(() => {
-    const savedConnectionId = getWorkspaceState("analyticsConnectionId");
-    const savedConnectionName = getWorkspaceState("analyticsConnectionName");
+  const {
+    connectionId,
+    connectionName,
+    connecting,
+    handleConnect,
+    handleDisconnect,
+  } = useAnalyticsConnection(
+    connections,
+    connectToDatabase,
+    getWorkspaceState,
+    setWorkspaceState,
+    activeWorkspaceId,
+    toast
+  );
 
-    if (savedConnectionId) {
-      setConnectionId(savedConnectionId);
-      setConnectionName(savedConnectionName || "");
-    } else {
-      setConnectionId(null);
-      setConnectionName("");
-    }
-  }, [activeWorkspaceId]);
   const [timeRange, setTimeRange] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
-  const [planModal, setPlanModal] = useState({
-    isOpen: false,
-    query: "",
-    plan: null,
-  });
-  const [slowQueries, setSlowQueries] = useState([]);
-  const [tableStats, setTableStats] = useState([]);
-  const [poolStats, setPoolStats] = useState(null);
   const [exportingPDF, setExportingPDF] = useState(false);
+
   const {
     analytics,
     loading,
@@ -75,47 +69,26 @@ function AnalyticsPage() {
     exportPDF,
   } = useAnalytics(connectionId);
 
+  const {
+    slowQueries,
+    tableStats,
+    poolStats,
+    planModal,
+    handleViewPlan,
+    closePlanModal,
+  } = useAnalyticsData(
+    connectionId,
+    getSlowQueries,
+    getTableStats,
+    getPoolStats,
+    getQueryPlan
+  );
+
   useEffect(() => {
     if (connectionId) {
       fetchHistoricalData(timeRange);
-      loadAdditionalData();
     }
   }, [connectionId, timeRange]);
-
-  const loadAdditionalData = async () => {
-    const [slow, tables, pool] = await Promise.all([
-      getSlowQueries(24),
-      getTableStats(),
-      getPoolStats(),
-    ]);
-    setSlowQueries(slow);
-    setTableStats(tables);
-    setPoolStats(pool);
-  };
-
-  const handleViewPlan = async (query) => {
-    const result = await getQueryPlan(query);
-    if (result?.success) {
-      setPlanModal({ isOpen: true, query, plan: result.plan });
-    }
-  };
-
-  const handleConnect = async (id) => {
-    setConnecting(id);
-    try {
-      await connectToDatabase(id, true);
-      const conn = connections.find((c) => c.id === id);
-      setConnectionId(id);
-      setConnectionName(conn?.name || "");
-      setWorkspaceState("analyticsConnectionId", id);
-      setWorkspaceState("analyticsConnectionName", conn?.name || "");
-      toast.success("Connected successfully");
-    } catch (err) {
-      toast.error("Failed to connect");
-    } finally {
-      setConnecting(null);
-    }
-  };
 
   if (!connectionId) {
     if (connections.length === 0) {
@@ -208,12 +181,7 @@ function AnalyticsPage() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => {
-                    setConnectionId(null);
-                    setConnectionName("");
-                    setWorkspaceState("analyticsConnectionId", null);
-                    setWorkspaceState("analyticsConnectionName", "");
-                  }}
+                  onClick={handleDisconnect}
                 >
                   Change Connection
                 </Button>
@@ -313,9 +281,7 @@ function AnalyticsPage() {
                 )}
                 <QueryPlanModal
                   isOpen={planModal.isOpen}
-                  onClose={() =>
-                    setPlanModal({ isOpen: false, query: "", plan: null })
-                  }
+                  onClose={closePlanModal}
                   query={planModal.query}
                   plan={planModal.plan}
                 />
