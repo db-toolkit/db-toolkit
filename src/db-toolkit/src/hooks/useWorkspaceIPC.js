@@ -1,7 +1,7 @@
 /**
  * Workspace IPC hook
  */
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 const ipc = {
     invoke: (channel, ...args) => window.electron.ipcRenderer.invoke(channel, ...args)
@@ -28,11 +28,11 @@ export function useWorkspaceIPC() {
         return await ipc.invoke('workspace:delete', workspaceId);
     }, []);
 
-    return {
+    return useMemo(() => ({
         loadWorkspaces,
         createWorkspace,
         updateWorkspace,
         updateWorkspaceState,
         deleteWorkspace
-    };
+    }), [loadWorkspaces, createWorkspace, updateWorkspace, updateWorkspaceState, deleteWorkspace]);
 }
