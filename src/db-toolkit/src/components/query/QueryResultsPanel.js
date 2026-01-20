@@ -59,37 +59,39 @@ export function QueryResultsPanel({ connectionId, result, executionTime, onSelec
             );
           })}
         </div>
-        {activeTab === 'results' && totalRows > 0 && (
-          <div className="flex items-center gap-2 px-4 text-sm text-gray-600 dark:text-gray-400">
-            <span>Show:</span>
-            <select
-              value={displayLimit}
-              onChange={(e) => handleLimitChange(parseInt(e.target.value))}
-              className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        <div className="flex items-center gap-2 px-4">
+          {activeTab === 'results' && totalRows > 0 && (
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <span>Show:</span>
+              <select
+                value={displayLimit}
+                onChange={(e) => handleLimitChange(parseInt(e.target.value))}
+                className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                <option value={10}>10 rows</option>
+                <option value={20}>20 rows</option>
+                <option value={50}>50 rows</option>
+                <option value={100}>100 rows</option>
+                <option value={500}>500 rows</option>
+                <option value={1000}>1000 rows</option>
+                <option value={totalRows}>All ({totalRows})</option>
+              </select>
+              {totalRows > displayLimit && (
+                <span className="text-xs">Showing {displayLimit} of {totalRows}</span>
+              )}
+            </div>
+          )}
+          {result && onClearOutput && (
+            <button
+              onClick={onClearOutput}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"
+              title="Clear output"
             >
-              <option value={10}>10 rows</option>
-              <option value={20}>20 rows</option>
-              <option value={50}>50 rows</option>
-              <option value={100}>100 rows</option>
-              <option value={500}>500 rows</option>
-              <option value={1000}>1000 rows</option>
-              <option value={totalRows}>All ({totalRows})</option>
-            </select>
-            {totalRows > displayLimit && (
-              <span className="text-xs">Showing {displayLimit} of {totalRows}</span>
-            )}
-          </div>
-        )}
-        {result && onClearOutput && (
-          <button
-            onClick={onClearOutput}
-            className="flex items-center gap-1 px-3 py-1.5 mx-4 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"
-            title="Clear output"
-          >
-            <X size={16} />
-            Clear
-          </button>
-        )}
+              <X size={16} />
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="flex-1 overflow-hidden">

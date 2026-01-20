@@ -45,6 +45,7 @@ function QueryPage() {
     renameTab,
     closeOtherTabs,
     closeAllTabs,
+    clearOutput,
   } = useQueryTabs(connectionId, initialQuery);
 
   const [showExport, setShowExport] = useState(false);
@@ -52,7 +53,7 @@ function QueryPage() {
   const [showQueryBuilder, setShowQueryBuilder] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
 
-  const { loading, executeQuery, clearOutput } = useQuery(connectionId);
+  const { loading, executeQuery } = useQuery(connectionId);
   const { schema, fetchSchemaTree } = useSchema(connectionId);
 
   const {

@@ -154,6 +154,16 @@ export function useQueryTabs(connectionId, initialQuery = "") {
     setActiveTabId(1);
   }, []);
 
+  const clearOutput = useCallback(() => {
+    setTabs((prev) =>
+      prev.map((t) =>
+        t.id === activeTabId
+          ? { ...t, result: null, error: null, executionTime: 0 }
+          : t,
+      ),
+    );
+  }, [activeTabId]);
+
   return {
     tabs,
     setTabs,
@@ -171,5 +181,6 @@ export function useQueryTabs(connectionId, initialQuery = "") {
     renameTab,
     closeOtherTabs,
     closeAllTabs,
+    clearOutput,
   };
 }
