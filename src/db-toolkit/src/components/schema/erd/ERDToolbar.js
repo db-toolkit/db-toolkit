@@ -1,7 +1,7 @@
 /**
  * ERD Diagram toolbar component
  */
-import { Download, Minimize2, ArrowDown, ArrowRight, ArrowUp, ArrowLeft, Search, RotateCcw, Tag } from 'lucide-react';
+import { Download, Minimize2, ArrowDown, ArrowRight, ArrowUp, ArrowLeft, Search, RotateCcw } from 'lucide-react';
 import { Button } from '../../common/Button';
 
 export function ERDToolbar({
@@ -9,8 +9,6 @@ export function ERDToolbar({
     onLayoutChange,
     searchQuery,
     onSearchChange,
-    showLabels,
-    onToggleLabels,
     onToggleExpand,
     onToggleCollapse,
     onReset,
@@ -109,15 +107,6 @@ export function ERDToolbar({
                     </button>
                 </div>
 
-                <Button
-                    variant={showLabels ? "primary" : "secondary"}
-                    size="sm"
-                    icon={<Tag size={16} />}
-                    onClick={onToggleLabels}
-                    title="Toggle relationship labels"
-                >
-                    Labels
-                </Button>
                 <Button
                     variant="secondary"
                     size="sm"

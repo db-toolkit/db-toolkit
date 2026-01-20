@@ -35,13 +35,12 @@ const defaultEdgeOptions = {
 
 export function ERDiagram({ schema, onClose }) {
   const [exporting, setExporting] = useState(false);
-  const [showLabels, setShowLabels] = useState(true);
   const toast = useToast();
 
   // Generate nodes and edges from schema
   const initialNodes = useMemo(() => schemaToNodes(schema), [schema]);
   const relationships = useMemo(() => detectRelationships(schema), [schema]);
-  const initialEdges = useMemo(() => relationshipsToEdges(relationships, showLabels), [relationships, showLabels]);
+  const initialEdges = useMemo(() => relationshipsToEdges(relationships, true), [relationships]);
 
   // Use custom hooks
   const {
@@ -131,8 +130,6 @@ export function ERDiagram({ schema, onClose }) {
         onLayoutChange={setLayoutDirection}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        showLabels={showLabels}
-        onToggleLabels={() => setShowLabels(!showLabels)}
         onToggleExpand={() => toggleAllNodes(false)}
         onToggleCollapse={() => toggleAllNodes(true)}
         onReset={resetLayout}
