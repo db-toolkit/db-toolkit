@@ -2,7 +2,7 @@
  * Hook for query auto-fix with AI
  */
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useAiAssistant } from "./useAiAssistant";
+import { useAiAssistant } from "../useAiAssistant";
 
 export function useQueryAutoFix(connectionId, query, error, schema, toast) {
   const { fixQueryError } = useAiAssistant(connectionId);
