@@ -146,7 +146,7 @@ function QueryPage() {
       )}
 
       <div
-        className="flex-shrink-0 flex justify-between items-center px-6 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+        className="flex-shrink-0 flex justify-between items-center px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
         style={{
           opacity: reconnecting ? 0.5 : 1,
           pointerEvents: reconnecting ? "none" : "auto",
