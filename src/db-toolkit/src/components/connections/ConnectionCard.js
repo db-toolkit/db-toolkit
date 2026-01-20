@@ -3,7 +3,7 @@ import { Button } from '../common/Button';
 
 export function ConnectionCard({ connection, onConnect, onDelete, onEdit, isActive }) {
   return (
-    <div className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-lg hover:border-green-400 dark:hover:border-green-500 transition-all duration-200 cursor-pointer h-[180px] flex flex-col">
+    <div className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-lg hover:border-green-400 dark:hover:border-green-500 transition-all duration-200 cursor-pointer h-[160px] flex flex-col">
       <div className="flex items-start gap-3 mb-4 flex-1">
         <Database className="text-green-600 dark:text-green-400 mt-1" size={24} />
         <div className="flex-1 min-w-0">
