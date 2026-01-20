@@ -2,7 +2,7 @@
  * Hook for managing database connection reconnection
  */
 import { useState, useEffect } from 'react';
-import { connectionsAPI } from '../services/api';
+import { connectionsAPI } from '../../services/api';
 
 export function useConnectionReconnect(connectionId, fetchSchemaTree, toast) {
   const [reconnecting, setReconnecting] = useState(false);

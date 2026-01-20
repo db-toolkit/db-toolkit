@@ -9,7 +9,7 @@ import Split from "react-split";
 import { useQuery, useSchema } from "../hooks";
 import { useQueryTabs } from "../hooks/query/useQueryTabs";
 import { useQueryAutoFix } from "../hooks/query/useQueryAutoFix";
-import { useConnectionReconnect } from "../hooks/useConnectionReconnect";
+import { useConnectionReconnect } from "../hooks/connections/useConnectionReconnect";
 import { useQueryExecution } from "../hooks/query/useQueryExecution";
 import { useSettingsContext } from "../contexts/SettingsContext";
 import { Button } from "../components/common/Button";

@@ -1,4 +1,4 @@
-export { useConnections } from './useConnections';
+export { useConnections } from './connections/useConnections';
 export { useSchema } from './useSchema';
 export { useQuery } from './query/useQuery';
 export { useData } from './useData';

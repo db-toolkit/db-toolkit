@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useToast } from '../contexts/ToastContext';
+import { useToast } from '../../contexts/ToastContext';
 
 export function useConnectionForm(connection, isOpen, settings, onClose, onSave) {
   const toast = useToast();

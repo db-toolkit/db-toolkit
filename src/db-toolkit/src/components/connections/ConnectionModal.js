@@ -4,7 +4,7 @@ import { Input } from '../common/Input';
 import { Button } from '../common/Button';
 import { useSettingsContext } from '../../contexts/SettingsContext';
 import { useToast } from '../../contexts/ToastContext';
-import { useConnectionForm } from '../../hooks/useConnectionForm';
+import { useConnectionForm } from '../../hooks/connections/useConnectionForm';
 import { parseConnectionUrl } from '../../utils/connectionParser';
 import { ConnectionFormFields } from './ConnectionFormFields';
 
