@@ -104,7 +104,7 @@ function AppContent() {
             <Route path="/data-explorer" element={<DataExplorerPage />} />
             <Route path="/migrations" element={<MigrationsPage />} />
             <Route path="/backups" element={<BackupsPage />} />
-            <Route path="/analytics/:connectionId" element={<AnalyticsPage />} />
+            <Route path="/analytics/:connectionId?" element={<AnalyticsPage />} />
             <Route path="/docs" element={<DocumentationPage />} />
           </Routes>
         </Suspense>
