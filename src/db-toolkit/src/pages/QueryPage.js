@@ -1,7 +1,7 @@
 /**
  * Query Editor Page
  */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useWorkspace } from "../components/workspace/WorkspaceProvider";
 import { Download, Bot, Loader2, Workflow } from "lucide-react";
@@ -9,9 +9,10 @@ import Split from "react-split";
 import { useQuery, useSchema } from "../hooks";
 import { useQueryTabs } from "../hooks/useQueryTabs";
 import { useQueryAutoFix } from "../hooks/useQueryAutoFix";
+import { useConnectionReconnect } from "../hooks/useConnectionReconnect";
+import { useQueryExecution } from "../hooks/useQueryExecution";
 import { useSettingsContext } from "../contexts/SettingsContext";
 import { Button } from "../components/common/Button";
-import { connectionsAPI } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
 import { QueryEditor } from "../components/query/QueryEditor";
 import { QueryResultsPanel } from "../components/query/QueryResultsPanel";
@@ -52,10 +53,11 @@ function QueryPage() {
   const [showExport, setShowExport] = useState(false);
   const [showAiAssistant, setShowAiAssistant] = useState(false);
   const [showQueryBuilder, setShowQueryBuilder] = useState(false);
-  const [reconnecting, setReconnecting] = useState(false);
 
   const { loading, executeQuery } = useQuery(connectionId);
   const { schema, fetchSchemaTree } = useSchema(connectionId);
+
+  const { reconnecting } = useConnectionReconnect(connectionId, fetchSchemaTree, toast);
 
   const {
     fixSuggestion,
@@ -64,6 +66,8 @@ function QueryPage() {
     handleRejectFix,
     clearFixSuggestion,
   } = useQueryAutoFix(connectionId, query, error, schema, toast);
+
+  const { handleExecute } = useQueryExecution(query, executeQuery, updateActiveTab, clearFixSuggestion, settings);
 
   const setQuery = (newQuery) => {
     setQueryBase(newQuery);
@@ -77,64 +81,6 @@ function QueryPage() {
       setHasUnsavedChanges(activeWorkspace.id, hasUnsaved);
     }
   }, [tabs, activeWorkspace?.id, setHasUnsavedChanges]);
-
-  // Auto-reconnect on page load
-  useEffect(() => {
-    const reconnect = async () => {
-      if (!connectionId) return;
-
-      setReconnecting(true);
-      let retries = 3;
-
-      while (retries > 0) {
-        try {
-          await connectionsAPI.connect(connectionId);
-          await fetchSchemaTree();
-          setReconnecting(false);
-          return;
-        } catch (err) {
-          retries--;
-          console.error(`Reconnection attempt failed (${3 - retries}/3):`, err);
-          if (retries > 0) {
-            await new Promise((resolve) =>
-              setTimeout(resolve, 1000 * (4 - retries)),
-            );
-          } else {
-            toast.error("Failed to reconnect after 3 attempts");
-          }
-        }
-      }
-
-      setReconnecting(false);
-    };
-
-    reconnect();
-  }, [connectionId, fetchSchemaTree, toast]);
-
-  const handleExecute = useCallback(async () => {
-    if (!query.trim()) return;
-    const startTime = Date.now();
-    clearFixSuggestion();
-    updateActiveTab({ error: null });
-
-    try {
-      const limit = settings?.default_query_limit || 1000;
-      const timeout = settings?.default_query_timeout || 30;
-      const queryResult = await executeQuery(query, limit, 0, timeout);
-      const time = Date.now() - startTime;
-      updateActiveTab({
-        result: queryResult,
-        executionTime: time,
-        error: null,
-        saved: true,
-      });
-    } catch (err) {
-      console.error("Query failed:", err);
-      const errorMsg = err.response?.data?.detail || err.message;
-      const time = Date.now() - startTime;
-      updateActiveTab({ error: errorMsg, executionTime: time });
-    }
-  }, [query, clearFixSuggestion, updateActiveTab, settings, executeQuery]);
 
   return (
     <div className="h-full flex flex-col overflow-hidden">

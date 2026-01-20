@@ -1,14 +1,12 @@
 why is the overview, performance and connectionis tab in the analytics page
 all the same
 
-what is the use of tghe labels button in the eri diagrm toolbar please
+what is the use of the labels button in the eri diagrm toolbar please
 remove it
 
 
 date field should be a date picker when i double click to edit in the
-data grid in the data explorer page
+data grid in the data explorer page review and give me feedback but do not do anything yet
 
 
 what other logic is in the query page that can be moved to hook
-
-we need tooltips so let;s start from this query editor page, add tooltip to the clear button "clear results" and also to the visual builder and the ai assistant button "open visual query builder" and "open ai assistant panel"
