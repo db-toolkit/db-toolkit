@@ -91,7 +91,7 @@ function SchemaPage() {
         </Button>
         <Button
           variant="secondary"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/connections')}
         >
           Back to Connections
         </Button>
@@ -164,7 +164,7 @@ function SchemaPage() {
                   <Button icon={<RefreshCw size={16} />} onClick={() => fetchSchemaTree()}>
                     Retry Connection
                   </Button>
-                  <Button variant="secondary" onClick={() => navigate('/')}>
+                  <Button variant="secondary" onClick={() => navigate('/connections')}>
                     Back to Connections
                   </Button>
                 </div>
