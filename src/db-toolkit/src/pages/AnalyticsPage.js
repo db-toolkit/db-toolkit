@@ -2,14 +2,13 @@
  * Analytics page for database monitoring
  */
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Database, Download } from "lucide-react";
-import { useAnalytics } from "../hooks";
-import { useConnectionReconnect } from "../hooks/connections/useConnectionReconnect";
+import { useConnections, useAnalytics } from "../hooks";
 import { useAnalyticsData } from "../hooks/analytics/useAnalyticsData";
 import { useToast } from "../contexts/ToastContext";
-import { connectionsAPI } from "../services/api";
+import { useConnectionStore } from "../stores/connectionStore";
 import { ConnectionSelector } from "../components/data-explorer/ConnectionSelector";
 import { Button } from "../components/common/Button";
 
@@ -36,26 +35,29 @@ import { AnalyticsAlertsTab } from "../components/analytics/AnalyticsAlertsTab";
 import { pageTransition } from "../utils/animations";
 
 function AnalyticsPage() {
-  const { connectionId } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  
+  const connectionId = useConnectionStore((state) => state.activeConnections.analytics);
+  const setConnection = useConnectionStore((state) => state.setConnection);
 
-  const [connections, setConnections] = useState([]);
+  const { connections, connectToDatabase } = useConnections();
+  const [connecting, setConnecting] = useState(false);
   const [timeRange, setTimeRange] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
   const [exportingPDF, setExportingPDF] = useState(false);
 
-  useEffect(() => {
-    const loadConnections = async () => {
-      try {
-        const response = await connectionsAPI.getAll();
-        setConnections(response.data);
-      } catch (err) {
-        toast.error("Failed to load connections");
-      }
-    };
-    loadConnections();
-  }, []);
+  const handleConnect = async (connId) => {
+    setConnecting(true);
+    try {
+      await connectToDatabase(connId);
+      setConnection('analytics', connId);
+    } catch (err) {
+      toast.error(`Failed to connect: ${err.message}`);
+    } finally {
+      setConnecting(false);
+    }
+  };
 
   const {
     analytics,
@@ -70,12 +72,6 @@ function AnalyticsPage() {
     getPoolStats,
     exportPDF,
   } = useAnalytics(connectionId);
-
-  const { reconnecting } = useConnectionReconnect(
-    connectionId,
-    () => fetchHistoricalData(timeRange),
-    toast
-  );
 
   const {
     slowQueries,
@@ -124,7 +120,8 @@ function AnalyticsPage() {
     return (
       <ConnectionSelector
         connections={connections}
-        onConnect={(connId) => navigate(`/analytics/${connId}`)}
+        connecting={connecting}
+        onConnect={handleConnect}
         title="Database Analytics"
         description="Select a connection to view analytics"
         buttonText="Connect & Monitor"
@@ -134,12 +131,12 @@ function AnalyticsPage() {
 
   return (
     <motion.div className="h-screen flex flex-col" {...pageTransition}>
-      {loading || reconnecting ? (
+      {loading || connecting ? (
         <div className="h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
             <p className="text-gray-600 dark:text-gray-400">
-              {reconnecting ? "Connecting to database..." : "Loading analytics..."}
+              {connecting ? "Connecting to database..." : "Loading analytics..."}
             </p>
           </div>
         </div>
@@ -188,7 +185,7 @@ function AnalyticsPage() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => navigate("/analytics")}
+                  onClick={() => setConnection('analytics', null)}
                 >
                   Change Connection
                 </Button>
