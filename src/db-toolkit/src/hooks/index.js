@@ -1,12 +1,12 @@
 export { useConnections } from './useConnections';
 export { useSchema } from './useSchema';
-export { useQuery } from './useQuery';
+export { useQuery } from './query/useQuery';
 export { useData } from './useData';
 export { useSession } from './useSession';
 export { useBackups } from './useBackups';
-export { useAnalytics } from './useAnalytics';
+export { useAnalytics } from './analytics/useAnalytics';
 export { useRequestDeduplication, useOptimizedCallback, useOptimizedMemo, usePerformanceMonitor } from './usePerformance';
 export { useSchemaAI } from './useSchemaAI';
 export { useAiAssistant } from './useAiAssistant';
-export { useQueryTabs } from './useQueryTabs';
-export { useQueryAutoFix } from './useQueryAutoFix';
+export { useQueryTabs } from './query/useQueryTabs';
+export { useQueryAutoFix } from './query/useQueryAutoFix';
