@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![DB Toolkit](https://img.shields.io/badge/version-0.1.0-blue) ![Node](https://img.shields.io/badge/node-18+-green) ![Electron](https://img.shields.io/badge/electron-latest-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+![DB Toolkit](https://img.shields.io/badge/version-0.1.0-blue) ![Node](https://img.shields.io/badge/node-22+-green) ![Electron](https://img.shields.io/badge/electron-latest-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 A modern, cross-platform desktop database management application built with **Electron + React** frontend and **Node.js** backend.
 
