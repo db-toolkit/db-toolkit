@@ -16,6 +16,10 @@ export function useAnalyticsConnection(connections, connectToDatabase, getWorksp
     if (savedConnectionId) {
       setConnectionId(savedConnectionId);
       setConnectionName(savedConnectionName || "");
+      // Reconnect to the saved connection
+      connectToDatabase(savedConnectionId, true).catch((err) => {
+        console.error("Failed to reconnect to saved analytics connection:", err);
+      });
     } else {
       setConnectionId(null);
       setConnectionName("");
