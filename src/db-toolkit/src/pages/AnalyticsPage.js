@@ -27,6 +27,12 @@ import { AnalyticsTabs } from "../components/analytics/AnalyticsTabs";
 import { TimeRangePicker } from "../components/analytics/TimeRangePicker";
 import { QueryPerformance } from "../components/analytics/QueryPerformance";
 import { AlertsPanel } from "../components/analytics/AlertsPanel";
+import { AnalyticsOverview } from "../components/analytics/AnalyticsOverview";
+import { AnalyticsPerformanceTab } from "../components/analytics/AnalyticsPerformanceTab";
+import { AnalyticsQueriesTab } from "../components/analytics/AnalyticsQueriesTab";
+import { AnalyticsTablesTab } from "../components/analytics/AnalyticsTablesTab";
+import { AnalyticsConnectionsTab } from "../components/analytics/AnalyticsConnectionsTab";
+import { AnalyticsAlertsTab } from "../components/analytics/AnalyticsAlertsTab";
 import { pageTransition } from "../utils/animations";
 
 function AnalyticsPage() {
@@ -210,75 +216,49 @@ function AnalyticsPage() {
             ) : analytics ? (
               <>
                 {activeTab === "overview" && (
-                  <div className="space-y-6">
-                    <AnalyticsStats analytics={analytics} history={history} />
-                    <AnalyticsCharts history={history} timeRange={timeRange} />
-                    {analytics.query_stats && (
-                      <QueryStats stats={analytics.query_stats} />
-                    )}
-                    {poolStats && <ConnectionPoolStats stats={poolStats} />}
-                  </div>
+                  <AnalyticsOverview
+                    analytics={analytics}
+                    history={history}
+                    poolStats={poolStats}
+                  />
                 )}
 
                 {activeTab === "performance" && (
-                  <div className="space-y-6">
-                    <QueryPerformance
-                      queries={analytics.current_queries || []}
-                      slowQueries={slowQueries}
-                    />
-                    <AnalyticsCharts history={history} timeRange={timeRange} />
-                    <SlowQueryLog queries={slowQueries} />
-                    <TableStats stats={tableStats} />
-                  </div>
+                  <AnalyticsPerformanceTab
+                    analytics={analytics}
+                    history={history}
+                    timeRange={timeRange}
+                    slowQueries={slowQueries}
+                    tableStats={tableStats}
+                  />
                 )}
 
                 {activeTab === "queries" && (
-                  <div className="space-y-6">
-                    <QueryPerformance
-                      queries={analytics.current_queries || []}
-                      slowQueries={slowQueries}
-                    />
-                    <CurrentQueries
-                      queries={analytics.current_queries}
-                      onKill={killQuery}
-                      onViewPlan={handleViewPlan}
-                    />
-                    <LongRunningQueries
-                      queries={analytics.long_running_queries}
-                      onKill={killQuery}
-                    />
-                    <BlockedQueries queries={analytics.blocked_queries} />
-                    <SlowQueryLog queries={slowQueries} />
-                  </div>
+                  <AnalyticsQueriesTab
+                    analytics={analytics}
+                    slowQueries={slowQueries}
+                    killQuery={killQuery}
+                    handleViewPlan={handleViewPlan}
+                  />
                 )}
 
                 {activeTab === "tables" && (
-                  <div className="space-y-6">
-                    <TableStats stats={tableStats} />
-                  </div>
+                  <AnalyticsTablesTab tableStats={tableStats} />
                 )}
 
                 {activeTab === "connections" && (
-                  <div className="space-y-6">
-                    {poolStats && <ConnectionPoolStats stats={poolStats} />}
-                    <CurrentQueries
-                      queries={analytics.current_queries}
-                      onKill={killQuery}
-                      onViewPlan={handleViewPlan}
-                    />
-                    <LongRunningQueries
-                      queries={analytics.long_running_queries}
-                      onKill={killQuery}
-                    />
-                    <BlockedQueries queries={analytics.blocked_queries} />
-                  </div>
+                  <AnalyticsConnectionsTab
+                    analytics={analytics}
+                    poolStats={poolStats}
+                    killQuery={killQuery}
+                    handleViewPlan={handleViewPlan}
+                  />
                 )}
 
                 {activeTab === "alerts" && (
-                  <div className="space-y-6">
-                    <AlertsPanel analytics={analytics} />
-                  </div>
+                  <AnalyticsAlertsTab analytics={analytics} />
                 )}
+
                 <QueryPlanModal
                   isOpen={planModal.isOpen}
                   onClose={closePlanModal}
