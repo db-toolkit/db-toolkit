@@ -74,7 +74,7 @@ function QueryPage() {
     if (activeWorkspace) {
       setHasUnsavedChanges(activeWorkspace.id, hasUnsaved);
     }
-  }, [tabs, activeWorkspace, setHasUnsavedChanges]);
+  }, [tabs, activeWorkspace?.id, setHasUnsavedChanges]);
 
   // Auto-reconnect on page load
   useEffect(() => {
