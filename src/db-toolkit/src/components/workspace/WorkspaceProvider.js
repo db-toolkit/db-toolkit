@@ -235,6 +235,7 @@ export function WorkspaceProvider({ children }) {
   );
 
   const saveTimerRef = useRef({});
+  const updateWorkspaceStateRef = useRef();
 
   const updateWorkspaceState = useCallback(
     async (workspaceId, stateUpdates) => {
@@ -258,6 +259,9 @@ export function WorkspaceProvider({ children }) {
     },
     [ipc],
   );
+
+  // Keep ref updated
+  updateWorkspaceStateRef.current = updateWorkspaceState;
 
   const getWorkspaceState = useCallback(
     (key) => {
@@ -285,10 +289,10 @@ export function WorkspaceProvider({ children }) {
         clearTimeout(saveTimerRef.current[activeWorkspaceId]);
       }
       saveTimerRef.current[activeWorkspaceId] = setTimeout(() => {
-        updateWorkspaceState(activeWorkspaceId, { [key]: value });
+        updateWorkspaceStateRef.current(activeWorkspaceId, { [key]: value });
       }, 1000);
     },
-    [activeWorkspaceId, updateWorkspaceState],
+    [activeWorkspaceId],
   );
 
   const setHasUnsavedChanges = useCallback((workspaceId, hasChanges) => {
@@ -320,7 +324,7 @@ export function WorkspaceProvider({ children }) {
         clearTimeout(saveTimerRef.current[`${activeWorkspaceId}-route`]);
       }
       saveTimerRef.current[`${activeWorkspaceId}-route`] = setTimeout(() => {
-        updateWorkspaceState(activeWorkspaceId, {
+        updateWorkspaceStateRef.current(activeWorkspaceId, {
           activeRoute: location.pathname,
         });
       }, 1000);
