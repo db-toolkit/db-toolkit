@@ -1,11 +1,17 @@
 /**
  * Hook for managing database connection reconnection
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { connectionsAPI } from '../../services/api';
 
 export function useConnectionReconnect(connectionId, fetchSchemaTree, toast) {
   const [reconnecting, setReconnecting] = useState(false);
+  const callbackRef = useRef(fetchSchemaTree);
+
+  // Keep callback ref updated
+  useEffect(() => {
+    callbackRef.current = fetchSchemaTree;
+  }, [fetchSchemaTree]);
 
   // Auto-reconnect on page load
   useEffect(() => {
@@ -18,7 +24,7 @@ export function useConnectionReconnect(connectionId, fetchSchemaTree, toast) {
       while (retries > 0) {
         try {
           await connectionsAPI.connect(connectionId);
-          await fetchSchemaTree();
+          await callbackRef.current();
           setReconnecting(false);
           return;
         } catch (err) {
@@ -38,7 +44,7 @@ export function useConnectionReconnect(connectionId, fetchSchemaTree, toast) {
     };
 
     reconnect();
-  }, [connectionId, fetchSchemaTree, toast]);
+  }, [connectionId, toast]);
 
   return { reconnecting };
 }
