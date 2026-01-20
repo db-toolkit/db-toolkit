@@ -52,7 +52,7 @@ function QueryPage() {
   const [showQueryBuilder, setShowQueryBuilder] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
 
-  const { loading, executeQuery } = useQuery(connectionId);
+  const { loading, executeQuery, clearOutput } = useQuery(connectionId);
   const { schema, fetchSchemaTree } = useSchema(connectionId);
 
   const {
@@ -238,6 +238,7 @@ function QueryPage() {
                   onFixError={(errorMsg) => {
                     updateActiveTab({ error: errorMsg });
                   }}
+                  onClearOutput={clearOutput}
                 />
               </div>
             </Split>

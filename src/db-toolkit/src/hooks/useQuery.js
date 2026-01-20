@@ -72,6 +72,11 @@ export function useQuery(connectionId) {
     }
   }, [connectionId]);
 
+  const clearOutput = useCallback(() => {
+    setResult(null);
+    setError(null);
+  }, []);
+
   return {
     result,
     history,
@@ -80,5 +85,6 @@ export function useQuery(connectionId) {
     executeQuery,
     fetchHistory,
     clearHistory,
+    clearOutput,
   };
 }

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Table, MessageSquare, History, Clock, Bot, Loader2 } from 'lucide-react';
+import { Table, MessageSquare, History, Clock, Bot, Loader2, X } from 'lucide-react';
 import { EditableTable } from '../data/EditableTable';
 import { QueryHistory } from './QueryHistory';
 
-export function QueryResultsPanel({ connectionId, result, executionTime, onSelectQuery, onRefresh, currentQuery, onFixError, isFixingError }) {
+export function QueryResultsPanel({ connectionId, result, executionTime, onSelectQuery, onRefresh, currentQuery, onFixError, isFixingError, onClearOutput }) {
   const [activeTab, setActiveTab] = useState('results');
   const [displayLimit, setDisplayLimit] = useState(() => {
     return parseInt(localStorage.getItem('query-display-limit') || '100');
@@ -79,6 +79,16 @@ export function QueryResultsPanel({ connectionId, result, executionTime, onSelec
               <span className="text-xs">Showing {displayLimit} of {totalRows}</span>
             )}
           </div>
+        )}
+        {result && onClearOutput && (
+          <button
+            onClick={onClearOutput}
+            className="flex items-center gap-1 px-3 py-1.5 mx-4 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"
+            title="Clear output"
+          >
+            <X size={16} />
+            Clear
+          </button>
         )}
       </div>
 
