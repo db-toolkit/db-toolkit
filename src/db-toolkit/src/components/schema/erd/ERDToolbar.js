@@ -22,7 +22,7 @@ export function ERDToolbar({
         <div className="h-14 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4">
             <div className="flex items-center gap-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    Schema Diagram
+                    ER Diagram
                 </h2>
 
                 {/* Layout Direction Buttons */}
@@ -94,7 +94,7 @@ export function ERDToolbar({
 
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
-                <div className="flex bg-gray-100 dark:bg-gray-800 rounded p-1 mr-2">
+                <div className="flex bg-gray-100 dark:bg-gray-800 rounded p-1 mr-2 gap-2">
                     <button
                         onClick={onToggleExpand}
                         className="px-2 py-1 text-xs rounded text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-white dark:hover:bg-gray-700"

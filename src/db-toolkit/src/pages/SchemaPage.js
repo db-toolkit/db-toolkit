@@ -116,14 +116,16 @@ function SchemaPage() {
           )}
           <Button
             variant="secondary"
-            icon={<Network size={20} />}
+            size="sm"
+            icon={<Network size={16} />}
             onClick={() => setShowERDiagram(true)}
           >
             ER Diagram
           </Button>
           <Button
             variant="secondary"
-            icon={<Sparkles size={20} />}
+            size="sm"
+            icon={<Sparkles size={16} />}
             onClick={() => handleAnalyzeSchema()}
             disabled={aiLoading}
           >
@@ -131,13 +133,15 @@ function SchemaPage() {
           </Button>
           <Button
             variant="secondary"
-            icon={<RefreshCw size={20} />}
+            size="sm"
+            icon={<RefreshCw size={16} />}
             onClick={refreshSchema}
           >
             Refresh
           </Button>
           <Button
-            icon={<Code size={20} />}
+            size="sm"
+            icon={<Code size={16} />}
             onClick={() => navigate(`/query/${connectionId}`)}
           >
             Query Editor

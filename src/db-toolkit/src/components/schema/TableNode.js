@@ -20,21 +20,21 @@ function TableNode({ data }) {
   }, [forceCollapse]);
 
   const primaryKeys = columns.filter(col =>
-    col && (col.primary_key || col.name === 'id')
+    col && (col.primary_key || col.column_name === 'id')
   );
 
   const foreignKeys = columns.filter(col => {
-    if (!col || !col.name) return false;
+    if (!col || !col.column_name) return false;
     if (col.foreign_key) return true;
     if (col.is_foreign_key) return true;
-    if (typeof col.name === 'string' && col.name.endsWith('_id') && col.name !== 'id') return true;
+    if (typeof col.column_name === 'string' && col.column_name.endsWith('_id') && col.column_name !== 'id') return true;
     return false;
   });
 
   const visibleColumns = isCollapsed
     ? columns.filter(col =>
-      primaryKeys.some(pk => pk.name === col.name) ||
-      foreignKeys.some(fk => fk.name === col.name)
+      primaryKeys.some(pk => pk.column_name === col.column_name) ||
+      foreignKeys.some(fk => fk.column_name === col.column_name)
     )
     : columns;
 
@@ -63,12 +63,12 @@ function TableNode({ data }) {
         ) : (
           <div className="space-y-1">
             {visibleColumns.map((column, index) => {
-              const isPK = primaryKeys.some(pk => pk.name === column.name);
-              const isFK = foreignKeys.some(fk => fk.name === column.name);
+              const isPK = primaryKeys.some(pk => pk.column_name === column.column_name);
+              const isFK = foreignKeys.some(fk => fk.column_name === column.column_name);
 
               return (
                 <div
-                  key={`${column.name}-${index}`}
+                  key={`${column.column_name}-${index}`}
                   className="flex items-center gap-2 text-sm py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 >
                   <div className="w-4 flex justify-center">
@@ -76,11 +76,11 @@ function TableNode({ data }) {
                     {isFK && !isPK && <Link size={12} className="text-green-600 dark:text-green-400" />}
                     {isPK && isFK && <Key size={12} className="text-orange-600 dark:text-orange-400" />}
                   </div>
-                  <span className="font-medium text-gray-900 dark:text-gray-100 truncate flex-1" title={column.name}>
-                    {column.name}
+                  <span className="font-medium text-gray-900 dark:text-gray-100 truncate flex-1" title={column.column_name}>
+                    {column.column_name}
                   </span>
                   <span className="text-gray-500 dark:text-gray-400 text-xs ml-2 font-mono">
-                    {column.type || column.data_type}
+                    {column.data_type}
                   </span>
                 </div>
               );
