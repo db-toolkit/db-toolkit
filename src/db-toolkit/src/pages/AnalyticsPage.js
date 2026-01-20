@@ -2,14 +2,12 @@
  * Analytics page for database monitoring
  */
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Database, Download } from "lucide-react";
 import { useConnections, useAnalytics } from "../hooks";
-import { useAnalyticsConnection } from "../hooks/analytics/useAnalyticsConnection";
 import { useAnalyticsData } from "../hooks/analytics/useAnalyticsData";
 import { useToast } from "../contexts/ToastContext";
-import { useWorkspace } from "../components/workspace/WorkspaceProvider";
 import { ConnectionSelector } from "../components/data-explorer/ConnectionSelector";
 import { Button } from "../components/common/Button";
 
@@ -36,26 +34,14 @@ import { AnalyticsAlertsTab } from "../components/analytics/AnalyticsAlertsTab";
 import { pageTransition } from "../utils/animations";
 
 function AnalyticsPage() {
+  const { connectionId } = useParams();
   const navigate = useNavigate();
   const { connections, connectToDatabase } = useConnections();
-  const { getWorkspaceState, setWorkspaceState, activeWorkspaceId } =
-    useWorkspace();
   const toast = useToast();
+  const [connecting, setConnecting] = useState(false);
 
-  const {
-    connectionId,
-    connectionName,
-    connecting,
-    handleConnect,
-    handleDisconnect,
-  } = useAnalyticsConnection(
-    connections,
-    connectToDatabase,
-    getWorkspaceState,
-    setWorkspaceState,
-    activeWorkspaceId,
-    toast
-  );
+  const connection = connections.find((c) => c.id === connectionId);
+  const connectionName = connection?.name || "";
 
   const [timeRange, setTimeRange] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
@@ -89,6 +75,22 @@ function AnalyticsPage() {
     getPoolStats,
     getQueryPlan
   );
+
+  const handleConnect = async (connection) => {
+    setConnecting(true);
+    try {
+      await connectToDatabase(connection);
+      navigate(`/analytics/${connection.id}`);
+    } catch (error) {
+      toast.error(`Failed to connect: ${error.message}`);
+    } finally {
+      setConnecting(false);
+    }
+  };
+
+  const handleDisconnect = () => {
+    navigate("/analytics");
+  };
 
   useEffect(() => {
     if (connectionId) {
