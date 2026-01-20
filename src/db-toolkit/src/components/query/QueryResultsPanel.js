@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Table, MessageSquare, History, Clock, Bot, Loader2, X } from 'lucide-react';
 import { EditableTable } from '../data/EditableTable';
 import { QueryHistory } from './QueryHistory';
+import { Tooltip } from '../common/Tooltip';
 
 export function QueryResultsPanel({ connectionId, result, executionTime, onSelectQuery, onRefresh, currentQuery, onFixError, isFixingError, onClearOutput }) {
   const [activeTab, setActiveTab] = useState('results');
@@ -82,14 +83,15 @@ export function QueryResultsPanel({ connectionId, result, executionTime, onSelec
             </div>
           )}
           {result && onClearOutput && (
-            <button
-              onClick={onClearOutput}
-              className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"
-              title="Clear output"
-            >
-              <X size={16} />
-              Clear
-            </button>
+            <Tooltip text="Clear results">
+              <button
+                onClick={onClearOutput}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"
+              >
+                <X size={16} />
+                Clear
+              </button>
+            </Tooltip>
           )}
         </div>
       </div>

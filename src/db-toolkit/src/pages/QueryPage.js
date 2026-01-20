@@ -19,6 +19,7 @@ import { QueryTabBar } from "../components/query/QueryTabBar";
 import { CsvExportModal } from "../components/csv";
 import { AiAssistant } from "../components/query/AiAssistant";
 import { QueryBuilder } from "../components/query-builder/QueryBuilder";
+import { Tooltip } from "../components/common/Tooltip";
 
 function QueryPage() {
   const { connectionId } = useParams();
@@ -165,22 +166,26 @@ function QueryPage() {
           toast={toast}
         />
         <div className="flex gap-2 ml-4">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setShowQueryBuilder(true)}
-          >
-            <Workflow size={16} className="mr-2" />
-            Visual Builder
-          </Button>
-          <Button
-            variant={showAiAssistant ? "primary" : "secondary"}
-            size="sm"
-            onClick={() => setShowAiAssistant(!showAiAssistant)}
-          >
-            <Bot size={16} className="mr-2" />
-            AI Assistant
-          </Button>
+          <Tooltip text="Open visual query builder">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowQueryBuilder(true)}
+            >
+              <Workflow size={16} className="mr-2" />
+              Visual Builder
+            </Button>
+          </Tooltip>
+          <Tooltip text="Open AI assistant panel">
+            <Button
+              variant={showAiAssistant ? "primary" : "secondary"}
+              size="sm"
+              onClick={() => setShowAiAssistant(!showAiAssistant)}
+            >
+              <Bot size={16} className="mr-2" />
+              AI Assistant
+            </Button>
+          </Tooltip>
           {result && (
             <Button
               variant="secondary"
