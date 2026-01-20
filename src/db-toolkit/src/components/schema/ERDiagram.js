@@ -124,7 +124,7 @@ export function ERDiagram({ schema, onClose }) {
   }, [toast]);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-white dark:bg-gray-900">
+    <div className="fixed inset-0 top-10 z-[9999] bg-white dark:bg-gray-900">
       {/* Toolbar */}
       <ERDToolbar
         layoutDirection={layoutDirection}
