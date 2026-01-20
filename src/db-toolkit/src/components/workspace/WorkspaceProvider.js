@@ -256,7 +256,7 @@ export function WorkspaceProvider({ children }) {
         return false;
       }
     },
-    [],
+    [ipc],
   );
 
   const getWorkspaceState = useCallback(
@@ -325,7 +325,7 @@ export function WorkspaceProvider({ children }) {
         });
       }, 1000);
     }
-  }, [location.pathname, activeWorkspaceId, updateWorkspaceState]);
+  }, [location.pathname, activeWorkspaceId]);
 
   // Cleanup timers on unmount
   useEffect(() => {
