@@ -49,7 +49,7 @@ export function QueryTabBar({
               e.preventDefault();
               tabContextMenu.open(e, { tabId: tab.id });
             }}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-t cursor-pointer transition min-w-[140px] ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-t cursor-pointer transition min-w-[140px] ${
               activeTabId === tab.id
                 ? "bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100"
                 : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
