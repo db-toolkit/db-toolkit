@@ -22,6 +22,7 @@ export function WorkspaceProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [maxWorkspaces, setMaxWorkspaces] = useState(10); // Default value
   const [workspacesEnabled, setWorkspacesEnabled] = useState(true); // Default value
+  const defaultWorkspaceCreatedRef = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { trackFeature } = useTelemetry();
@@ -54,7 +55,8 @@ export function WorkspaceProvider({ children }) {
 
   // Auto-create default workspace if none exist (only if enabled)
   useEffect(() => {
-    if (workspacesEnabled && !loading && workspaces.length === 0) {
+    if (workspacesEnabled && !loading && workspaces.length === 0 && !defaultWorkspaceCreatedRef.current) {
+      defaultWorkspaceCreatedRef.current = true;
       createWorkspace(null, "Default Workspace", null);
     }
   }, [workspacesEnabled, loading, workspaces.length]);
