@@ -187,14 +187,16 @@ function QueryPage() {
             </Button>
           </Tooltip>
           {result && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setShowExport(true)}
-            >
-              <Download size={16} className="mr-2" />
-              Export CSV
-            </Button>
+            <Tooltip text="Export results as CSV" position="bottom">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowExport(true)}
+              >
+                <Download size={16} className="mr-2" />
+                Export CSV
+              </Button>
+            </Tooltip>
           )}
         </div>
       </div>
