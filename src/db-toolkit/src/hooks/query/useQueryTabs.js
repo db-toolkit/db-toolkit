@@ -2,7 +2,7 @@
  * Hook for managing query editor tabs
  */
 import { useState, useEffect, useCallback } from "react";
-import { cacheService } from "../services/indexedDB";
+import { cacheService } from "../../services/indexedDB";
 
 export function useQueryTabs(connectionId, initialQuery = "") {
   const [tabs, setTabs] = useState([
