@@ -101,15 +101,6 @@ export function useConnections() {
               .slice(0, 5);
             window.electron.updateRecentConnections(recent);
           }
-          if (!silent) {
-            const conn = connections.find((c) => c.id === id);
-            addNotification({
-              type: "success",
-              title: "Connected",
-              message: `Successfully connected to ${conn?.name || "database"}`,
-              action: { label: "View Schema", path: `/schema/${id}` },
-            });
-          }
           return result;
         } else {
           throw new Error(result?.message || "Connection failed");
