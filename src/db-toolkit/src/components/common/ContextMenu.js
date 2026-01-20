@@ -58,7 +58,7 @@ export function ContextMenu({ isOpen, position, onClose, items, children }) {
   const content = (
     <div
       ref={menuRef}
-      className="fixed z-[9999] min-w-[200px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 animate-in fade-in zoom-in-95 duration-100"
+      className="fixed z-[9999] min-w-[180px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 animate-in fade-in zoom-in-95 duration-100 text-sm"
       role="menu"
       style={{ left: position.x, top: position.y }}
     >
@@ -76,7 +76,7 @@ export function ContextMenu({ isOpen, position, onClose, items, children }) {
               }
             }}
             disabled={item.disabled}
-            className={`w-full flex items-center gap-3 px-3 py-2 text-sm text-left transition-colors ${
+            className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-sm text-left transition-colors ${
               item.disabled
                 ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
                 : item.danger
