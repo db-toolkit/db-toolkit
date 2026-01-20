@@ -94,7 +94,7 @@ function Layout({ children }) {
   }, [recentConnections]);
 
   return (
-    <div className="h-screen bg-gray-100 dark:bg-black overflow-hidden">
+    <div className="h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
       <CustomTitleBar onToggleSidebar={toggleSidebar} />
       <div className="flex h-full" style={{ height: "calc(100vh - 40px)" }}>
         {showSidebar && (
@@ -127,7 +127,7 @@ function Layout({ children }) {
                   </button>
                 </Tooltip>
               </header>
-              <main className="flex-1 overflow-auto bg-gray-50 dark:bg-neutral-900">
+              <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-800">
                 {children}
               </main>
               <StatusBar />
@@ -150,7 +150,7 @@ function Layout({ children }) {
                 </button>
               </Tooltip>
             </header>
-            <main className="flex-1 overflow-auto bg-gray-50 dark:bg-neutral-900">
+            <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-800">
               {children}
             </main>
             <StatusBar />
