@@ -118,7 +118,7 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
                 return (
                   <td
                     key={colIndex}
-                    className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap group relative"
+                    className={`px-4 py-3 text-sm text-gray-900 dark:text-gray-100 group relative ${isEditing ? '' : 'whitespace-nowrap'}`}
                     onDoubleClick={() => onCellUpdate && startEdit(rowIndex, colIndex, value)}
                     onContextMenu={(e) => {
                       e.preventDefault();
@@ -126,7 +126,7 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
                     }}
                   >
                     {isEditing ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 min-w-[300px]">
                         <input
                           type="text"
                           value={editValue}
@@ -135,7 +135,7 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
                           onBlur={() => !saving && cancelEdit()}
                           autoFocus
                           disabled={saving}
-                          className="w-full px-2 py-1 border border-green-500 dark:border-green-400 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                          className="flex-1 min-w-0 px-2 py-1 border border-green-500 dark:border-green-400 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                         />
                         <button
                           onClick={() => saveEdit(row, colIndex)}
