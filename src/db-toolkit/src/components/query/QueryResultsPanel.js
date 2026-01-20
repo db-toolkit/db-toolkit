@@ -83,7 +83,7 @@ export function QueryResultsPanel({ connectionId, result, executionTime, onSelec
             </div>
           )}
           {result && onClearOutput && (
-            <Tooltip text="Clear results">
+            <Tooltip text="Clear results" position="bottom">
               <button
                 onClick={onClearOutput}
                 className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"

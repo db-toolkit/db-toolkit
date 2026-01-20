@@ -13,7 +13,7 @@ export function Tooltip({ children, text, position = 'top' }) {
     <div className="relative group inline-block">
       {children}
       <div
-        className={`absolute ${positions[position]} px-2.5 py-1.5 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 pointer-events-none z-50`}
+        className={`absolute ${positions[position]} px-2.5 py-1.5 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 pointer-events-none z-[9999]`}
       >
         {text}
       </div>
