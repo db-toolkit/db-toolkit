@@ -166,7 +166,7 @@ function QueryPage() {
           toast={toast}
         />
         <div className="flex gap-2 ml-4">
-          <Tooltip text="Open visual query builder">
+          <Tooltip text="Open visual query builder" position="bottom">
             <Button
               variant="secondary"
               size="sm"
@@ -176,7 +176,7 @@ function QueryPage() {
               Visual Builder
             </Button>
           </Tooltip>
-          <Tooltip text="Open AI assistant panel">
+          <Tooltip text="Open AI assistant panel" position="bottom">
             <Button
               variant={showAiAssistant ? "primary" : "secondary"}
               size="sm"
