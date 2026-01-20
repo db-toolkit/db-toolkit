@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Database, Download } from "lucide-react";
 import { useConnections, useAnalytics } from "../hooks";
+import { useConnectionReconnect } from "../hooks/connections/useConnectionReconnect";
 import { useAnalyticsData } from "../hooks/analytics/useAnalyticsData";
 import { useToast } from "../contexts/ToastContext";
 import { ConnectionSelector } from "../components/data-explorer/ConnectionSelector";
@@ -42,6 +43,8 @@ function AnalyticsPage() {
 
   const connection = connections.find((c) => c.id === connectionId);
   const connectionName = connection?.name || "";
+
+  const { reconnecting } = useConnectionReconnect(connectionId, async () => {}, toast);
 
   const [timeRange, setTimeRange] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
@@ -135,12 +138,12 @@ function AnalyticsPage() {
 
   return (
     <motion.div className="h-screen flex flex-col" {...pageTransition}>
-      {loading ? (
+      {loading || reconnecting ? (
         <div className="h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
             <p className="text-gray-600 dark:text-gray-400">
-              Loading analytics...
+              {reconnecting ? "Connecting to database..." : "Loading analytics..."}
             </p>
           </div>
         </div>
