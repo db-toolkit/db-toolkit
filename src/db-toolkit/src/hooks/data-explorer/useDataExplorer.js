@@ -4,14 +4,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useConnections, useSchema } from '../index';
 import { useToast } from '../../contexts/ToastContext';
+import { useConnectionStore } from '../../stores/connectionStore';
 import { dropTable } from '../../utils/dropTable';
 import api from '../../services/api';
 
 export function useDataExplorer() {
   const { connections, connectToDatabase } = useConnections();
   const toast = useToast();
-  const [connectionId, setConnectionId] = useState(null);
-  const [connectionName, setConnectionName] = useState('');
+  const connectionId = useConnectionStore((state) => state.activeConnections.dataExplorer);
+  const setConnection = useConnectionStore((state) => state.setConnection);
   const [connecting, setConnecting] = useState(null);
   const { schema, loading: schemaLoading, error: schemaError, fetchSchemaTree } = useSchema(connectionId);
   const [selectedTable, setSelectedTable] = useState(null);
@@ -27,20 +28,20 @@ export function useDataExplorer() {
   const [showFilters, setShowFilters] = useState(false);
   const [cellModal, setCellModal] = useState({ isOpen: false, data: null, column: null });
 
+  const connectionName = connections.find(c => c.id === connectionId)?.name || '';
+
   const handleConnect = useCallback(async (id) => {
     setConnecting(id);
     try {
       await connectToDatabase(id, true);
-      const conn = connections.find(c => c.id === id);
-      setConnectionId(id);
-      setConnectionName(conn?.name || '');
+      setConnection('dataExplorer', id);
       toast.success('Connected successfully');
     } catch (err) {
       toast.error(err.message || 'Failed to connect');
     } finally {
       setConnecting(null);
     }
-  }, [connectToDatabase, connections, toast]);
+  }, [connectToDatabase, setConnection, toast]);
 
   useEffect(() => {
     if (connectionId) {
@@ -49,7 +50,7 @@ export function useDataExplorer() {
         toast.error(`Failed to load schema: ${err.message}`);
       });
     }
-  }, [connectionId, fetchSchemaTree, toast]);
+  }, [connectionId, toast]);
 
   const loadTableData = useCallback(async (schema, table, offset = 0, sort = null, order = 'ASC', filterData = {}) => {
     setLoading(true);
@@ -225,7 +226,7 @@ export function useDataExplorer() {
         setColumns([]);
       }
     }, toast);
-  }, [connectionId, fetchSchemaTree, selectedTable, toast]);
+  }, [connectionId, selectedTable, toast]);
 
   return {
     connections,
@@ -247,7 +248,6 @@ export function useDataExplorer() {
     filters,
     showFilters,
     cellModal,
-    setConnectionId,
     setShowFilters,
     setCellModal,
     handleConnect,
