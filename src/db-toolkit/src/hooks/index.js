@@ -1,7 +1,7 @@
 export { useConnections } from './connections/useConnections';
 export { useSchema } from './useSchema';
 export { useQuery } from './query/useQuery';
-export { useData } from './useData';
+export { useData } from './data-explorer/useData';
 export { useSession } from './useSession';
 export { useBackups } from './useBackups';
 export { useAnalytics } from './analytics/useAnalytics';

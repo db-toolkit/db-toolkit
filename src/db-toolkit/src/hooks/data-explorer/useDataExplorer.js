@@ -2,10 +2,10 @@
  * Custom hook for Data Explorer logic
  */
 import { useState, useEffect, useCallback } from 'react';
-import { useConnections, useSchema } from '../hooks';
-import { useToast } from '../contexts/ToastContext';
-import { dropTable } from '../utils/dropTable';
-import api from '../services/api';
+import { useConnections, useSchema } from '../index';
+import { useToast } from '../../contexts/ToastContext';
+import { dropTable } from '../../utils/dropTable';
+import api from '../../services/api';
 
 export function useDataExplorer() {
   const { connections, connectToDatabase } = useConnections();

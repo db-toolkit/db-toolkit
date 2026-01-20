@@ -15,7 +15,7 @@ import { DataExplorerNoConnections as DataExplorerEmpty } from '../components/da
 import { ConnectionSelector } from '../components/data-explorer/ConnectionSelector';
 import { DataExplorerToolbar } from '../components/data-explorer/DataExplorerToolbar';
 import { pageTransition } from '../utils/animations';
-import { useDataExplorer } from '../hooks/useDataExplorer';
+import { useDataExplorer } from '../hooks/data-explorer/useDataExplorer';
 
 function DataExplorerPage() {
   const navigate = useNavigate();
