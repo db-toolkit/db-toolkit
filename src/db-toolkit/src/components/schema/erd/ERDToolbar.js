@@ -99,13 +99,13 @@ export function ERDToolbar({
                         onClick={onToggleExpand}
                         className="px-2 py-1 text-xs rounded text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-white dark:hover:bg-gray-700"
                     >
-                        Expand All
+                        Expand
                     </button>
                     <button
                         onClick={onToggleCollapse}
                         className="px-2 py-1 text-xs rounded text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-white dark:hover:bg-gray-700"
                     >
-                        Collapse All
+                        Collapse
                     </button>
                 </div>
 
