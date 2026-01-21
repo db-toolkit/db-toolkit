@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Database, FileText, HardDrive, Plus, ArrowRight, Activity } from 'lucide-react';
+import { Database, FileText, HardDrive, ArrowRight, Activity } from 'lucide-react';
 import { useConnections } from '../hooks';
 import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
-import { ConnectionModal } from '../components/connections/ConnectionModal';
 import { ConnectionSidebar } from '../components/connections/ConnectionSidebar';
 import { AddConnectionButton } from '../components/connections/AddConnectionButton';
 
@@ -18,7 +17,6 @@ export default function DashboardPage() {
   const { connections, loading, createConnection } = useConnections();
   const [stats, setStats] = useState({ queries: 0, backups: 0 });
   const [recentActivity, setRecentActivity] = useState([]);
-  const [showModal, setShowModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
@@ -66,7 +64,7 @@ export default function DashboardPage() {
     try {
       await createConnection(connectionData);
       toast.success('Connection created successfully');
-      setShowModal(false);
+      setShowSidebar(false);
     } catch (err) {
       toast.error(err.message || 'Failed to create connection');
     }
@@ -217,12 +215,6 @@ export default function DashboardPage() {
           </div>
         </>
       )}
-
-      <ConnectionModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onSave={handleSaveConnection}
-      />
 
       <ConnectionSidebar
         isOpen={showSidebar}
