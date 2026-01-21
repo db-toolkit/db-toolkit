@@ -127,12 +127,10 @@
 
 .hero-gradient-1 {
   animation: heroGradient1 20s linear infinite;
-  will-change: transform;
 }
 
 .hero-gradient-2 {
   animation: heroGradient2 20s linear infinite;
-  will-change: transform;
 }
 
 /* Reduce motion for accessibility */

@@ -72,6 +72,8 @@ export default function Hero() {
               src="/preview.png" 
               alt="DB Toolkit Application Preview" 
               className="w-full h-auto"
+              loading="lazy"
+              decoding="async"
             />
           </div>
         </div>

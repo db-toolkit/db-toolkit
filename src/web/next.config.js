@@ -9,6 +9,11 @@ const nextConfig = {
   },
   swcMinify: true,
   reactStrictMode: true,
+  poweredByHeader: false,
+  compress: true,
+  experimental: {
+    optimizeCss: true,
+  },
 };
 
 module.exports = nextConfig;

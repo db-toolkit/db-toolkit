@@ -9,6 +9,8 @@ const playfair = Playfair_Display({
   weight: ["400", "700"],
   subsets: ["latin"],
   display: "swap",
+  preload: true,
+  fallback: ["Georgia", "serif"],
 });
 
 export const metadata = {
