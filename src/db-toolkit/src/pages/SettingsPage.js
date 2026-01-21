@@ -7,6 +7,7 @@ import { useSettings } from "../hooks/useSettings";
 import { useToast } from "../contexts/ToastContext";
 import { Button } from "../components/common/Button";
 import { LoadingState } from "../components/common/LoadingState";
+import { SettingsSidebar } from "../components/settings/SettingsSidebar";
 import { AppearanceSettings } from "../components/settings/AppearanceSettings";
 import { QuerySettings } from "../components/settings/QuerySettings";
 import { EditorSettings } from "../components/settings/EditorSettings";
@@ -96,27 +97,11 @@ function SettingsPage() {
       </div>
 
       <div className="flex-1 flex overflow-hidden">
-        <div className="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
-          <nav className="space-y-1">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                    activeTab === tab.id
-                      ? "bg-green-600 text-white"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  <Icon size={20} />
-                  <span className="text-sm font-medium">{tab.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
+        <SettingsSidebar 
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
         <div className="flex-1 overflow-y-auto p-8">
           <div className="max-w-2xl">
