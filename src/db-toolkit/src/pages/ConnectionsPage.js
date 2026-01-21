@@ -101,13 +101,14 @@ function ConnectionsPage() {
   );
 
   return (
-    <div className="p-8 animate-page-transition">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Database Connections</h2>
-      </div>
-      
-      {connections.length > 0 && (
-        <div className="mb-6">
+    <>
+      <div className="p-8 animate-page-transition">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Database Connections</h2>
+        </div>
+        
+        {connections.length > 0 && (
+          <div className="mb-6">
           <div className="relative max-w-md">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -165,11 +166,6 @@ function ConnectionsPage() {
         connection={null}
       />
 
-      <AddConnectionButton 
-        onClick={() => setShowSidebar(true)} 
-        isVisible={!showSidebar}
-      />
-
       {showErrorModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
@@ -181,7 +177,13 @@ function ConnectionsPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+
+      <AddConnectionButton 
+        onClick={() => setShowSidebar(true)} 
+        isVisible={!showSidebar}
+      />
+    </>
   );
 }
 
