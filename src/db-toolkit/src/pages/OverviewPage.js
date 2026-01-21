@@ -70,9 +70,10 @@ export default function OverviewPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Welcome to DB Toolkit</h1>
+    <>
+      <div className="p-6 space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Welcome to DB Toolkit</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">Modern database management made simple</p>
       </div>
 
@@ -189,6 +190,8 @@ export default function OverviewPage() {
         </>
       )}
 
+      </div>
+
       <ConnectionSidebar
         isOpen={showSidebar}
         onClose={() => setShowSidebar(false)}
@@ -200,6 +203,6 @@ export default function OverviewPage() {
         onClick={() => setShowSidebar(true)} 
         isVisible={!showSidebar}
       />
-    </div>
+    </>
   );
 }

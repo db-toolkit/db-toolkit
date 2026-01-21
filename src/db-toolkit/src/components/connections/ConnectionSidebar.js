@@ -78,7 +78,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
       />
       
       {/* Sidebar */}
-      <div className="fixed right-0 top-0 h-full w-[600px] bg-white dark:bg-gray-900 shadow-2xl z-50 flex flex-col">
+      <div className="fixed right-0 top-0 h-screen w-[600px] bg-white dark:bg-gray-900 shadow-2xl z-50 flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
@@ -118,7 +118,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
                         key={type}
                         type="button"
                         onClick={() => handleDbTypeChange(type)}
-                        className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                        className={`py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all ${
                           formData.db_type === type
                             ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
                             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300'
