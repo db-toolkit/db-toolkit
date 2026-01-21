@@ -10,8 +10,23 @@ export function CellViewModal({ isOpen, onClose, data, column }) {
 
   if (!isOpen) return null;
 
+  // Format data for display
+  const formatData = (value) => {
+    if (value === null || value === undefined) return 'NULL';
+    if (typeof value === 'object') {
+      try {
+        return JSON.stringify(value, null, 2);
+      } catch (e) {
+        return String(value);
+      }
+    }
+    return String(value);
+  };
+
+  const displayData = formatData(data);
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(String(data));
+    navigator.clipboard.writeText(displayData);
     toast.success('Copied to clipboard');
   };
 
@@ -36,7 +51,7 @@ export function CellViewModal({ isOpen, onClose, data, column }) {
         </div>
         <div className="p-6 overflow-auto flex-1">
           <pre className="text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words">
-            {String(data)}
+            {displayData}
           </pre>
         </div>
       </div>
