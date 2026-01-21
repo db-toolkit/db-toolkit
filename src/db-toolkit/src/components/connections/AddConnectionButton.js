@@ -8,7 +8,7 @@ export function AddConnectionButton({ onClick, isVisible = true }) {
   if (!isVisible) return null;
 
   return (
-    <Tooltip content="Add a new database connection" position="top">
+    <Tooltip content="Add a new database connection" position="bottom">
       <button
         onClick={onClick}
         className="fixed bottom-8 right-8 w-14 h-14 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-50 group"
