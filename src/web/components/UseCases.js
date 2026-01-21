@@ -1,8 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { Code, Database, LineChart, GitBranch, Shield, Zap } from 'lucide-react';
-import { fadeInUp, staggerContainer } from '@/utils/motion';
 
 export default function UseCases() {
   const useCases = [
@@ -47,39 +45,21 @@ export default function UseCases() {
   return (
     <section className="py-20 bg-gray-50 dark:bg-gray-800">
       <div className="container mx-auto px-6">
-        <motion.div
-          variants={staggerContainer}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <motion.h2
-            variants={fadeInUp(0)}
-            className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4"
-          >
+        <div className="text-center mb-16">
+          <h2 className="animate-fade-in-up text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Built for Everyone
-          </motion.h2>
-          <motion.p
-            variants={fadeInUp(0.1)}
-            className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
-          >
+          </h2>
+          <p className="animate-fade-in-up-delay-1 text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Whether you're a developer, DBA, or analyst, DB Toolkit adapts to your workflow
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
-        <motion.div
-          variants={staggerContainer}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {useCases.map((useCase, index) => (
-            <motion.div
+            <div
               key={index}
-              variants={fadeInUp(index * 0.1)}
-              className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
+              className="animate-fade-in-up bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
+              style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'backwards' }}
             >
               <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl flex items-center justify-center text-white mb-6">
                 {useCase.icon}
@@ -98,9 +78,9 @@ export default function UseCases() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
