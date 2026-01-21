@@ -23,7 +23,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={{ success, error, info }}>
       {children}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col-reverse gap-2">
         {toasts.map((toast) => (
           <Toast key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
         ))}
@@ -40,24 +40,32 @@ function Toast({ toast, onClose }) {
   }, []);
 
   const icons = {
-    success: <CheckCircle size={20} className="text-green-600" />,
-    error: <XCircle size={20} className="text-red-600" />,
-    info: <AlertCircle size={20} className="text-green-600" />,
+    success: <CheckCircle size={18} className="text-white" />,
+    error: <XCircle size={18} className="text-white" />,
+    info: <AlertCircle size={18} className="text-white" />,
   };
 
   const styles = {
-    success: 'bg-green-50 border-green-200 dark:bg-green-900 dark:border-green-700',
-    error: 'bg-red-50 border-red-200 dark:bg-red-900 dark:border-red-700',
-    info: 'bg-green-50 border-green-200 dark:bg-green-900 dark:border-green-700',
+    success: 'bg-green-600 text-white',
+    error: 'bg-red-600 text-white',
+    info: 'bg-gray-800 dark:bg-gray-700 text-white',
+  };
+
+  const iconStyles = {
+    success: 'text-white',
+    error: 'text-white',
+    info: 'text-white',
   };
 
   return (
     <div
-      className={`flex items-center gap-3 p-4 border rounded-lg shadow-lg min-w-[300px] ${styles[toast.type]} ${isExiting ? 'toast-exit' : 'toast-enter'}`}
+      className={`flex items-center gap-3 px-4 py-3 rounded-full shadow-lg ${styles[toast.type]} ${isExiting ? 'toast-exit' : 'toast-enter'}`}
     >
-      {icons[toast.type]}
-      <p className="flex-1 text-sm text-gray-900 dark:text-gray-100">{toast.message}</p>
-      <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+      <div className={iconStyles[toast.type]}>
+        {icons[toast.type]}
+      </div>
+      <p className="text-sm font-medium">{toast.message}</p>
+      <button onClick={onClose} className="text-white/80 hover:text-white transition-colors ml-2">
         <X size={16} />
       </button>
     </div>

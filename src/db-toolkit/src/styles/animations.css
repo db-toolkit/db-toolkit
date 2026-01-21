@@ -90,32 +90,32 @@
 }
 
 /* Toast animations */
-@keyframes slideInRight {
+@keyframes slideInUp {
   from {
     opacity: 0;
-    transform: translateX(100%);
+    transform: translateY(100%);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
-@keyframes slideOutRight {
+@keyframes slideOutDown {
   from {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
   to {
     opacity: 0;
-    transform: translateX(100%);
+    transform: translateY(100%);
   }
 }
 
 .toast-enter {
-  animation: slideInRight 0.3s ease-out;
+  animation: slideInUp 0.3s ease-out;
 }
 
 .toast-exit {
-  animation: slideOutRight 0.2s ease-in;
+  animation: slideOutDown 0.2s ease-in;
 }
