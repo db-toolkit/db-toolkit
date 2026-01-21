@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { Download, ArrowRight, Star } from "lucide-react";
-import { fadeInUp } from "@/utils/motion";
 import { detectPlatform, getDownloadUrl } from "@/utils/detectPlatform";
 
 export default function CTASection() {
@@ -31,65 +29,19 @@ export default function CTASection() {
   return (
     <section className="relative py-8 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 90, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-          className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-100/30 to-transparent rounded-full blur-3xl motion-reduce:animate-none"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [90, 0, 90],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-          className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-100/30 to-transparent rounded-full blur-3xl motion-reduce:animate-none"
-        />
+        <div className="hero-gradient-1 absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-100/30 to-transparent rounded-full blur-3xl" />
+        <div className="hero-gradient-2 absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-100/30 to-transparent rounded-full blur-3xl" />
       </div>
       <div className="relative container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="max-w-4xl mx-auto text-center"
-        >
-          <motion.h2
-            variants={fadeInUp(0)}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3"
-          >
+        <div className="animate-fade-in-up max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
             Ready to Get Started?
-          </motion.h2>
-          <motion.p
-            variants={fadeInUp(0.1)}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            className="text-lg text-gray-600 dark:text-gray-300 mb-6"
-          >
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
             Download DB Toolkit now and simplify your database workflow
-          </motion.p>
+          </p>
 
-          <motion.div
-            variants={fadeInUp(0.2)}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
-          >
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <a
               href="/downloads"
               className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold"
@@ -110,8 +62,8 @@ export default function CTASection() {
               <Star size={20} />
               Star on GitHub
             </a>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );
