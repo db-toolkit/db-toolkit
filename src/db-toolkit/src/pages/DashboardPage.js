@@ -60,6 +60,15 @@ export default function DashboardPage() {
 
   const activeConnections = connections.filter(c => c.status === 'connected');
 
+  // Get recent connections sorted by last used time
+  const recentConnections = connections
+    .map(conn => ({
+      ...conn,
+      lastUsed: localStorage.getItem(`connection_time_${conn.id}`) || '0'
+    }))
+    .sort((a, b) => parseInt(b.lastUsed) - parseInt(a.lastUsed))
+    .slice(0, 2);
+
   const handleSaveConnection = async (connectionData) => {
     try {
       await createConnection(connectionData);
@@ -182,11 +191,11 @@ export default function DashboardPage() {
                 </Button>
               )}
             </div>
-            {connections.length === 0 ? (
+            {recentConnections.length === 0 ? (
               <p className="text-gray-500 dark:text-gray-400">No connections yet</p>
             ) : (
               <div className="space-y-3">
-                {connections.slice(0, 2).map((conn) => (
+                {recentConnections.map((conn) => (
                   <div
                     key={conn.id}
                     className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
