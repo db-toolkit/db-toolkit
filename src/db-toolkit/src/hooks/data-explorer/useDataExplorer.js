@@ -85,25 +85,25 @@ export function useDataExplorer() {
     }
   }, [connectionId, pageSize, toast]);
 
-  const handleSelectTable = useCallback((schema, table) => {
-    setSelectedTable({ schema, table });
+  const handleSelectTable = useCallback((schemaName, tableName) => {
+    setSelectedTable({ schema: schemaName, table: tableName });
     setPage(0);
     setSortColumn(null);
     setSortOrder('ASC');
     setFilters({});
     
-    // Get column metadata from schema
-    if (schema) {
-      const schemaObj = schema.find(s => s.schema === schema);
+    // Get column metadata from schema tree
+    if (schema && Array.isArray(schema)) {
+      const schemaObj = schema.find(s => s.schema === schemaName);
       if (schemaObj) {
-        const tableObj = schemaObj.tables.find(t => t.name === table);
+        const tableObj = schemaObj.tables.find(t => t.name === tableName);
         if (tableObj && tableObj.columns) {
           setColumnMetadata(tableObj.columns);
         }
       }
     }
     
-    loadTableData(schema, table, 0);
+    loadTableData(schemaName, tableName, 0);
   }, [loadTableData, schema]);
 
   const handleSort = useCallback((column, order) => {
