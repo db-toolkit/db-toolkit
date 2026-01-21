@@ -55,13 +55,13 @@ export default function Hero() {
             )}
           </button>
           <a
-            href="https://docs-dbtoolkit.vercel.app/"
+            href="https://github.com/db-toolkit/db-toolkit"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-8 py-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold"
           >
-            View Docs
-            <ArrowRight size={20} />
+            <Github size={20} />
+            Star on GitHub
           </a>
         </div>
 
