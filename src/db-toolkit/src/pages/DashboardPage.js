@@ -5,6 +5,8 @@ import { useConnections } from '../hooks';
 import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
 import { ConnectionModal } from '../components/connections/ConnectionModal';
+import { ConnectionSidebar } from '../components/connections/ConnectionSidebar';
+import { AddConnectionButton } from '../components/connections/AddConnectionButton';
 
 const ipc = {
   invoke: (channel, ...args) => window.electron.ipcRenderer.invoke(channel, ...args)
@@ -17,6 +19,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ queries: 0, backups: 0 });
   const [recentActivity, setRecentActivity] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -128,12 +131,6 @@ export default function DashboardPage() {
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
-          <Button onClick={() => setShowModal(true)}>
-            <Plus size={16} className="mr-1" /> New Connection
-          </Button>
-          <Button variant="secondary" onClick={() => navigate('/query/new')}>
-            <FileText size={16} className="mr-1" /> New Query
-          </Button>
           <Button variant="secondary" onClick={() => navigate('/backups')}>
             <HardDrive size={16} className="mr-1" /> Create Backup
           </Button>
@@ -225,6 +222,18 @@ export default function DashboardPage() {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onSave={handleSaveConnection}
+      />
+
+      <ConnectionSidebar
+        isOpen={showSidebar}
+        onClose={() => setShowSidebar(false)}
+        onSave={handleSaveConnection}
+        connection={null}
+      />
+
+      <AddConnectionButton 
+        onClick={() => setShowSidebar(true)} 
+        isVisible={!showSidebar}
       />
     </div>
   );
