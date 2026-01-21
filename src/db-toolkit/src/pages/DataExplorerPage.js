@@ -1,13 +1,14 @@
 /**
  * Data Explorer page for browsing table data
  */
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { LoadingState } from '../components/common/LoadingState';
 import { DataGrid } from '../components/data-explorer/DataGrid';
 import { TableSelector } from '../components/data-explorer/TableSelector';
 import { CellViewModal } from '../components/data-explorer/CellViewModal';
+import { AddRowModal } from '../components/data-explorer/AddRowModal';
 import { ColumnFilter } from '../components/data-explorer/ColumnFilter';
 import { Breadcrumbs } from '../components/common/Breadcrumbs';
 import { Button } from '../components/common/Button';
@@ -18,6 +19,7 @@ import { useDataExplorer } from '../hooks/data-explorer/useDataExplorer';
 
 function DataExplorerPage() {
   const navigate = useNavigate();
+  const [showAddRowModal, setShowAddRowModal] = useState(false);
   const {
     connections,
     connectionId,
@@ -28,6 +30,7 @@ function DataExplorerPage() {
     selectedTable,
     data,
     columns,
+    columnMetadata,
     loading,
     page,
     pageSize,
@@ -48,6 +51,7 @@ function DataExplorerPage() {
     clearFilters,
     handleCellClick,
     handleCellUpdate,
+    handleAddRow,
     exportToCSV,
     exportToJSON,
     handleNextPage,
@@ -120,6 +124,7 @@ function DataExplorerPage() {
           onPrevPage={handlePrevPage}
           onNextPage={handleNextPage}
           onRefresh={handleRefresh}
+          onAddRow={() => setShowAddRowModal(true)}
         />
       </div>
 
@@ -193,6 +198,14 @@ function DataExplorerPage() {
         onClose={() => setCellModal({ isOpen: false, data: null, column: null })}
         data={cellModal.data}
         column={cellModal.column}
+      />
+
+      <AddRowModal
+        isOpen={showAddRowModal}
+        onClose={() => setShowAddRowModal(false)}
+        columns={columnMetadata}
+        onSave={handleAddRow}
+        tableName={selectedTable ? `${selectedTable.schema}.${selectedTable.table}` : ''}
       />
     </div>
   );

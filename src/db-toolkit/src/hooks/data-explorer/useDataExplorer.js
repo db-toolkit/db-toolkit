@@ -3,6 +3,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useConnections, useSchema } from '../index';
+import { useData } from './useData';
 import { useToast } from '../../contexts/ToastContext';
 import { useConnectionStore } from '../../stores/connectionStore';
 import { dropTable } from '../../utils/dropTable';
@@ -15,9 +16,11 @@ export function useDataExplorer() {
   const setConnection = useConnectionStore((state) => state.setConnection);
   const [connecting, setConnecting] = useState(null);
   const { schema, loading: schemaLoading, error: schemaError, fetchSchemaTree } = useSchema(connectionId);
+  const { insertRow } = useData(connectionId);
   const [selectedTable, setSelectedTable] = useState(null);
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
+  const [columnMetadata, setColumnMetadata] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [pageSize] = useState(100);
@@ -88,8 +91,20 @@ export function useDataExplorer() {
     setSortColumn(null);
     setSortOrder('ASC');
     setFilters({});
+    
+    // Get column metadata from schema
+    if (schema) {
+      const schemaObj = schema.find(s => s.schema === schema);
+      if (schemaObj) {
+        const tableObj = schemaObj.tables.find(t => t.name === table);
+        if (tableObj && tableObj.columns) {
+          setColumnMetadata(tableObj.columns);
+        }
+      }
+    }
+    
     loadTableData(schema, table, 0);
-  }, [loadTableData]);
+  }, [loadTableData, schema]);
 
   const handleSort = useCallback((column, order) => {
     setSortColumn(column);
@@ -155,6 +170,20 @@ export function useDataExplorer() {
       throw err;
     }
   }, [columns, selectedTable, connectionId, toast, loadTableData, page, pageSize, sortColumn, sortOrder, filters]);
+
+  const handleAddRow = useCallback(async (rowData) => {
+    if (!selectedTable) return;
+    
+    try {
+      await insertRow(selectedTable.table, selectedTable.schema, rowData);
+      toast.success('Row added successfully');
+      // Refresh table data
+      loadTableData(selectedTable.schema, selectedTable.table, page * pageSize, sortColumn, sortOrder, filters);
+    } catch (err) {
+      toast.error(err.message || 'Failed to add row');
+      throw err;
+    }
+  }, [selectedTable, insertRow, toast, loadTableData, page, pageSize, sortColumn, sortOrder, filters]);
 
   const exportToCSV = useCallback(() => {
     if (!data || data.length === 0) return;
@@ -239,6 +268,7 @@ export function useDataExplorer() {
     selectedTable,
     data,
     columns,
+    columnMetadata,
     loading,
     page,
     pageSize,
@@ -258,6 +288,7 @@ export function useDataExplorer() {
     clearFilters,
     handleCellClick,
     handleCellUpdate,
+    handleAddRow,
     exportToCSV,
     exportToJSON,
     handleNextPage,
