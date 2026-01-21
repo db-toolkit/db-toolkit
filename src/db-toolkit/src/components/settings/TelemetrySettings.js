@@ -25,8 +25,8 @@ export function TelemetrySettings() {
   return (
     <div className="space-y-6">
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Telemetry
             </h3>
@@ -37,7 +37,7 @@ export function TelemetrySettings() {
           
           <button
             onClick={handleToggleTelemetry}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+            className={`flex-shrink-0 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
               enabled ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
             }`}
           >
@@ -57,8 +57,8 @@ export function TelemetrySettings() {
               </h4>
               
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <div>
+                <div className="flex items-center justify-between gap-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       Feature Usage
                     </span>
@@ -68,7 +68,7 @@ export function TelemetrySettings() {
                   </div>
                   <button
                     onClick={() => handleSubToggle('featureUsage')}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                    className={`flex-shrink-0 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
                       preferences.featureUsage ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   >
@@ -78,8 +78,8 @@ export function TelemetrySettings() {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <div>
+                <div className="flex items-center justify-between gap-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       Session Duration
                     </span>
@@ -89,7 +89,7 @@ export function TelemetrySettings() {
                   </div>
                   <button
                     onClick={() => handleSubToggle('sessionDuration')}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                    className={`flex-shrink-0 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
                       preferences.sessionDuration ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   >
@@ -99,8 +99,8 @@ export function TelemetrySettings() {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <div>
+                <div className="flex items-center justify-between gap-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       System Information
                     </span>
@@ -110,7 +110,7 @@ export function TelemetrySettings() {
                   </div>
                   <button
                     onClick={() => handleSubToggle('systemInfo')}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                    className={`flex-shrink-0 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
                       preferences.systemInfo ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   >
@@ -120,8 +120,8 @@ export function TelemetrySettings() {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <div>
+                <div className="flex items-center justify-between gap-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       Database Types
                     </span>
@@ -131,7 +131,7 @@ export function TelemetrySettings() {
                   </div>
                   <button
                     onClick={() => handleSubToggle('databaseTypes')}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                    className={`flex-shrink-0 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
                       preferences.databaseTypes ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   >
@@ -141,8 +141,8 @@ export function TelemetrySettings() {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <div>
+                <div className="flex items-center justify-between gap-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       Workspace Usage
                     </span>
@@ -152,7 +152,7 @@ export function TelemetrySettings() {
                   </div>
                   <button
                     onClick={() => handleSubToggle('workspaceUsage')}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                    className={`flex-shrink-0 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
                       preferences.workspaceUsage ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   >
