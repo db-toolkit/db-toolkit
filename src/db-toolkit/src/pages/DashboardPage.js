@@ -14,7 +14,7 @@ const ipc = {
 export default function DashboardPage() {
   const navigate = useNavigate();
   const toast = useToast();
-  const { connections, loading, createConnection } = useConnections();
+  const { connections, loading, createConnection, connectedIds } = useConnections();
   const [stats, setStats] = useState({ queries: 0, backups: 0 });
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -38,8 +38,6 @@ export default function DashboardPage() {
     
     loadStats();
   }, []);
-
-  const activeConnections = connections.filter(c => c.status === 'connected');
 
   // Get recent connections sorted by last used time
   const recentConnections = connections
@@ -167,7 +165,7 @@ export default function DashboardPage() {
                     className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${conn.status === 'connected' ? 'bg-green-500' : 'bg-gray-400'}`} />
+                      <div className={`w-2 h-2 rounded-full ${connectedIds.has(conn.id) ? 'bg-green-500' : 'bg-gray-400'}`} />
                       <div>
                         <div className="font-medium text-gray-900 dark:text-white">{conn.name}</div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
