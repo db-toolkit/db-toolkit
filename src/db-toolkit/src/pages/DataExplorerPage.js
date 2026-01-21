@@ -3,7 +3,7 @@
  */
 import { useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+
 import { LoadingState } from '../components/common/LoadingState';
 import { DataGrid } from '../components/data-explorer/DataGrid';
 import { TableSelector } from '../components/data-explorer/TableSelector';
@@ -14,7 +14,6 @@ import { Button } from '../components/common/Button';
 import { DataExplorerNoConnections as DataExplorerEmpty } from '../components/data-explorer/DataExplorerEmpty';
 import { ConnectionSelector } from '../components/data-explorer/ConnectionSelector';
 import { DataExplorerToolbar } from '../components/data-explorer/DataExplorerToolbar';
-import { pageTransition } from '../utils/animations';
 import { useDataExplorer } from '../hooks/data-explorer/useDataExplorer';
 
 function DataExplorerPage() {
@@ -93,7 +92,7 @@ function DataExplorerPage() {
   }
 
   return (
-    <motion.div className="h-screen flex flex-col" {...pageTransition}>
+    <div className="h-screen flex flex-col animate-page-transition">
       <div className="px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Data Explorer</h2>
@@ -195,7 +194,7 @@ function DataExplorerPage() {
         data={cellModal.data}
         column={cellModal.column}
       />
-    </motion.div>
+    </div>
   );
 }
 

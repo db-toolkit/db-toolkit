@@ -3,7 +3,6 @@
  */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Database, Download } from "lucide-react";
 import { useConnections, useAnalytics } from "../hooks";
 import { useAnalyticsData } from "../hooks/analytics/useAnalyticsData";
@@ -32,7 +31,6 @@ import { AnalyticsQueriesTab } from "../components/analytics/AnalyticsQueriesTab
 import { AnalyticsTablesTab } from "../components/analytics/AnalyticsTablesTab";
 import { AnalyticsConnectionsTab } from "../components/analytics/AnalyticsConnectionsTab";
 import { AnalyticsAlertsTab } from "../components/analytics/AnalyticsAlertsTab";
-import { pageTransition } from "../utils/animations";
 
 function AnalyticsPage() {
   const navigate = useNavigate();
@@ -97,10 +95,7 @@ function AnalyticsPage() {
   if (!connectionId) {
     if (connections.length === 0) {
       return (
-        <motion.div
-          className="p-8 flex items-center justify-center h-full"
-          {...pageTransition}
-        >
+        <div className="p-8 flex items-center justify-center h-full animate-page-transition">
           <div className="text-center max-w-md">
             <Database className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -113,7 +108,7 @@ function AnalyticsPage() {
               Create Connection
             </Button>
           </div>
-        </motion.div>
+        </div>
       );
     }
 
@@ -130,7 +125,7 @@ function AnalyticsPage() {
   }
 
   return (
-    <motion.div className="h-screen flex flex-col" {...pageTransition}>
+    <div className="h-screen flex flex-col animate-page-transition">
       {loading || connecting ? (
         <div className="h-screen flex items-center justify-center">
           <div className="text-center">
@@ -268,7 +263,7 @@ function AnalyticsPage() {
           </div>
         </>
       )}
-    </motion.div>
+    </div>
   );
 }
 

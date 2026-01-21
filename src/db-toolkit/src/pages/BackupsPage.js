@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+
 import { Plus, Database, Clock, Search } from 'lucide-react';
 import { useDebounce } from '../utils/debounce';
 import { useBackups } from '../hooks/useBackups';
@@ -14,7 +14,6 @@ import { ScheduleModal } from '../components/backup/ScheduleModal';
 import { ScheduleCard } from '../components/backup/ScheduleCard';
 import { ScheduleBackupsModal } from '../components/backup/ScheduleBackupsModal';
 import { useBackupWebSocket } from '../websockets/useBackupWebSocket';
-import { pageTransition } from '../utils/animations';
 import api from '../services/api';
 
 function BackupsPage() {
@@ -195,7 +194,7 @@ function BackupsPage() {
   );
 
   return (
-    <motion.div className="p-8" {...pageTransition}>
+    <div className="p-8 animate-page-transition">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Database Backups</h2>
         <div className="flex gap-2">
@@ -328,7 +327,7 @@ function BackupsPage() {
         onDelete={handleDelete}
         onShowInFolder={handleShowInFolder}
       />
-    </motion.div>
+    </div>
   );
 }
 

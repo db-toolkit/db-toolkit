@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Plus, Database, Search } from 'lucide-react';
 import { useDebounce } from '../utils/debounce';
 import { useConnections } from '../hooks';
@@ -14,7 +13,6 @@ import { ConnectionCard } from '../components/connections/ConnectionCard';
 import { ConnectionModal } from '../components/connections/ConnectionModal';
 import { ConnectionSidebar } from '../components/connections/ConnectionSidebar';
 import { AddConnectionButton } from '../components/connections/AddConnectionButton';
-import { pageTransition } from '../utils/animations';
 
 function ConnectionsPage() {
   const navigate = useNavigate();
@@ -103,7 +101,7 @@ function ConnectionsPage() {
   );
 
   return (
-    <motion.div className="p-8" {...pageTransition}>
+    <div className="p-8 animate-page-transition">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Database Connections</h2>
       </div>
@@ -183,7 +181,7 @@ function ConnectionsPage() {
           </div>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 

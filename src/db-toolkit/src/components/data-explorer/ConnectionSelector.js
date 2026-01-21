@@ -2,10 +2,9 @@
  * Connection selector for Data Explorer
  */
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+
 import { Database } from 'lucide-react';
 import { Button } from '../common/Button';
-import { pageTransition } from '../../utils/animations';
 
 export const ConnectionSelector = memo(function ConnectionSelector({ 
   connections, 
@@ -16,7 +15,7 @@ export const ConnectionSelector = memo(function ConnectionSelector({
   buttonText = "Connect & Explore"
 }) {
   return (
-    <motion.div className="p-8" {...pageTransition}>
+    <div className="p-8 animate-page-transition">
       <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{title}</h2>
       <p className="text-gray-600 dark:text-gray-400 mb-6">{description}</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -47,6 +46,6 @@ export const ConnectionSelector = memo(function ConnectionSelector({
           </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 });

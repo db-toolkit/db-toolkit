@@ -3,11 +3,10 @@
  */
 import { useState, useMemo } from 'react';
 import { Search, Copy, Check, BookOpen } from 'lucide-react';
-import { motion } from 'framer-motion';
+
 import { useDebounce } from '../utils/debounce';
 import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
-import { pageTransition } from '../utils/animations';
 import documentation from '../data/documentation.json';
 
 function DocumentationPage() {
@@ -96,7 +95,7 @@ function DocumentationPage() {
   };
 
   return (
-    <motion.div className="h-screen flex flex-col" {...pageTransition}>
+    <div className="h-screen flex flex-col animate-page-transition">
       {/* Top Tabs */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="px-6 pt-4">
@@ -188,7 +187,7 @@ function DocumentationPage() {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
