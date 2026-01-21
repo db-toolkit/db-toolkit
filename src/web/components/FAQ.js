@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -61,20 +60,11 @@ export default function FAQ() {
                   }`}
                 />
               </button>
-              <AnimatePresence>
-                {openIndex === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="px-6 pb-6 text-gray-600 dark:text-gray-300">
-                      {faq.answer}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {openIndex === index && (
+                <div className="px-6 pb-6 text-gray-600 dark:text-gray-300 animate-fade-in-up">
+                  {faq.answer}
+                </div>
+              )}
             </div>
           ))}
         </div>
