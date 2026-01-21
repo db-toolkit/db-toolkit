@@ -37,7 +37,7 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-base">Connect</h3>
             <div className="flex gap-4">
-              <a href="https://docs-dbtoolkit.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 inline-block">
+              <a href="https://github.com/db-toolkit/db-toolkit" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 inline-block">
                 <Github size={20} />
               </a>
               <a href="mailto:adelodunpeter24@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 inline-block">
