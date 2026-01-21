@@ -4,6 +4,7 @@
 import { Plus } from "lucide-react";
 import { useWorkspace } from "./WorkspaceProvider";
 import { WorkspaceTab } from "./WorkspaceTab";
+import { Tooltip } from "../common/Tooltip";
 import { useNavigate } from "react-router-dom";
 import { createWorkspaceWithEffect, switchWorkspaceWithEffect } from "../../utils/workspaceUtils";
 import { useCallback, useMemo } from "react";
@@ -64,14 +65,15 @@ export function WorkspaceTabBar() {
       </div>
 
       {/* New Workspace Button - Fixed to right */}
-      <button
-        onClick={handleNewWorkspace}
-        className="flex-shrink-0 flex items-center justify-center px-3 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 h-full"
-        style={{ WebkitAppRegion: "no-drag" }}
-        title="Open new workspace"
-      >
-        <Plus size={16} />
-      </button>
+      <Tooltip text="Add new workspace" position="bottom">
+        <button
+          onClick={handleNewWorkspace}
+          className="flex-shrink-0 flex items-center justify-center px-3 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 h-full"
+          style={{ WebkitAppRegion: "no-drag" }}
+        >
+          <Plus size={16} />
+        </button>
+      </Tooltip>
     </div>
   );
 }
