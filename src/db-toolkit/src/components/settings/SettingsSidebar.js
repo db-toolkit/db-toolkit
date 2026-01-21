@@ -1,7 +1,18 @@
 /**
  * Settings Sidebar Navigation
  */
-export function SettingsSidebar({ tabs, activeTab, onTabChange }) {
+import { Palette, Code, Settings as SettingsIcon, Database, Layout, BarChart3 } from 'lucide-react';
+
+const tabs = [
+  { id: 'appearance', label: 'Appearance', icon: Palette },
+  { id: 'query', label: 'Query', icon: Code },
+  { id: 'editor', label: 'Editor', icon: SettingsIcon },
+  { id: 'connection', label: 'Connection', icon: Database },
+  { id: 'workspace', label: 'Workspace', icon: Layout },
+  { id: 'telemetry', label: 'Telemetry', icon: BarChart3 },
+];
+
+export function SettingsSidebar({ activeTab, onTabChange }) {
   return (
     <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 px-3">
