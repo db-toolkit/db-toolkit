@@ -14,7 +14,7 @@ const tabs = [
 
 export function SettingsSidebar({ activeTab, onTabChange }) {
   return (
-    <div className="w-48 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4">
+    <div className="w-48 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
       <nav className="space-y-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
