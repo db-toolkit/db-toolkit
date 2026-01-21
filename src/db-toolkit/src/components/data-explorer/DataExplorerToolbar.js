@@ -2,7 +2,7 @@
  * Toolbar for Data Explorer (filters, pagination, export)
  */
 import { memo } from 'react';
-import { ChevronLeft, ChevronRight, RefreshCw, Download, Filter } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RefreshCw, Download, Filter, Plus } from 'lucide-react';
 import { Button } from '../common/Button';
 import { Tooltip } from '../common/Tooltip';
 
@@ -19,6 +19,7 @@ export const DataExplorerToolbar = memo(function DataExplorerToolbar({
   onPrevPage,
   onNextPage,
   onRefresh,
+  onAddRow,
 }) {
   if (!selectedTable) return null;
 
@@ -30,6 +31,16 @@ export const DataExplorerToolbar = memo(function DataExplorerToolbar({
         <span>Page {page + 1} of {totalPages}</span>
       </div>
       <div className="flex gap-2">
+        <Tooltip text="Add new row">
+          <Button
+            variant="success"
+            size="sm"
+            onClick={onAddRow}
+            icon={<Plus size={16} />}
+          >
+            Add Row
+          </Button>
+        </Tooltip>
         <Tooltip text={showFilters ? 'Hide filters' : 'Show filters'}>
           <Button
             variant="secondary"
