@@ -12,12 +12,15 @@ import { EmptyState } from '../components/common/EmptyState';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 import { ConnectionCard } from '../components/connections/ConnectionCard';
 import { ConnectionModal } from '../components/connections/ConnectionModal';
+import { ConnectionSidebar } from '../components/connections/ConnectionSidebar';
+import { AddConnectionButton } from '../components/connections/AddConnectionButton';
 import { pageTransition } from '../utils/animations';
 
 function ConnectionsPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const [showModal, setShowModal] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [modalError, setModalError] = useState('');
   const [editingConnection, setEditingConnection] = useState(null);
@@ -159,6 +162,15 @@ function ConnectionsPage() {
         onSave={handleSave}
         connection={editingConnection}
       />
+
+      <ConnectionSidebar
+        isOpen={showSidebar}
+        onClose={() => setShowSidebar(false)}
+        onSave={handleSave}
+        connection={null}
+      />
+
+      <AddConnectionButton onClick={() => setShowSidebar(true)} />
 
       {showErrorModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
