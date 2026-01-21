@@ -1,6 +1,5 @@
 /**
  * Sidebar for creating/editing database connections
- * Supports Basic, SSH, SSL, and Advanced configurations
  */
 import { useState, useCallback } from 'react';
 import { X } from 'lucide-react';
@@ -12,14 +11,9 @@ import { useConnectionForm } from '../../hooks/connections/useConnectionForm';
 import { parseConnectionUrl } from '../../utils/connectionParser';
 import { ConnectionFormFields } from './ConnectionFormFields';
 
-const TABS = [
-  { id: 'basic', label: 'Basic' },
-];
-
 export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
   const { settings } = useSettingsContext();
   const toast = useToast();
-  const [activeTab, setActiveTab] = useState('basic');
   const [useUrl, setUseUrl] = useState(false);
   const [databaseUrl, setDatabaseUrl] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -98,39 +92,20 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-gray-700 px-6">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'border-green-500 text-green-600 dark:text-green-400'
-                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
           <form onSubmit={handleSubmit} id="connection-form">
-            {activeTab === 'basic' && (
-              <>
-                {/* Basic Information */}
-                <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
-                    Basic Information
-                  </h3>
-                  <Input
-                    label="Connection Name"
-                    value={formData.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
-                  />
-                </div>
+            {/* Basic Information */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                Basic Information
+              </h3>
+              <Input
+                label="Connection Name"
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+              />
+            </div>
 
                 {/* Database Type */}
                 <div className="mb-6">
@@ -197,8 +172,6 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
                     setShowPassword={setShowPassword}
                   />
                 )}
-              </>
-            )}
           </form>
         </div>
 

@@ -106,9 +106,6 @@ function ConnectionsPage() {
     <motion.div className="p-8" {...pageTransition}>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Database Connections</h2>
-        <Button icon={<Plus size={20} />} onClick={() => { setEditingConnection(null); setShowModal(true); }}>
-          New Connection
-        </Button>
       </div>
       
       {connections.length > 0 && (
