@@ -66,7 +66,7 @@ export function WorkspaceTabBar() {
       {/* New Workspace Button - Fixed to right */}
       <button
         onClick={handleNewWorkspace}
-        className="flex-shrink-0 flex items-center justify-center w-8 h-8 mx-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition border border-gray-300 dark:border-gray-600 rounded"
+        className="flex-shrink-0 flex items-center justify-center w-8 h-8 mr-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition border border-gray-300 dark:border-gray-600 rounded"
         style={{ WebkitAppRegion: "no-drag" }}
         title="Add new workspace"
       >
