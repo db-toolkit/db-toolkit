@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Database, FileText, HardDrive, ArrowRight, Activity } from 'lucide-react';
+import { Database, FileText, HardDrive, ArrowRight } from 'lucide-react';
 import { useConnections } from '../hooks';
 import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
@@ -16,7 +16,6 @@ export default function DashboardPage() {
   const toast = useToast();
   const { connections, loading, createConnection } = useConnections();
   const [stats, setStats] = useState({ queries: 0, backups: 0 });
-  const [recentActivity, setRecentActivity] = useState([]);
   const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
@@ -38,25 +37,7 @@ export default function DashboardPage() {
     };
     
     loadStats();
-
-    const activity = [];
-    const sessionState = JSON.parse(localStorage.getItem('session-state') || '{}');
-    if (sessionState.last_active) {
-      const lastActive = new Date(sessionState.last_active);
-      const timeAgo = getTimeAgo(lastActive);
-      activity.push({ text: 'Last session activity', time: timeAgo, icon: Activity });
-    }
-    
-    setRecentActivity(activity);
   }, []);
-
-  const getTimeAgo = (date) => {
-    const seconds = Math.floor((new Date() - date) / 1000);
-    if (seconds < 60) return 'just now';
-    if (seconds < 3600) return `${Math.floor(seconds / 60)} mins ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
-    return `${Math.floor(seconds / 86400)} days ago`;
-  };
 
   const activeConnections = connections.filter(c => c.status === 'connected');
 
@@ -167,21 +148,6 @@ export default function DashboardPage() {
         </div>
       ) : (
         <>
-          {recentActivity.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
-              <div className="space-y-3">
-                {recentActivity.map((activity, idx) => (
-                  <div key={idx} className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-                    <activity.icon size={16} />
-                    <span>{activity.text}</span>
-                    <span className="text-gray-400 dark:text-gray-500">• {activity.time}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Connections</h2>
