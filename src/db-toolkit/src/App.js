@@ -12,7 +12,7 @@ import './styles/App.css';
 import './styles/split.css';
 
 // Lazy load pages to reduce initial bundle size
-const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const OverviewPage = lazy(() => import('./pages/OverviewPage'));
 const ConnectionsPage = lazy(() => import('./pages/ConnectionsPage'));
 const SchemaPage = lazy(() => import('./pages/SchemaPage'));
 const QueryPage = lazy(() => import('./pages/QueryPage'));
@@ -96,7 +96,7 @@ function AppContent() {
           </div>
         }>
           <Routes>
-            <Route path="/" element={<DashboardPage />} />
+            <Route path="/" element={<OverviewPage />} />
             <Route path="/connections" element={<ConnectionsPage />} />
             <Route path="/schema/:connectionId" element={<SchemaPage />} />
             <Route path="/query-editor" element={<QueryEditorSelectPage />} />

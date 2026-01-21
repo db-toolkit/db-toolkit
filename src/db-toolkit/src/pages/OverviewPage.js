@@ -11,7 +11,7 @@ const ipc = {
   invoke: (channel, ...args) => window.electron.ipcRenderer.invoke(channel, ...args)
 };
 
-export default function DashboardPage() {
+export default function OverviewPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const { connections, loading, createConnection, connectedIds } = useConnections();
