@@ -1,4 +1,5 @@
 import './globals.css';
+import './animations.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import Navbar from '@/components/Navbar';
 import NavigationLoader from '@/components/NavigationLoader';

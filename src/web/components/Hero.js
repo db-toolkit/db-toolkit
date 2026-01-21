@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { Download, Github, ArrowRight } from 'lucide-react';
 import { primaryGradient, buttonGradient } from '@/utils/gradients';
 import { useDownload } from '@/hooks/useDownload';
@@ -12,80 +11,31 @@ export default function Hero() {
     <section className={`relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br ${primaryGradient.light} dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 pt-32`}>
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 90, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-100/30 to-transparent rounded-full blur-3xl motion-reduce:animate-none"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [90, 0, 90],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-100/30 to-transparent rounded-full blur-3xl motion-reduce:animate-none"
-        />
-
+        <div className="hero-gradient-1 absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-100/30 to-transparent rounded-full blur-3xl" />
+        <div className="hero-gradient-2 absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-100/30 to-transparent rounded-full blur-3xl" />
       </div>
 
       <div className="relative container mx-auto px-6 py-20 text-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
+        <div className="animate-fade-in mb-8">
           <span className="px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm font-bold rounded-full border-2 border-blue-200 dark:border-blue-700">
             🎉 v0.1.0 Beta Release
           </span>
-        </motion.div>
+        </div>
 
-        {/* Subtitle */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-6xl md:text-7xl font-bold text-gray-900 dark:text-white mb-4 max-w-4xl mx-auto"
-        >
+        <h1 className="animate-fade-in-up-delay-4 text-6xl md:text-7xl font-bold text-gray-900 dark:text-white mb-4 max-w-4xl mx-auto">
           Your <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">all-in-one</span> database companion
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-4 max-w-2xl mx-auto"
-        >
+        <p className="animate-fade-in-up-delay-5 text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-4 max-w-2xl mx-auto">
           Query, migrate, and backup databases effortlessly
-        </motion.p>
+        </p>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="text-base text-gray-500 dark:text-gray-400 mb-12 italic"
-        >
+        <p className="animate-fade-in-up-delay-7 text-base text-gray-500 dark:text-gray-400 mb-12 italic">
           "Simplify your database workflow, amplify your productivity"
-        </motion.p>
+        </p>
 
         {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-        >
+        <div className="animate-fade-in-up-delay-7 flex flex-col sm:flex-row gap-4 justify-center items-center">
           <button
             onClick={() => download(platformUrl, 'DB-Toolkit')}
             disabled={!!downloading}
@@ -113,15 +63,10 @@ export default function Hero() {
             View Docs
             <ArrowRight size={20} />
           </a>
-        </motion.div>
+        </div>
 
         {/* App Preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1 }}
-          className="mt-20 max-w-6xl mx-auto"
-        >
+        <div className="animate-fade-in-up mt-20 max-w-6xl mx-auto" style={{ animationDelay: '1s', animationFillMode: 'backwards' }}>
           <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
             <img 
               src="/preview.png" 
@@ -129,7 +74,7 @@ export default function Hero() {
               className="w-full h-auto"
             />
           </div>
-        </motion.div>
+        </div>
 
       </div>
     </section>
