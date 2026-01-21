@@ -9,7 +9,7 @@ export function ToastProvider({ children }) {
   const addToast = (message, type = 'info') => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => removeToast(id), 5000);
+    setTimeout(() => removeToast(id), 4000);
   };
 
   const removeToast = (id) => {
