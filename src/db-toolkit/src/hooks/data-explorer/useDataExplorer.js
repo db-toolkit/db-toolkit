@@ -93,19 +93,11 @@ export function useDataExplorer() {
     setFilters({});
     
     // Get column metadata from schema tree
-    console.log('Schema:', schema);
-    console.log('Looking for schema:', schemaName, 'table:', tableName);
-    
-    if (schema && Array.isArray(schema)) {
-      const schemaObj = schema.find(s => s.schema === schemaName);
-      console.log('Found schema obj:', schemaObj);
-      
-      if (schemaObj) {
-        const tableObj = schemaObj.tables.find(t => t.name === tableName);
-        console.log('Found table obj:', tableObj);
-        
-        if (tableObj && tableObj.columns) {
-          console.log('Setting column metadata:', tableObj.columns);
+    if (schema && schema.schemas && schema.schemas[schemaName]) {
+      const schemaObj = schema.schemas[schemaName];
+      if (schemaObj.tables && schemaObj.tables[tableName]) {
+        const tableObj = schemaObj.tables[tableName];
+        if (tableObj.columns) {
           setColumnMetadata(tableObj.columns);
         }
       }
