@@ -1,0 +1,6 @@
+well in the data folder then component there belongs to the 
+component/data-eplorer folder can you move it and update imports
+
+
+the data epxlorer page component containsn a mix of ui and logic wthat is 
+what makes it very long right how can we seperate it 
