@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { Mail, Github, MessageSquare } from 'lucide-react';
 import Footer from '@/components/Footer';
+import { GITHUB_URL, GITHUB_ISSUES_URL, EMAIL } from '@/utils/constants';
 
 const ContactForm = dynamic(() => import('@/components/ContactForm'), { 
   loading: () => <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-96 rounded-lg"></div>,
@@ -33,8 +34,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Email</h3>
-                  <a href="mailto:adelodunpeter24@gmail.com" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-teal-400">
-                    adelodunpeter24@gmail.com
+                  <a href={`mailto:${EMAIL}`} className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-teal-400">
+                    {EMAIL}
                   </a>
                 </div>
               </div>
@@ -45,7 +46,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Source Code</h3>
-                  <a href="https://github.com/db-toolkit/db-toolkit" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-teal-400">
+                  <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-teal-400">
                     GitHub
                   </a>
                 </div>
@@ -57,7 +58,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Issues & Support</h3>
-                  <a href="https://github.com/db-toolkit/db-toolkit/issues" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-teal-400">
+                  <a href={GITHUB_ISSUES_URL} target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-teal-400">
                     Report an issue on GitHub
                   </a>
                 </div>

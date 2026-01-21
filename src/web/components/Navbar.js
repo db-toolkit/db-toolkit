@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Database, Moon, Sun, Menu, X, Github } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { GITHUB_URL } from '@/utils/constants';
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
@@ -42,7 +43,7 @@ export default function Navbar() {
           {/* GitHub & Theme Toggle & Mobile Menu */}
           <div className="flex items-center gap-2">
             <a
-              href="https://github.com/db-toolkit/db-toolkit"
+              href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex p-2 rounded-full hover:bg-gray-900 dark:hover:bg-white hover:scale-110 transition-all group"

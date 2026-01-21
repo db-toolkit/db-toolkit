@@ -3,6 +3,7 @@
 import { Download, Github, ArrowRight } from 'lucide-react';
 import { primaryGradient, buttonGradient } from '@/utils/gradients';
 import { useDownload } from '@/hooks/useDownload';
+import { GITHUB_URL } from '@/utils/constants';
 
 export default function Hero() {
   const { download, downloading, platformUrl } = useDownload();
@@ -55,7 +56,7 @@ export default function Hero() {
             )}
           </button>
           <a
-            href="https://github.com/db-toolkit/db-toolkit"
+            href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-8 py-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold"

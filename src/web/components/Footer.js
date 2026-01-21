@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Database, Github, Mail } from 'lucide-react';
+import { GITHUB_URL, GITHUB_ISSUES_URL, EMAIL } from '@/utils/constants';
 
 export default function Footer() {
   return (
@@ -30,17 +31,17 @@ export default function Footer() {
             <ul className="space-y-3 text-base">
               <li><a href="https://docs-dbtoolkit.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-110 transition-all duration-300 inline-block">Documentation</a></li>
               <li><Link href="/downloads" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-110 transition-all duration-300 inline-block">Downloads</Link></li>
-              <li><a href="https://github.com/db-toolkit/db-toolkit/issues" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-110 transition-all duration-300 inline-block">Support</a></li>
+              <li><a href={GITHUB_ISSUES_URL} target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-110 transition-all duration-300 inline-block">Support</a></li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-base">Connect</h3>
             <div className="flex gap-4">
-              <a href="https://github.com/db-toolkit/db-toolkit" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 inline-block">
+              <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 inline-block">
                 <Github size={20} />
               </a>
-              <a href="mailto:adelodunpeter24@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 inline-block">
+              <a href={`mailto:${EMAIL}`} className="text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 inline-block">
                 <Mail size={20} />
               </a>
             </div>

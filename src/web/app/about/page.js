@@ -2,6 +2,7 @@
 
 import { Database, Users, Target, Sparkles } from 'lucide-react';
 import Footer from '@/components/Footer';
+import { GITHUB_URL } from '@/utils/constants';
 
 export default function About() {
   return (
@@ -78,7 +79,7 @@ export default function About() {
             DB Toolkit is open source and welcomes contributions from developers around the world.
           </p>
           <a
-            href="https://github.com/db-toolkit/db-toolkit"
+            href={GITHUB_URL}
             className="inline-block px-8 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold"
           >
             Contribute on GitHub
