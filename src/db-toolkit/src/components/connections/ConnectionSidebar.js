@@ -14,9 +14,6 @@ import { ConnectionFormFields } from './ConnectionFormFields';
 
 const TABS = [
   { id: 'basic', label: 'Basic' },
-  { id: 'ssh', label: 'SSH Tunnel' },
-  { id: 'ssl', label: 'SSL/TLS' },
-  { id: 'advanced', label: 'Advanced' },
 ];
 
 export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
@@ -87,7 +84,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
       />
       
       {/* Sidebar */}
-      <div className="fixed right-0 top-0 h-full w-[900px] bg-white dark:bg-gray-900 shadow-2xl z-50 flex flex-col">
+      <div className="fixed right-0 top-0 h-full w-[600px] bg-white dark:bg-gray-900 shadow-2xl z-50 flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
@@ -201,24 +198,6 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
                   />
                 )}
               </>
-            )}
-
-            {activeTab === 'ssh' && (
-              <div className="text-gray-500 dark:text-gray-400">
-                SSH Tunnel configuration coming soon...
-              </div>
-            )}
-
-            {activeTab === 'ssl' && (
-              <div className="text-gray-500 dark:text-gray-400">
-                SSL/TLS configuration coming soon...
-              </div>
-            )}
-
-            {activeTab === 'advanced' && (
-              <div className="text-gray-500 dark:text-gray-400">
-                Advanced settings coming soon...
-              </div>
             )}
           </form>
         </div>
