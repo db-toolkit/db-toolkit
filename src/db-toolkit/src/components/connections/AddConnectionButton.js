@@ -4,7 +4,9 @@
 import { Plus } from 'lucide-react';
 import { Tooltip } from '../common/Tooltip';
 
-export function AddConnectionButton({ onClick }) {
+export function AddConnectionButton({ onClick, isVisible = true }) {
+  if (!isVisible) return null;
+
   return (
     <Tooltip content="Add a new database connection" position="left">
       <button
