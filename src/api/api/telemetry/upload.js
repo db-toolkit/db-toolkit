@@ -3,6 +3,11 @@ import { storeTelemetryBatch } from '../../utils/telemetry-db.js';
 const VALID_EVENT_TYPES = ['feature_usage', 'database_usage', 'workspace_usage'];
 
 export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
   if (req.method !== 'POST' && req.method !== 'OPTIONS') {
     return res.status(405).json({ 
       success: false, 
