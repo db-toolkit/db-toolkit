@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Table, MessageSquare, History, Clock, Bot, Loader2, X } from 'lucide-react';
-import { EditableTable } from '../data/EditableTable';
+import { EditableTable } from '../data-explorer/EditableTable';
 import { QueryHistory } from './QueryHistory';
 import { Tooltip } from '../common/Tooltip';
 
