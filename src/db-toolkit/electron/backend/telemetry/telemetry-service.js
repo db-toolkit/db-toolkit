@@ -5,14 +5,12 @@
 
 const { TelemetryManager } = require('./telemetry-manager');
 const { FeatureUsageAnalytics } = require('./feature-usage-analytics');
-const { SessionAnalytics } = require('./session-analytics');
 const { DatabaseUsageAnalytics } = require('./database-usage-analytics');
 
 class TelemetryService {
   constructor() {
     this.manager = new TelemetryManager();
     this.features = new FeatureUsageAnalytics(this.manager);
-    this.sessions = new SessionAnalytics(this.manager);
     this.databases = new DatabaseUsageAnalytics(this.manager);
     this.initialized = false;
   }
@@ -26,7 +24,6 @@ class TelemetryService {
       this.initialized = result.success;
       
       if (result.enabled) {
-        this.sessions.startSession();
         console.log('Telemetry service initialized and enabled');
       }
       
@@ -43,12 +40,6 @@ class TelemetryService {
   async setEnabled(enabled) {
     try {
       const result = await this.manager.setEnabled(enabled);
-      
-      if (enabled && !this.initialized) {
-        this.sessions.startSession();
-      } else if (!enabled) {
-        this.sessions.endSession();
-      }
       
       this.initialized = enabled;
       return result;
@@ -117,13 +108,6 @@ class TelemetryService {
   }
 
   /**
-   * Session tracking
-   */
-  getSessionInfo() {
-    return this.sessions.getCurrentSession();
-  }
-
-  /**
    * Analytics and reporting
    */
   async getTelemetryReport() {
@@ -141,14 +125,6 @@ class TelemetryService {
         features: {
           topUsed: this.features.getTopFeatures(10),
           summary: this.features.getUsageSummary()
-        },
-
-        // Session analytics
-        sessions: {
-          stats: this.sessions.getSessionStats(30),
-          peakHours: this.sessions.getPeakUsageHours(30),
-          dailyPattern: this.sessions.getDailyPattern(7),
-          durationBreakdown: this.sessions.getDurationBreakdown(30)
         },
 
         // Database analytics
@@ -169,16 +145,8 @@ class TelemetryService {
   /**
    * Application lifecycle
    */
-  async onAppStart() {
-    if (this.initialized) {
-      this.sessions.startSession();
-    }
-  }
-
   async onAppExit() {
     if (this.initialized) {
-      this.sessions.endSession();
-      
       // Upload any pending events
       await this.manager.uploadBatch();
     }
@@ -191,7 +159,6 @@ class TelemetryService {
     try {
       await this.manager.clearData();
       this.features.reset();
-      this.sessions.clearHistory();
       this.databases.reset();
       
       return { success: true };

@@ -11,7 +11,6 @@ class TelemetryManager {
     this.enabled = false;
     this.preferences = {
       featureUsage: true,
-      sessionDuration: true,
       systemInfo: true,
       databaseTypes: true,
       workspaceUsage: true
@@ -23,7 +22,6 @@ class TelemetryManager {
     this.maxEvents = 100;
     this.uploadInterval = 24 * 60 * 60 * 1000; // 24 hours
     this.lastUpload = 0;
-    this.currentSessionStart = null;
   }
 
   /**
