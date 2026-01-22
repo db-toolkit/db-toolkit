@@ -1,6 +1,6 @@
 {
   "functions": {
-    "**/*.ts": {
+    "**/*.js": {
       "runtime": "@vercel/node@3.0.0"
     }
   }
