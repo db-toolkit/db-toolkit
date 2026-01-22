@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "@vercel/node": "5.5.26",
-    "@vercel/postgres": "^0.10.0"
+    "@vercel/postgres": "^0.10.0",
+    "resend": "^6.8.0"
   },
   "devDependencies": {
     "vercel": "50.4.9"
