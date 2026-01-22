@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Columns, Key, Sparkles } from 'lucide-react';
 import { useSchema } from '../../hooks';
-import { useSchemaAI } from '../../hooks/useSchemaAI';
+import { useSchemaAI } from '../../hooks/schema/useSchemaAI';
 import { useToast } from '../../contexts/ToastContext';
 import { LoadingState } from '../common/LoadingState';
 import { Button } from '../common/Button';

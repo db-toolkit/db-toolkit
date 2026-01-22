@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { RefreshCw, Code, FolderTree, Upload, Sparkles, Network } from 'lucide-react';
 import { useSchema } from '../hooks';
-import { useSchemaAI } from '../hooks/useSchemaAI';
+import { useSchemaAI } from '../hooks/schema/useSchemaAI';
 import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
 import { LoadingState } from '../components/common/LoadingState';

@@ -6,7 +6,7 @@ import { Bot, AlertCircle, Loader2, X, ArrowRight } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useAiAssistant } from '../../hooks/useAiAssistant';
 import { useToast } from '../../contexts/ToastContext';
-import { useSchemaContext } from '../../hooks/useSchemaContext';
+import { useSchemaContext } from '../../hooks/schema/useSchemaContext';
 import { useChatMessages } from '../../hooks/useChatMessages';
 import { isQueryRequest, getConversationalResponse } from '../../utils/aiHelpers';
 import { ChatMessage } from '../ai/ChatMessage';
