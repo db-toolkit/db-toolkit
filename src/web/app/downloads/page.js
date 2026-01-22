@@ -66,14 +66,14 @@ export default function DownloadsPage() {
               </p>
               {platform.downloads ? (
                 <div className="space-y-3">
-                  {platform.downloads.map((download) => (
+                  {platform.downloads.map((downloadItem) => (
                     <button
-                      key={download.label}
-                      onClick={() => download(download.url, download.label)}
-                      disabled={downloading === download.label}
+                      key={downloadItem.label}
+                      onClick={() => download(downloadItem.url, downloadItem.label, 'downloads-page')}
+                      disabled={downloading === downloadItem.label}
                       className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
                     >
-                      {downloading === download.label ? (
+                      {downloading === downloadItem.label ? (
                         <Loader2 size={20} className="animate-spin" />
                       ) : (
                         <Download size={20} />

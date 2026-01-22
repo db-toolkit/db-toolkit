@@ -38,7 +38,7 @@ export default function Hero() {
         {/* CTA Buttons */}
         <div className="animate-fade-in-up-delay-7 flex flex-col sm:flex-row gap-4 justify-center items-center">
           <button
-            onClick={() => download(platformUrl, 'DB-Toolkit')}
+            onClick={() => download(platformUrl, 'DB-Toolkit', 'homepage')}
             disabled={!!downloading}
             className={`group flex items-center gap-2 px-8 py-4 bg-gradient-to-r ${buttonGradient} text-white rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100`}
           >
