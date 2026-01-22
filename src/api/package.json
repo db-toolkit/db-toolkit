@@ -2,6 +2,7 @@
   "name": "db-toolkit-api",
   "version": "1.0.0",
   "description": "Serverless API for DB Toolkit telemetry and downloads",
+  "type": "module",
   "scripts": {
     "deploy": "vercel --prod"
   },
@@ -10,8 +11,6 @@
     "@vercel/postgres": "^0.10.0"
   },
   "devDependencies": {
-    "@types/node": "25.0.10",
-    "typescript": "^5.0.0",
     "vercel": "50.4.9"
   }
 }
