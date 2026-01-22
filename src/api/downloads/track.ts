@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import type { DownloadEvent, ApiResponse } from '../types';
-import { trackDownload } from '../utils/database';
+import { trackDownload } from '../utils/download-db';
 
 const VALID_PLATFORMS = ['windows', 'macos', 'linux'];
 

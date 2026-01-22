@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import type { DownloadStats, ApiResponse } from '../types';
-import { getDownloadStats } from '../utils/database';
+import { getDownloadStats } from '../utils/download-db';
 
 export default async function handler(
   req: VercelRequest,
