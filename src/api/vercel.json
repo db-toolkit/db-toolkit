@@ -1,12 +1,7 @@
 {
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 10
-    }
-  },
   "crons": [
     {
-      "path": "/api/api/cron/daily-report",
+      "path": "/api/cron/daily-report",
       "schedule": "0 8 * * *"
     }
   ]
