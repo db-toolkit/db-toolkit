@@ -2,9 +2,9 @@
  * Hook for Schema AI analysis with IndexedDB caching
  */
 import { useState, useCallback } from 'react';
-import { schemaAiAPI } from '../services/api';
-import { indexedDBService } from '../services/indexedDB';
-import { INDEXEDDB_CONFIG } from '../utils/constants';
+import { schemaAiAPI } from '../../services/api';
+import { indexedDBService } from '../../services/indexedDB';
+import { INDEXEDDB_CONFIG } from '../../utils/constants';
 
 export function useSchemaAI(connectionId) {
   const [loading, setLoading] = useState(false);
