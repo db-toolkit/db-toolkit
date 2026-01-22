@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Serverless API for DB Toolkit telemetry and downloads",
   "scripts": {
-    "build": "tsc",
     "deploy": "vercel --prod"
   },
   "dependencies": {
