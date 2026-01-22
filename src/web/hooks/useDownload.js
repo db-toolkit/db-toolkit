@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { detectPlatform, getDownloadUrl } from '@/utils/detectPlatform';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://your-api-url.vercel.app';
+import { API_URL } from '@/utils/constants';
 
 export function useDownload() {
   const [downloading, setDownloading] = useState(null);
