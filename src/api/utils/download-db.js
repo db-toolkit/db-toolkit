@@ -1,12 +1,7 @@
-import { sql } from './database';
-
-/**
- * Download tracking database operations
- */
+import { sql } from './database.js';
 
 export async function initDownloadsTable() {
   try {
-    // Create downloads table
     await sql`
       CREATE TABLE IF NOT EXISTS downloads (
         id SERIAL PRIMARY KEY,
@@ -17,13 +12,11 @@ export async function initDownloadsTable() {
       )
     `;
 
-    // Create index on timestamp for faster queries
     await sql`
       CREATE INDEX IF NOT EXISTS idx_downloads_timestamp 
       ON downloads(timestamp)
     `;
 
-    // Create index on platform for stats queries
     await sql`
       CREATE INDEX IF NOT EXISTS idx_downloads_platform 
       ON downloads(platform)
@@ -37,7 +30,7 @@ export async function initDownloadsTable() {
   }
 }
 
-export async function trackDownload(platform: string, source?: string) {
+export async function trackDownload(platform, source) {
   try {
     await sql`
       INSERT INTO downloads (platform, source, timestamp)
@@ -52,26 +45,24 @@ export async function trackDownload(platform: string, source?: string) {
 
 export async function getDownloadStats() {
   try {
-    // Get total count
     const totalResult = await sql`
       SELECT COUNT(*) as total FROM downloads
     `;
     const total = parseInt(totalResult.rows[0].total);
 
-    // Get count by platform
     const platformResult = await sql`
       SELECT platform, COUNT(*) as count 
       FROM downloads 
       GROUP BY platform
     `;
 
-    const byPlatform: Record<string, number> = {
+    const byPlatform = {
       windows: 0,
       macos: 0,
       linux: 0
     };
 
-    platformResult.rows.forEach((row: any) => {
+    platformResult.rows.forEach((row) => {
       byPlatform[row.platform] = parseInt(row.count);
     });
 
