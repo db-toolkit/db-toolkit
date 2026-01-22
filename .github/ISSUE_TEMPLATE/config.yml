@@ -3,6 +3,3 @@ contact_links:
   - name: Documentation
     url: https://docs-dbtoolkit.vercel.app
     about: Check the documentation for guides and tutorials
-  - name: Discussions
-    url: https://github.com/db-toolkit/db-toolkit/discussions
-    about: Ask questions and discuss ideas with the community

@@ -11,7 +11,7 @@ import {
   useMemo,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useWorkspaceIPC } from "../../hooks/useWorkspaceIPC";
+import { useWorkspaceIPC } from "../../hooks/workspace/useWorkspaceIPC";
 import { useTelemetry } from "../../hooks/useTelemetry";
 
 const WorkspaceContext = createContext(null);

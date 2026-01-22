@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { HashRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { useWorkspaceShortcuts } from './hooks/useWorkspaceShortcuts';
+import { useWorkspaceShortcuts } from './hooks/workspace/useWorkspaceShortcuts';
 import { useBackupWebSocket } from './websockets/useBackupWebSocket';
 import { useTelemetry } from './hooks/useTelemetry';
 import Layout from './components/common/Layout';
