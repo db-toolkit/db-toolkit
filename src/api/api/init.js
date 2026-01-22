@@ -1,4 +1,4 @@
-import { initDownloadsTable } from '../../utils/download-db.js';
+import { initDownloadsTable } from '../utils/download-db.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
