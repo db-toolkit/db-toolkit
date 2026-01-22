@@ -99,14 +99,9 @@ export function SettingsModal({ isOpen, onClose }) {
             <span className="hidden sm:inline">Reset to Defaults</span>
             <span className="sm:hidden">Reset</span>
           </Button>
-          <div className="flex gap-2">
-            <Button variant="secondary" onClick={onClose} className="flex-1 sm:flex-none">
-              Cancel
-            </Button>
-            <Button onClick={handleSave} className="flex-1 sm:flex-none">
-              Save Changes
-            </Button>
-          </div>
+          <Button onClick={handleSave}>
+            Save Changes
+          </Button>
         </div>
       </div>
     </div>
