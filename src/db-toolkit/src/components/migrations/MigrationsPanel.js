@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { X, Minimize2, Maximize2, Play, RotateCcw, History, Plus, FileText, Folder } from 'lucide-react';
 import { useConnections } from '../../hooks';
-import { useMigratorStream } from '../../hooks/useMigratorStream';
+import { useMigratorStream } from '../../hooks/migrations/useMigratorStream';
 import { useToast } from '../../contexts/ToastContext';
 import { Button } from '../common/Button';
 

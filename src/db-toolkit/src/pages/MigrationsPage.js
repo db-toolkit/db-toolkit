@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Play, RotateCcw, History, Plus, FileText, Folder, Trash2, X } from 'lucide-react';
 import { useConnections } from '../hooks';
-import { useMigratorStream } from '../hooks/useMigratorStream';
+import { useMigratorStream } from '../hooks/migrations/useMigratorStream';
 import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
 import MigrationFileBrowser from '../components/migrations/MigrationFileBrowser';
