@@ -13,7 +13,6 @@ export function useTelemetry() {
   const initialized = useRef(false);
   const [preferences, setPreferences] = useState({
     featureUsage: true,
-    sessionDuration: true,
     systemInfo: true,
     databaseTypes: true,
     workspaceUsage: true
@@ -92,17 +91,6 @@ export function useTelemetry() {
     }
   };
 
-  const trackSession = async (action, metadata = {}) => {
-    if (!enabled) return;
-    
-    try {
-      mixpanel.track(`session_${action}`, metadata);
-      await window.electron.ipcRenderer.invoke('telemetry:trackSession', action, metadata);
-    } catch (error) {
-      console.error('Failed to track session:', error);
-    }
-  };
-
   const getTelemetryReport = async () => {
     if (!enabled) return null;
     
@@ -134,7 +122,6 @@ export function useTelemetry() {
     updatePreferences,
     trackFeature,
     trackDatabase,
-    trackSession,
     getTelemetryReport,
     clearTelemetryData
   };

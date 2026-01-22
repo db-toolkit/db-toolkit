@@ -31,18 +31,9 @@ function WorkspaceWrapper() {
 function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { trackSession, trackFeature } = useTelemetry();
+  const { trackFeature } = useTelemetry();
   useMenuActions();
   useBackupWebSocket(() => {}); // Global listener for backup notifications
-
-  // Track session start/end
-  useEffect(() => {
-    trackSession('start');
-    
-    return () => {
-      trackSession('end');
-    };
-  }, [trackSession]);
 
   // Track feature/page usage
   useEffect(() => {
