@@ -3,15 +3,15 @@ import { storeTelemetryBatch } from '../../utils/telemetry-db.js';
 const VALID_EVENT_TYPES = ['feature_usage', 'database_usage', 'workspace_usage'];
 
 export default async function handler(req, res) {
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST' && req.method !== 'OPTIONS') {
     return res.status(405).json({ 
       success: false, 
       error: 'Method not allowed' 
     });
+  }
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
   try {
