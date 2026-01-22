@@ -4,17 +4,12 @@
 import { useMemo, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { LoadingState } from '../components/common/LoadingState';
-import { DataGrid } from '../components/data-explorer/DataGrid';
-import { TableSelector } from '../components/data-explorer/TableSelector';
-import { CellViewModal } from '../components/data-explorer/CellViewModal';
-import { AddRowModal } from '../components/data-explorer/AddRowModal';
-import { ColumnFilter } from '../components/data-explorer/ColumnFilter';
-import { Breadcrumbs } from '../components/common/Breadcrumbs';
-import { Button } from '../components/common/Button';
 import { DataExplorerNoConnections as DataExplorerEmpty } from '../components/data-explorer/DataExplorerEmpty';
 import { ConnectionSelector } from '../components/data-explorer/ConnectionSelector';
-import { DataExplorerToolbar } from '../components/data-explorer/DataExplorerToolbar';
+import { DataExplorerHeader } from '../components/data-explorer/DataExplorerHeader';
+import { DataExplorerSidebar } from '../components/data-explorer/DataExplorerSidebar';
+import { DataExplorerContent } from '../components/data-explorer/DataExplorerContent';
+import { DataExplorerModals } from '../components/data-explorer/DataExplorerModals';
 import { useDataExplorer } from '../hooks/data-explorer/useDataExplorer';
 
 function DataExplorerPage() {
@@ -97,115 +92,61 @@ function DataExplorerPage() {
 
   return (
     <div className="h-screen flex flex-col animate-page-transition">
-      <div className="px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Data Explorer</h2>
-          <div className="flex items-center gap-4">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setConnectionId(null)}
-            >
-              Change Connection
-            </Button>
-          </div>
-        </div>
-        <Breadcrumbs items={breadcrumbItems} />
-        <DataExplorerToolbar
+      <DataExplorerHeader
+        breadcrumbItems={breadcrumbItems}
+        selectedTable={selectedTable}
+        page={page}
+        pageSize={pageSize}
+        totalCount={totalCount}
+        totalPages={totalPages}
+        showFilters={showFilters}
+        onChangeConnection={() => setConnectionId(null)}
+        onToggleFilters={() => setShowFilters(!showFilters)}
+        onExportCSV={exportToCSV}
+        onExportJSON={exportToJSON}
+        onPrevPage={handlePrevPage}
+        onNextPage={handleNextPage}
+        onRefresh={handleRefresh}
+        onAddRow={() => setShowAddRowModal(true)}
+      />
+
+      <div className="flex-1 flex overflow-hidden">
+        <DataExplorerSidebar
+          schemaLoading={schemaLoading}
+          schema={schema}
           selectedTable={selectedTable}
-          page={page}
-          pageSize={pageSize}
-          totalCount={totalCount}
-          totalPages={totalPages}
+          onSelectTable={handleSelectTable}
+          onRefreshTable={handleRefresh}
+          onDropTable={handleDropTable}
+        />
+
+        <DataExplorerContent
           showFilters={showFilters}
-          onToggleFilters={() => setShowFilters(!showFilters)}
-          onExportCSV={exportToCSV}
-          onExportJSON={exportToJSON}
-          onPrevPage={handlePrevPage}
-          onNextPage={handleNextPage}
-          onRefresh={handleRefresh}
-          onAddRow={() => setShowAddRowModal(true)}
+          selectedTable={selectedTable}
+          columns={columns}
+          filters={filters}
+          loading={loading}
+          data={data}
+          sortColumn={sortColumn}
+          sortOrder={sortOrder}
+          onFilterChange={handleFilterChange}
+          onClearFilters={clearFilters}
+          onApplyFilters={applyFilters}
+          onSort={handleSort}
+          onCellClick={handleCellClick}
+          onCellUpdate={handleCellUpdate}
+          onFilterByValue={handleFilterByValue}
         />
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
-        <div className="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
-          {schemaLoading ? (
-            <div className="p-4">
-              <LoadingState message="Loading schema..." />
-            </div>
-          ) : (
-            <TableSelector
-              schema={schema}
-              selectedTable={selectedTable}
-              onSelectTable={handleSelectTable}
-              onRefreshTable={handleRefresh}
-              onDropTable={handleDropTable}
-            />
-          )}
-        </div>
-
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {showFilters && selectedTable && (
-            <ColumnFilter
-              columns={columns}
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onClearFilters={clearFilters}
-            />
-          )}
-          {showFilters && selectedTable && (
-            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-              <Button variant="primary" size="sm" onClick={applyFilters}>
-                Apply Filters
-              </Button>
-            </div>
-          )}
-          <div className="flex-1 overflow-auto">
-            {loading ? (
-              <LoadingState message="Loading data..." />
-            ) : selectedTable ? (
-              data.length > 0 ? (
-                <DataGrid
-                  data={data}
-                  columns={columns}
-                  onSort={handleSort}
-                  sortColumn={sortColumn}
-                  sortOrder={sortOrder}
-                  onCellClick={handleCellClick}
-                  onCellUpdate={handleCellUpdate}
-                  onFilterByValue={handleFilterByValue}
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
-                  <div className="text-center">
-                    <p className="text-lg font-medium mb-2">No data found</p>
-                    <p className="text-sm">This table is empty or has no accessible data</p>
-                  </div>
-                </div>
-              )
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
-                Select a table to view data
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <CellViewModal
-        isOpen={cellModal.isOpen}
-        onClose={() => setCellModal({ isOpen: false, data: null, column: null })}
-        data={cellModal.data}
-        column={cellModal.column}
-      />
-
-      <AddRowModal
-        isOpen={showAddRowModal}
-        onClose={() => setShowAddRowModal(false)}
-        columns={columnMetadata}
-        onSave={handleAddRow}
-        tableName={selectedTable ? `${selectedTable.schema}.${selectedTable.table}` : ''}
+      <DataExplorerModals
+        cellModal={cellModal}
+        showAddRowModal={showAddRowModal}
+        columnMetadata={columnMetadata}
+        selectedTable={selectedTable}
+        onCloseCellModal={() => setCellModal({ isOpen: false, data: null, column: null })}
+        onCloseAddRowModal={() => setShowAddRowModal(false)}
+        onAddRow={handleAddRow}
       />
     </div>
   );
