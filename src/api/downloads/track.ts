@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { DownloadEvent, ApiResponse } from '../../types';
+import type { DownloadEvent, ApiResponse } from '../types';
 
 const VALID_PLATFORMS = ['windows', 'macos', 'linux'];
 
