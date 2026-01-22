@@ -32,6 +32,8 @@ function registerConnectionHandlers() {
           database: request.database,
           username: request.username,
           password: request.password,
+          ssl_enabled: request.ssl_enabled,
+          ssl_mode: request.ssl_mode,
         },
       );
     } catch (error) {
@@ -56,6 +58,8 @@ function registerConnectionHandlers() {
         database: request.database,
         username: request.username,
         password: request.password,
+        ssl_enabled: request.ssl_enabled,
+        ssl_mode: request.ssl_mode,
       });
     } catch (error) {
       logger.error("Failed to update connection:", error);
@@ -92,6 +96,8 @@ function registerConnectionHandlers() {
         database: request.database,
         username: request.username,
         password: request.password,
+        ssl_enabled: request.ssl_enabled,
+        ssl_mode: request.ssl_mode,
       });
 
       logger.info(
