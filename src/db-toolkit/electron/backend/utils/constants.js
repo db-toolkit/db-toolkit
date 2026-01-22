@@ -2,6 +2,12 @@
  * Backend constants.
  */
 
+// API endpoints
+const API_ENDPOINTS = {
+  TELEMETRY_UPLOAD: 'https://db-toolkit-api.vercel.app/api/telemetry/upload',
+  DOWNLOAD_TRACK: 'https://db-toolkit-api.vercel.app/api/downloads/track',
+};
+
 // Cache TTL (in seconds)
 const CACHE_TTL = {
   SCHEMA_TREE: 900,      // 15 minutes
@@ -24,6 +30,7 @@ const CONNECTION_DEFAULTS = {
 };
 
 module.exports = {
+  API_ENDPOINTS,
   CACHE_TTL,
   QUERY_DEFAULTS,
   CONNECTION_DEFAULTS,

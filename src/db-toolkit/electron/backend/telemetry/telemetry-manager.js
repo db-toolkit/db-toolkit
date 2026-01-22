@@ -5,6 +5,8 @@
 
 const { TelemetryStorage } = require('./telemetry-storage');
 const { TelemetryTracker } = require('./telemetry-tracker');
+const { API_ENDPOINTS } = require('../utils/constants');
+const https = require('https');
 
 class TelemetryManager {
   constructor() {
@@ -18,7 +20,6 @@ class TelemetryManager {
     this.events = [];
     this.storage = new TelemetryStorage();
     this.tracker = new TelemetryTracker(this);
-    this.uploadEndpoint = null;
     this.maxEvents = 100;
     this.uploadInterval = 24 * 60 * 60 * 1000; // 24 hours
     this.lastUpload = 0;
@@ -32,7 +33,6 @@ class TelemetryManager {
       const config = await this.storage.loadConfig();
       this.enabled = config.enabled || false;
       this.preferences = config.preferences || this.preferences;
-      this.uploadEndpoint = config.endpoint || null;
       this.lastUpload = config.lastUpload || 0;
       
       if (this.enabled) {
@@ -91,7 +91,7 @@ class TelemetryManager {
    * Upload batch of events
    */
   async uploadBatch() {
-    if (!this.enabled || !this.uploadEndpoint || this.events.length === 0) {
+    if (!this.enabled || this.events.length === 0) {
       return;
     }
 
@@ -102,9 +102,36 @@ class TelemetryManager {
         version: this.storage.getAppVersion()
       };
 
-      console.log('Telemetry batch ready for upload:', {
-        count: batch.events.length,
-        types: [...new Set(batch.events.map(e => e.type))]
+      const payload = JSON.stringify(batch);
+      const url = new URL(API_ENDPOINTS.TELEMETRY_UPLOAD);
+
+      const options = {
+        hostname: url.hostname,
+        path: url.pathname,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(payload)
+        }
+      };
+
+      await new Promise((resolve, reject) => {
+        const req = https.request(options, (res) => {
+          let data = '';
+          res.on('data', (chunk) => data += chunk);
+          res.on('end', () => {
+            if (res.statusCode === 200) {
+              console.log(`Telemetry uploaded: ${batch.events.length} events`);
+              resolve();
+            } else {
+              reject(new Error(`Upload failed: ${res.statusCode}`));
+            }
+          });
+        });
+
+        req.on('error', reject);
+        req.write(payload);
+        req.end();
       });
 
       this.events = [];
@@ -173,9 +200,6 @@ class TelemetryManager {
       preferences: this.preferences,
       lastUpload: this.lastUpload
     };
-    if (this.uploadEndpoint) {
-      config.endpoint = this.uploadEndpoint;
-    }
     await this.storage.saveConfig(config);
   }
 
