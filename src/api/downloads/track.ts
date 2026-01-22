@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import type { DownloadEvent, ApiResponse } from '../types';
+import { trackDownload } from '../utils/database';
 
 const VALID_PLATFORMS = ['windows', 'macos', 'linux'];
 
@@ -26,14 +27,8 @@ export default async function handler(
       } as ApiResponse);
     }
 
-    const downloadEvent: DownloadEvent = {
-      platform,
-      timestamp: Date.now(),
-      source: source || 'unknown'
-    };
-
-    // TODO: Store in database
-    console.log('Download tracked:', downloadEvent);
+    // Store in database
+    await trackDownload(platform, source);
 
     return res.status(200).json({ 
       success: true,

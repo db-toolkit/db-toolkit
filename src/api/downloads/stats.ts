@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import type { DownloadStats, ApiResponse } from '../types';
+import { getDownloadStats } from '../utils/database';
 
 export default async function handler(
   req: VercelRequest,
@@ -14,19 +15,11 @@ export default async function handler(
   }
 
   try {
-    // TODO: Fetch from database
-    const stats: DownloadStats = {
-      total: 0,
-      byPlatform: {
-        windows: 0,
-        macos: 0,
-        linux: 0
-      }
-    };
+    const result = await getDownloadStats();
 
     return res.status(200).json({ 
       success: true,
-      data: stats
+      data: result.data
     } as ApiResponse<DownloadStats>);
 
   } catch (error) {
