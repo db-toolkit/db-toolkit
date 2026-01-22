@@ -12,50 +12,15 @@ class TelemetryTracker {
   /**
    * Track feature usage event
    */
-  trackFeatureUsage(feature, metadata = {}) {
+  trackFeatureUsage(feature, action, metadata = {}) {
     if (!this.manager.enabled || !this.manager.preferences.featureUsage) return;
     
     this.manager.addEvent({
       type: 'feature_usage',
       feature,
-      metadata: this.anonymize(metadata),
+      metadata: this.anonymize({ action, ...metadata }),
       timestamp: Date.now()
     });
-  }
-
-  /**
-   * Track session start
-   */
-  trackSessionStart() {
-    if (!this.manager.enabled || !this.manager.preferences.sessionDuration) return;
-    
-    const metadata = {};
-    if (this.manager.preferences.systemInfo) {
-      metadata.appVersion = this.manager.storage.getAppVersion();
-      metadata.os = this.manager.storage.getOSInfo();
-    }
-    
-    this.manager.addEvent({
-      type: 'session_start',
-      metadata: this.anonymize(metadata),
-      timestamp: Date.now()
-    });
-    this.manager.currentSessionStart = Date.now();
-  }
-
-  /**
-   * Track session end
-   */
-  trackSessionEnd() {
-    if (!this.manager.enabled || !this.manager.preferences.sessionDuration || !this.manager.currentSessionStart) return;
-    
-    const duration = Date.now() - this.manager.currentSessionStart;
-    this.manager.addEvent({
-      type: 'session_end',
-      metadata: this.anonymize({ duration }),
-      timestamp: Date.now()
-    });
-    this.manager.currentSessionStart = null;
   }
 
   /**
