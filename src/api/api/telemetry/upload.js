@@ -1,6 +1,6 @@
 import { storeTelemetryBatch } from '../../utils/telemetry-db.js';
 
-const VALID_EVENT_TYPES = ['feature_usage', 'session_start', 'session_end', 'database_usage', 'workspace_usage'];
+const VALID_EVENT_TYPES = ['feature_usage', 'database_usage', 'workspace_usage'];
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

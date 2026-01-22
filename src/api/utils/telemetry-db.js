@@ -105,33 +105,13 @@ export async function getTelemetryStats() {
       }
     });
 
-    // Session stats
-    const sessionResult = await sql`
-      SELECT COUNT(*) as total_sessions
-      FROM telemetry_events
-      WHERE type = 'session_start'
-    `;
-    const totalSessions = parseInt(sessionResult.rows[0].total_sessions);
-
-    // Average session duration
-    const durationResult = await sql`
-      SELECT AVG((metadata->>'duration')::bigint) as avg_duration
-      FROM telemetry_events
-      WHERE type = 'session_end' AND metadata->>'duration' IS NOT NULL
-    `;
-    const averageSessionDuration = durationResult.rows[0].avg_duration 
-      ? parseInt(durationResult.rows[0].avg_duration) 
-      : 0;
-
     return {
       success: true,
       data: {
         totalEvents,
         eventsByType,
         topFeatures,
-        databaseTypes,
-        totalSessions,
-        averageSessionDuration
+        databaseTypes
       }
     };
   } catch (error) {

@@ -1,5 +1,5 @@
 export interface TelemetryEvent {
-  type: 'feature_usage' | 'session_start' | 'session_end' | 'database_usage' | 'workspace_usage';
+  type: 'feature_usage' | 'database_usage' | 'workspace_usage';
   feature?: string;
   metadata: Record<string, any>;
   timestamp: number;
@@ -20,7 +20,6 @@ export interface TelemetryConfig {
 
 export interface TelemetryPreferences {
   featureUsage: boolean;
-  sessionDuration: boolean;
   systemInfo: boolean;
   databaseTypes: boolean;
   workspaceUsage: boolean;
@@ -31,6 +30,4 @@ export interface TelemetryStats {
   eventsByType: Record<string, number>;
   topFeatures: Array<{ feature: string; count: number }>;
   databaseTypes: Record<string, number>;
-  averageSessionDuration: number;
-  totalSessions: number;
 }
