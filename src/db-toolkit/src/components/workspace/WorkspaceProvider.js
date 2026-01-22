@@ -12,7 +12,7 @@ import {
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useWorkspaceIPC } from "../../hooks/workspace/useWorkspaceIPC";
-import { useTelemetry } from "../../hooks/useTelemetry";
+import { useTelemetry } from "../../hooks/system/useTelemetry";
 
 const WorkspaceContext = createContext(null);
 

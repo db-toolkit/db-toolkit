@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { queryAPI } from '../../services/api';
 import { useNotifications } from '../../contexts/NotificationContext';
-import { useRequestDeduplication } from '../usePerformance';
+import { useRequestDeduplication } from '../system/usePerformance';
 
 export function useQuery(connectionId) {
   const [result, setResult] = useState(null);

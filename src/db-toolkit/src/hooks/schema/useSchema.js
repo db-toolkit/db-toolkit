@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { schemaAPI } from '../../services/api';
 import { useSchemaStore } from '../../stores/useSchemaStore';
-import { useRequestDeduplication } from '../usePerformance';
+import { useRequestDeduplication } from '../system/usePerformance';
 
 export function useSchema(connectionId) {
   const schema = useSchemaStore((state) => state.schemas[connectionId] || null);

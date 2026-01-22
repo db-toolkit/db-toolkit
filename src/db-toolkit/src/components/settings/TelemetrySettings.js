@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from "react";
 import { Eye, Trash2 } from "lucide-react";
-import { useTelemetry } from "../../hooks/useTelemetry";
+import { useTelemetry } from "../../hooks/system/useTelemetry";
 import { Button } from "../common/Button";
 import { TelemetryDataModal } from "./TelemetryDataModal";
 

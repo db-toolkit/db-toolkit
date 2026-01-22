@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { X, Bug, Lightbulb, HelpCircle, FileText, Github} from 'lucide-react';
 import { Button } from './Button';
 import { useToast } from '../../contexts/ToastContext';
-import { useIssues } from '../../hooks/useIssues';
+import { useIssues } from '../../hooks/system/useIssues';
 
 export function ReportIssueModal({ isOpen, onClose }) {
   const [title, setTitle] = useState('');

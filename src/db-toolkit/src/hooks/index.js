@@ -2,7 +2,7 @@ export { useConnections } from "./connections/useConnections";
 export { useSchema } from "./schema/useSchema";
 export { useQuery } from "./query/useQuery";
 export { useData } from "./data-explorer/useData";
-export { useSession } from "./useSession";
+export { useSession } from "./system/useSession";
 export { useBackups } from "./backup/useBackups";
 export { useAnalytics } from "./analytics/useAnalytics";
 export {
@@ -10,7 +10,7 @@ export {
   useOptimizedCallback,
   useOptimizedMemo,
   usePerformanceMonitor,
-} from "./usePerformance";
+} from "./system/usePerformance";
 export { useSchemaAI } from "./schema/useSchemaAI";
 export { useAiAssistant } from "./ai/useAiAssistant";
 export { useQueryTabs } from "./query/useQueryTabs";

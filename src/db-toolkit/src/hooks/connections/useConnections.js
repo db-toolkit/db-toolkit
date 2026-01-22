@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { connectionsAPI } from "../../services/api";
 import { useNotifications } from "../../contexts/NotificationContext";
-import { useTelemetry } from "../useTelemetry";
+import { useTelemetry } from "../system/useTelemetry";
 
 export function useConnections() {
   const [connections, setConnections] = useState([]);

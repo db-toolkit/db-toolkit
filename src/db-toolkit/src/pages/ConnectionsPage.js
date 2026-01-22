@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Database, Search } from 'lucide-react';
 import { useDebounce } from '../utils/debounce';
 import { useConnections } from '../hooks';
-import { useSession } from '../hooks/useSession';
+import { useSession } from '../hooks/system/useSession';
 import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
 import { LoadingState } from '../components/common/LoadingState';

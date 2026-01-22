@@ -3,7 +3,7 @@
  */
 import { useState } from 'react';
 import { X, RotateCcw } from 'lucide-react';
-import { useSettings } from '../../hooks/useSettings';
+import { useSettings } from '../../hooks/system/useSettings';
 import { useToast } from '../../contexts/ToastContext';
 import { Button } from '../common/Button';
 import { SettingsSidebar } from './SettingsSidebar';

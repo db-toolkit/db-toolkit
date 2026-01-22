@@ -2,7 +2,7 @@
  * Settings context for global access to app settings
  */
 import { createContext, useContext } from 'react';
-import { useSettings } from '../hooks/useSettings';
+import { useSettings } from '../hooks/system/useSettings';
 
 const SettingsContext = createContext();
 
