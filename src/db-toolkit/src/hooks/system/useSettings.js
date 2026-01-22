@@ -2,7 +2,7 @@
  * Hook for application settings management
  */
 import { useState, useCallback, useEffect } from 'react';
-import { settingsAPI } from '../services/api';
+import { settingsAPI } from '../../services/api';
 
 export function useSettings() {
   const [settings, setSettings] = useState(null);

@@ -2,7 +2,7 @@
  * Hook for terminal WebSocket connection.
  */
 import { useEffect, useRef, useState } from 'react';
-import { WS_ENDPOINTS } from '../services/websocket';
+import { WS_ENDPOINTS } from '../../services/websocket';
 
 export function useTerminal(onData) {
   const wsRef = useRef(null);

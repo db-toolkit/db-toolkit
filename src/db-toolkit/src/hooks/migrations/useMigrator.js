@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { migratorAPI } from '../services/api';
+import { migratorAPI } from '../../services/api';
 
 export function useMigrator() {
   const [isRunning, setIsRunning] = useState(false);

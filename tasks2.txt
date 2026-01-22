@@ -1,2 +1,0 @@
-the data epxlorer page component containsn a mix of ui and logic wthat is
-what makes it very long right how can we seperate it

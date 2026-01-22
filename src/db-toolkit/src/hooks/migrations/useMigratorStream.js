@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from 'react';
-import { WS_ENDPOINTS } from '../services/websocket';
+import { WS_ENDPOINTS } from '../../services/websocket';
 
 export function useMigratorStream(onOutput) {
   const [isRunning, setIsRunning] = useState(false);

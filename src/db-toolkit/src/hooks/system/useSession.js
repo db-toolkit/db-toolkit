@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { sessionAPI } from '../services/api';
+import { sessionAPI } from '../../services/api';
 
 export function useSession() {
   const [sessionState, setSessionState] = useState(null);

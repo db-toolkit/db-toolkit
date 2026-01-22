@@ -2,7 +2,7 @@
  * Workspace keyboard shortcuts hook
  */
 import { useEffect } from 'react';
-import { useWorkspace } from '../components/workspace/WorkspaceProvider';
+import { useWorkspace } from '../../components/workspace/WorkspaceProvider';
 
 export function useWorkspaceShortcuts() {
     const { workspaces, activeWorkspaceId, switchWorkspace, closeWorkspace, createWorkspace } = useWorkspace();

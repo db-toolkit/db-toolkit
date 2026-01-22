@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { issuesAPI } from '../services/api';
+import { issuesAPI } from '../../services/api';
 
 export function useIssues() {
   const [loading, setLoading] = useState(false);
