@@ -3,6 +3,10 @@ import { trackDownload } from '../../utils/download-db.js';
 const VALID_PLATFORMS = ['windows', 'macos', 'linux'];
 
 export default async function handler(req, res) {
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ 
       success: false, 
