@@ -3,14 +3,10 @@
  * Frontend interface to telemetry system
  */
 
-import { useState, useEffect, useRef } from 'react';
-import mixpanel from 'mixpanel-browser';
-
-const MIXPANEL_TOKEN = '803ae15423ed320f88dade79cad9fa26';
+import { useState, useEffect } from 'react';
 
 export function useTelemetry() {
   const [enabled, setEnabled] = useState(false);
-  const initialized = useRef(false);
   const [preferences, setPreferences] = useState({
     featureUsage: true,
     systemInfo: true,
@@ -19,18 +15,9 @@ export function useTelemetry() {
   });
   const [status, setStatus] = useState(null);
 
-  // Initialize on mount
   useEffect(() => {
     loadTelemetryStatus();
   }, []);
-
-  // Initialize Mixpanel when enabled
-  useEffect(() => {
-    if (enabled && !initialized.current) {
-      mixpanel.init(MIXPANEL_TOKEN, { track_pageview: false, persistence: 'localStorage' });
-      initialized.current = true;
-    }
-  }, [enabled]);
 
   const loadTelemetryStatus = async () => {
     try {
@@ -73,7 +60,6 @@ export function useTelemetry() {
     if (!enabled) return;
     
     try {
-      mixpanel.track(`${feature}_${action}`, metadata);
       await window.electron.ipcRenderer.invoke('telemetry:trackFeature', feature, action, metadata);
     } catch (error) {
       console.error('Failed to track feature:', error);
@@ -84,7 +70,6 @@ export function useTelemetry() {
     if (!enabled) return;
     
     try {
-      mixpanel.track('database_usage', { dbType, operation, ...metadata });
       await window.electron.ipcRenderer.invoke('telemetry:trackDatabase', dbType, operation, metadata);
     } catch (error) {
       console.error('Failed to track database usage:', error);
