@@ -77,11 +77,11 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave)
   const handleTest = useCallback(async () => {
     setTesting(true);
     try {
-      const result = await window.electron.testConnection(formData);
-      if (result.success) {
+      const result = await window.electron.ipcRenderer.invoke('connections:test', formData);
+      if (result.data.success) {
         toast.success('Connection test successful!');
       } else {
-        toast.error(result.message || 'Connection test failed');
+        toast.error(result.data.message || 'Connection test failed');
       }
     } catch (err) {
       toast.error(err.message || 'Connection test failed');
