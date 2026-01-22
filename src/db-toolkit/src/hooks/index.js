@@ -12,6 +12,6 @@ export {
   usePerformanceMonitor,
 } from "./usePerformance";
 export { useSchemaAI } from "./schema/useSchemaAI";
-export { useAiAssistant } from "./useAiAssistant";
+export { useAiAssistant } from "./ai/useAiAssistant";
 export { useQueryTabs } from "./query/useQueryTabs";
 export { useQueryAutoFix } from "./query/useQueryAutoFix";

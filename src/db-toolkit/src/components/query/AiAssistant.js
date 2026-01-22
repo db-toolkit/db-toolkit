@@ -4,10 +4,10 @@
 import { useState, useCallback } from 'react';
 import { Bot, AlertCircle, Loader2, X, ArrowRight } from 'lucide-react';
 import { Button } from '../common/Button';
-import { useAiAssistant } from '../../hooks/useAiAssistant';
+import { useAiAssistant } from '../../hooks/ai/useAiAssistant';
 import { useToast } from '../../contexts/ToastContext';
 import { useSchemaContext } from '../../hooks/schema/useSchemaContext';
-import { useChatMessages } from '../../hooks/useChatMessages';
+import { useChatMessages } from '../../hooks/ai/useChatMessages';
 import { isQueryRequest, getConversationalResponse } from '../../utils/aiHelpers';
 import { ChatMessage } from '../ai/ChatMessage';
 import { SchemaScope } from '../ai/SchemaScope';
