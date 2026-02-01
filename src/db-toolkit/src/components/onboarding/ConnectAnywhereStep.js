@@ -1,43 +1,52 @@
-import { Database, Shield } from 'lucide-react';
+import { Sparkles, Code, History, Zap } from 'lucide-react';
 import { Button } from '../common/Button';
 
 export function ConnectAnywhereStep({ onNext }) {
-  const databases = [
-    { name: 'PostgreSQL', color: 'bg-blue-500' },
-    { name: 'MySQL', color: 'bg-orange-500' },
-    { name: 'MongoDB', color: 'bg-green-500' },
-    { name: 'SQLite', color: 'bg-gray-500' }
-  ];
-
   return (
-    <div className="flex flex-col items-center justify-center text-center space-y-6 py-12">
-      <div className="flex gap-3">
-        {databases.map((db) => (
-          <div
-            key={db.name}
-            className={`w-14 h-14 ${db.color} rounded-lg flex items-center justify-center`}
-          >
-            <Database className="w-8 h-8 text-white" />
-          </div>
-        ))}
+    <div className="flex items-center gap-8 py-8 px-6">
+      {/* Screenshot - Left Side */}
+      <div className="flex-1 rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
+        <img 
+          src="/assets/editor.png" 
+          alt="Query Editor" 
+          className="w-full h-auto"
+        />
       </div>
 
-      <div className="space-y-3">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Connect to Any Database
+      {/* Content - Right Side */}
+      <div className="flex-1 flex flex-col items-start text-left space-y-6">
+        <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
+          AI-Powered Query Editor
         </h2>
-        <p className="text-base text-gray-600 dark:text-gray-400 max-w-lg">
-          PostgreSQL, MySQL, MongoDB, SQLite - all in one place
+        
+        <p className="text-lg text-gray-600 dark:text-gray-400">
+          Write, execute, and optimize SQL queries with intelligent assistance.
         </p>
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-500">
-          <Shield className="w-4 h-4" />
-          <span>SSL support included</span>
-        </div>
-      </div>
 
-      <Button onClick={onNext} className="mt-8 px-8">
-        Next
-      </Button>
+        {/* Key Features */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-start gap-3 text-gray-600 dark:text-gray-400">
+            <Sparkles className="w-5 h-5 text-purple-500 mt-1 flex-shrink-0" />
+            <span className="text-base">AI assistant for query generation and optimization</span>
+          </div>
+          <div className="flex items-start gap-3 text-gray-600 dark:text-gray-400">
+            <Code className="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" />
+            <span className="text-base">Syntax highlighting & intelligent auto-complete</span>
+          </div>
+          <div className="flex items-start gap-3 text-gray-600 dark:text-gray-400">
+            <History className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
+            <span className="text-base">Multiple tabs & query history</span>
+          </div>
+          <div className="flex items-start gap-3 text-gray-600 dark:text-gray-400">
+            <Zap className="w-5 h-5 text-yellow-500 mt-1 flex-shrink-0" />
+            <span className="text-base">Execute queries with one click</span>
+          </div>
+        </div>
+
+        <Button onClick={onNext} className="mt-4 px-10 py-3 text-base">
+          Next
+        </Button>
+      </div>
     </div>
   );
 }
