@@ -8,6 +8,8 @@ import SplashScreen from './components/common/SplashScreen';
 import { Spinner } from './components/common/Spinner';
 import { useMenuActions } from './hooks/system/useMenuActions';
 import { WorkspaceProvider } from './components/workspace/WorkspaceProvider';
+import { OnboardingModal } from './components/onboarding/OnboardingModal';
+import { onboardingUtils } from './utils/onboarding';
 import './styles/App.css';
 import './styles/split.css';
 
@@ -32,8 +34,22 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
   const { trackFeature } = useTelemetry();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  
   useMenuActions();
   useBackupWebSocket(() => {}); // Global listener for backup notifications
+
+  // Check onboarding on mount
+  useEffect(() => {
+    if (!onboardingUtils.isCompleted()) {
+      setShowOnboarding(true);
+    }
+  }, []);
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    navigate('/connections', { replace: true });
+  };
 
   // Track feature/page usage
   useEffect(() => {
@@ -77,6 +93,7 @@ function AppContent() {
   return (
     <WorkspaceProvider>
       <WorkspaceWrapper />
+      {showOnboarding && <OnboardingModal onComplete={handleOnboardingComplete} />}
       <Layout>
         <Suspense fallback={
           <div className="flex items-center justify-center h-screen">
