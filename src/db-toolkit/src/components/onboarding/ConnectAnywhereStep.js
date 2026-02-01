@@ -27,7 +27,7 @@ export function ConnectAnywhereStep({ onNext }) {
         <div className="flex flex-col gap-4">
           <div className="flex items-start gap-3 text-gray-600 dark:text-gray-400">
             <Sparkles className="w-5 h-5 text-purple-500 mt-1 flex-shrink-0" />
-            <span className="text-base">AI assistant for query generation and optimization</span>
+            <span className="text-base">AI assistant for query generation</span>
           </div>
           <div className="flex items-start gap-3 text-gray-600 dark:text-gray-400">
             <Code className="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" />
@@ -40,6 +40,10 @@ export function ConnectAnywhereStep({ onNext }) {
           <div className="flex items-start gap-3 text-gray-600 dark:text-gray-400">
             <Zap className="w-5 h-5 text-yellow-500 mt-1 flex-shrink-0" />
             <span className="text-base">Execute queries with one click</span>
+          </div>
+          <div className="flex items-start gap-3 text-gray-600 dark:text-gray-400">
+            <Zap className="w-5 h-5 text-orange-500 mt-1 flex-shrink-0" />
+            <span className="text-base">Query analytics</span>
           </div>
         </div>
 
