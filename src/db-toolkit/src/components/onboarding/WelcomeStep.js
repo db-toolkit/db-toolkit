@@ -36,7 +36,7 @@ export function WelcomeStep({ onNext }) {
           </div>
         </div>
 
-        <Button onClick={onNext} className="mt-4 px-12 py-4 text-lg">
+        <Button onClick={onNext} className="mt-4 px-10 py-3 text-base">
           Get Started
         </Button>
       </div>
