@@ -61,7 +61,7 @@ export function OnboardingModal({ onComplete }) {
               key={index}
               className={`h-2 rounded-full transition-all ${
                 index === currentStep
-                  ? 'w-8 bg-blue-500'
+                  ? 'w-8 bg-green-500'
                   : 'w-2 bg-gray-300 dark:bg-gray-700'
               }`}
             />
