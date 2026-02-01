@@ -17,8 +17,7 @@ export function WelcomeStep({ onNext }) {
       <div className="flex-1 flex flex-col items-start text-left space-y-6">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
           Modern database manager,<br />
-          <span className="text-blue-500">free forever</span>,{' '}
-          <span className="text-purple-500">AI powered</span>
+          <span className="text-blue-500">free forever</span>
         </h1>
         
         {/* Value Props */}

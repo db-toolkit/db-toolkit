@@ -37,7 +37,7 @@ export function OnboardingModal({ onComplete }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full mx-4 relative">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-6xl w-full mx-4 relative">
         {/* Skip button */}
         <button
           onClick={handleSkip}
