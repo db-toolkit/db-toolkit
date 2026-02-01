@@ -1,2 +1,0 @@
-date field should be a date picker when i double click to edit in the
-data grid in the data explorer page review and give me feedback but do not do anything yet
