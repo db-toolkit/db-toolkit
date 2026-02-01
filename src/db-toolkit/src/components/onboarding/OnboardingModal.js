@@ -3,7 +3,6 @@ import { X } from 'lucide-react';
 import { WelcomeStep } from './WelcomeStep';
 import { ConnectAnywhereStep } from './ConnectAnywhereStep';
 import { PowerfulFeaturesStep } from './PowerfulFeaturesStep';
-import { ReadyToStartStep } from './ReadyToStartStep';
 import { onboardingUtils } from '../../utils/onboarding';
 
 export function OnboardingModal({ onComplete }) {
@@ -12,8 +11,7 @@ export function OnboardingModal({ onComplete }) {
   const steps = [
     { component: WelcomeStep },
     { component: ConnectAnywhereStep },
-    { component: PowerfulFeaturesStep },
-    { component: ReadyToStartStep }
+    { component: PowerfulFeaturesStep }
   ];
 
   const handleNext = () => {
@@ -41,7 +39,7 @@ export function OnboardingModal({ onComplete }) {
         {/* Skip button */}
         <button
           onClick={handleSkip}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors z-10"
         >
           <X className="w-5 h-5" />
         </button>
