@@ -37,11 +37,10 @@ Show actual app screenshots to give users a real preview:
 - **Modern**: Clean, spacious, professional
 - **Quick**: Minimal text, visual-first approach
 
-## Key Message (TBD)
-Need to define the ONE core message users should remember. Options:
-- "Modern database management, free forever"
-- "Open source database toolkit with AI"
-- "Your databases, beautifully managed"
+## Key Message (FINAL)
+**"Modern database manager, free forever, AI powered"**
+
+This is the core message users should remember after onboarding.
 
 ## Assets Location
 - Main preview: `/src/web/public/preview.png`
