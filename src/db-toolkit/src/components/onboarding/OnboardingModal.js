@@ -36,7 +36,7 @@ export function OnboardingModal({ onComplete }) {
   const isLastStep = currentStep === steps.length - 1;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-blue-500 bg-opacity-10 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-4xl w-full mx-4 relative">
         {/* Skip button */}
         <button
