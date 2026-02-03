@@ -4,30 +4,10 @@ import Sidebar from '../components/Sidebar';
 import DocContent from '../components/DocContent';
 import ScrollToTop from '../components/ScrollToTop';
 import BottomBar from '../components/BottomBar';
+import { useMDXDoc } from '../hooks/useMDXDoc';
 
-const loadData = async (section: string) => {
-  switch (section) {
-    case 'getting-started':
-      return (await import('../data/gettingStarted')).gettingStartedData;
-    case 'connections':
-      return (await import('../data/connections')).connectionsData;
-    case 'workspaces':
-      return (await import('../data/workspaces')).workspacesData;
-    case 'query-editor':
-      return (await import('../data/queryEditor')).queryEditorData;
-    case 'schema-explorer':
-      return (await import('../data/schemaExplorer')).schemaExplorerData;
-    case 'data-explorer':
-      return (await import('../data/dataExplorer')).dataExplorerData;
-    case 'backup-restore':
-      return (await import('../data/backupRestore')).backupRestoreData;
-    case 'migrations':
-      return (await import('../data/migrations')).migrationsData;
-    case 'settings':
-      return (await import('../data/settings')).settingsData;
-    default:
-      return (await import('../data/gettingStarted')).gettingStartedData;
-  }
+const getMDXFilename = (section: string) => {
+  return `${section}.mdx`;
 };
 
 const sections = [
@@ -48,18 +28,15 @@ interface GuidePageProps {
 
 export default function GuidePage({ navigateToSection }: GuidePageProps) {
   const [activeSection, setActiveSection] = useState('getting-started');
-  const [currentData, setCurrentData] = useState<any>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  const { data: currentData, loading, error } = useMDXDoc(getMDXFilename(activeSection));
 
   useEffect(() => {
     if (navigateToSection) {
       setActiveSection(navigateToSection);
     }
   }, [navigateToSection]);
-
-  useEffect(() => {
-    loadData(activeSection).then(setCurrentData);
-  }, [activeSection]);
   
   const { prevSection, nextSection } = useMemo(() => {
     const currentIndex = sections.findIndex(s => s.id === activeSection);
