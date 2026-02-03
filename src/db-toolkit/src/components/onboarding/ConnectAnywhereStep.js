@@ -1,110 +1,66 @@
-import { useState } from 'react';
 import { Code, Zap, Lock, BarChart3 } from 'lucide-react';
 import { Button } from '../common/Button';
 
 export function ConnectAnywhereStep({ onNext }) {
-  const [activeFeature, setActiveFeature] = useState(0);
-
   const features = [
     {
       icon: Code,
       title: 'Query Editor',
       description: 'AI assistant, syntax highlighting, autocomplete, and query analytics.',
-      image: '/assets/editor.png'
+      color: 'bg-blue-500'
     },
     {
       icon: Zap,
       title: 'Data Explorer',
       description: 'Browse, edit, and manage data with inline editing and CSV/JSON export.',
-      image: '/assets/data.png'
+      color: 'bg-purple-500'
     },
     {
       icon: Lock,
       title: 'Automated Backups',
       description: 'Schedule backups with retention policies and one-click restore.',
-      image: '/assets/backup.png'
+      color: 'bg-green-500'
     },
     {
       icon: BarChart3,
       title: 'Analytics',
       description: 'Monitor performance with live metrics and query insights.',
-      image: '/assets/analytics.png'
+      color: 'bg-orange-500'
     }
   ];
 
   return (
-    <div className="flex flex-col py-8 px-6">
-      <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">
+    <div className="flex flex-col items-center py-8 px-6">
+      <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-3 text-center">
         Powerful Features
       </h2>
-      <p className="text-base text-gray-600 dark:text-gray-400 mb-8 text-center">
+      <p className="text-base text-gray-600 dark:text-gray-400 mb-10 text-center max-w-2xl">
         Everything you need to manage your databases efficiently
       </p>
 
-      <div className="flex gap-6">
-        {/* Feature Buttons - Left Side */}
-        <div className="flex-1 space-y-3">
-          {features.map((feature, index) => (
-            <button
-              key={feature.title}
-              onClick={() => setActiveFeature(index)}
-              className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                activeFeature === index
-                  ? 'bg-blue-50 dark:bg-gray-800 border-blue-500 dark:border-blue-500 shadow-md'
-                  : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <div className={`p-2 rounded-lg ${
-                  activeFeature === index
-                    ? 'bg-blue-100 dark:bg-blue-900/30'
-                    : 'bg-gray-100 dark:bg-gray-700'
-                }`}>
-                  <feature.icon className={`w-5 h-5 ${
-                    activeFeature === index
-                      ? 'text-blue-600 dark:text-blue-400'
-                      : 'text-gray-600 dark:text-gray-400'
-                  }`} />
-                </div>
-                <div className="flex-1">
-                  <h3 className={`text-base font-semibold mb-1 ${
-                    activeFeature === index
-                      ? 'text-gray-900 dark:text-white'
-                      : 'text-gray-700 dark:text-gray-300'
-                  }`}>
-                    {feature.title}
-                  </h3>
-                  <p className={`text-sm ${
-                    activeFeature === index
-                      ? 'text-gray-600 dark:text-gray-300'
-                      : 'text-gray-500 dark:text-gray-400'
-                  }`}>
-                    {feature.description}
-                  </p>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Feature Preview - Right Side */}
-        <div className="flex-1">
-          <div className="rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
-            <img 
-              key={activeFeature}
-              src={features[activeFeature].image}
-              alt={features[activeFeature].title}
-              className="w-full h-auto"
-            />
+      {/* Feature Grid */}
+      <div className="grid grid-cols-2 gap-6 w-full max-w-3xl mb-8">
+        {features.map((feature) => (
+          <div
+            key={feature.title}
+            className="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all"
+          >
+            <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center mb-4`}>
+              <feature.icon className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              {feature.title}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {feature.description}
+            </p>
           </div>
-        </div>
+        ))}
       </div>
 
-      <div className="flex justify-center mt-8">
-        <Button onClick={onNext} className="px-10 py-3 text-base">
-          Next
-        </Button>
-      </div>
+      <Button onClick={onNext} className="px-10 py-3 text-base">
+        Next
+      </Button>
     </div>
   );
 }
