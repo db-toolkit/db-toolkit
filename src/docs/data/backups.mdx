@@ -1,0 +1,64 @@
+# Backup & Restore
+
+## Automated Backups
+
+Schedule backups:
+- **Daily** - Every day at specified time
+- **Weekly** - Once per week
+- **Monthly** - Once per month
+
+Features:
+- Compression
+- Retention policies
+- Automatic cleanup of old backups
+
+## Manual Backups
+
+Create on-demand backups:
+
+1. Click **"Backup"** tab
+2. Click **"Create Backup"**
+3. Choose location
+4. Wait for completion
+
+Backup includes:
+- All tables
+- Schemas
+- Indexes
+- Constraints
+
+## Backup Tools
+
+Supports native tools:
+- **PostgreSQL** - pg_dump
+- **MySQL** - mysqldump
+- **MongoDB** - mongodump
+
+Falls back to Python implementation if tools not installed.
+
+## Restore Database
+
+1. Click **"Restore"** tab
+2. Select backup file
+3. Choose target database
+4. Click **"Restore"**
+5. Confirm operation
+
+⚠️ **Warning:** Restore will overwrite existing data.
+
+## Backup Verification
+
+Automatic verification:
+- File integrity check
+- Size validation
+- Compression test
+
+Status shown in backup list.
+
+## Real-time Status
+
+WebSocket updates show:
+- Backup progress
+- Completion status
+- Error messages
+- Notifications
