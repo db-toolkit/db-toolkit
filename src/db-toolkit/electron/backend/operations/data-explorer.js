@@ -157,7 +157,8 @@ class DataExplorer {
 
       const result = await connector.executeQuery(query);
       if (result.success && result.data && result.data.length > 0) {
-        return { success: true, data: result.data[0][0] };
+        const cellValue = result.data[0][columnName];
+        return { success: true, data: cellValue };
       }
       return { success: false, error: 'No data found' };
     } catch (error) {
