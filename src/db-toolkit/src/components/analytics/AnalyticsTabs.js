@@ -4,7 +4,6 @@
 import { useState } from "react";
 import {
   LayoutGrid,
-  Gauge,
   Database,
   Activity,
   Network,
@@ -18,12 +17,6 @@ export function AnalyticsTabs({ activeTab, onTabChange, alertCount = 0 }) {
       label: "Overview",
       icon: LayoutGrid,
       description: "High-level metrics and key insights",
-    },
-    {
-      id: "performance",
-      label: "Performance",
-      icon: Gauge,
-      description: "CPU, Memory, I/O, and Cache metrics",
     },
     {
       id: "queries",

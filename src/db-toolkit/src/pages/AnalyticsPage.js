@@ -26,7 +26,6 @@ import { TimeRangePicker } from "../components/analytics/TimeRangePicker";
 import { QueryPerformance } from "../components/analytics/QueryPerformance";
 import { AlertsPanel } from "../components/analytics/AlertsPanel";
 import { AnalyticsOverview } from "../components/analytics/AnalyticsOverview";
-import { AnalyticsPerformanceTab } from "../components/analytics/AnalyticsPerformanceTab";
 import { AnalyticsQueriesTab } from "../components/analytics/AnalyticsQueriesTab";
 import { AnalyticsTablesTab } from "../components/analytics/AnalyticsTablesTab";
 import { AnalyticsConnectionsTab } from "../components/analytics/AnalyticsConnectionsTab";
@@ -213,16 +212,6 @@ function AnalyticsPage() {
                     analytics={analytics}
                     history={history}
                     poolStats={poolStats}
-                  />
-                )}
-
-                {activeTab === "performance" && (
-                  <AnalyticsPerformanceTab
-                    analytics={analytics}
-                    history={history}
-                    timeRange={timeRange}
-                    slowQueries={slowQueries}
-                    tableStats={tableStats}
                   />
                 )}
 
