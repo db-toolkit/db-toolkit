@@ -278,6 +278,7 @@ export function useDataExplorer() {
     filters,
     showFilters,
     cellModal,
+    setConnectionId,
     setShowFilters,
     setCellModal,
     handleConnect,

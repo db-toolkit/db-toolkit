@@ -24,7 +24,7 @@ export const DataExplorerToolbar = memo(function DataExplorerToolbar({
   if (!selectedTable) return null;
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center justify-between gap-4">
       <div className="text-sm text-gray-600 dark:text-gray-400">
         <span className="font-medium">Showing {page * pageSize + 1}-{Math.min((page + 1) * pageSize, totalCount)} of {totalCount} rows</span>
         <span className="mx-2">|</span>
@@ -91,16 +91,18 @@ export const DataExplorerToolbar = memo(function DataExplorerToolbar({
             <ChevronRight size={16} />
           </Button>
         </Tooltip>
-        <Tooltip text="Refresh data">
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<RefreshCw size={16} />}
-            onClick={onRefresh}
-          >
-            Refresh
-          </Button>
-        </Tooltip>
+        <div className="ml-2">
+          <Tooltip text="Refresh data">
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<RefreshCw size={16} />}
+              onClick={onRefresh}
+            >
+              Refresh
+            </Button>
+          </Tooltip>
+        </div>
       </div>
     </div>
   );
