@@ -78,7 +78,21 @@ export function OnboardingModal({ onComplete }) {
             ))}
           </div>
           
-          <div className="w-10" /> {/* Spacer for centering */}
+          {currentStep < steps.length - 1 ? (
+            <button
+              onClick={handleNext}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              onClick={handleComplete}
+              className="px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-lg transition-colors"
+            >
+              Create Connection
+            </button>
+          )}
         </div>
       </div>
     </div>

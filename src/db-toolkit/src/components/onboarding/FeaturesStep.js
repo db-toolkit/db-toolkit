@@ -62,13 +62,6 @@ export function FeaturesStep({ onNext }) {
           </div>
         ))}
       </div>
-
-      {/* Next button - bottom right */}
-      <div className="flex justify-end mt-6">
-        <Button onClick={onNext} className="px-10 py-3 text-base">
-          Next
-        </Button>
-      </div>
     </div>
   );
 }
