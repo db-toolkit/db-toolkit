@@ -28,6 +28,15 @@ export function useDataExplorer() {
   const [sortOrder, setSortOrder] = useState('ASC');
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState({});
+
+  // Wrapper to set data explorer connection
+  const setConnectionId = useCallback((id) => {
+    setConnection('dataExplorer', id);
+    setSelectedTable(null);
+    setData([]);
+    setColumns([]);
+    setPage(0);
+  }, [setConnection]);
   const [showFilters, setShowFilters] = useState(false);
   const [cellModal, setCellModal] = useState({ isOpen: false, data: null, column: null });
 
