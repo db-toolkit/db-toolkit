@@ -2,11 +2,10 @@
  * Settings modal with tabbed interface
  */
 import { useState } from 'react';
-import { X, RotateCcw } from 'lucide-react';
+import { X, RotateCcw, Palette, Code, Settings as SettingsIcon, Database, Layout, BarChart3 } from 'lucide-react';
 import { useSettings } from '../../hooks/system/useSettings';
 import { useToast } from '../../contexts/ToastContext';
 import { Button } from '../common/Button';
-import { SettingsSidebar } from './SettingsSidebar';
 import { AppearanceSettings } from './AppearanceSettings';
 import { QuerySettings } from './QuerySettings';
 import { EditorSettings } from './EditorSettings';
@@ -14,7 +13,14 @@ import { ConnectionSettings } from './ConnectionSettings';
 import { WorkspaceSettings } from './WorkspaceSettings';
 import { TelemetrySettings } from './TelemetrySettings';
 
-
+const tabs = [
+  { id: 'appearance', label: 'Appearance', icon: Palette },
+  { id: 'query', label: 'Query', icon: Code },
+  { id: 'editor', label: 'Editor', icon: SettingsIcon },
+  { id: 'connection', label: 'Connection', icon: Database },
+  { id: 'workspace', label: 'Workspace', icon: Layout },
+  { id: 'telemetry', label: 'Telemetry', icon: BarChart3 }
+];
 
 export function SettingsModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('appearance');
@@ -69,29 +75,43 @@ export function SettingsModal({ isOpen, onClose }) {
           </button>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
-          <SettingsSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Tab Bar */}
+        <div className="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
+                activeTab === tab.id
+                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+              }`}
+            >
+              <tab.icon size={16} />
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-            {activeTab === 'appearance' && (
-              <AppearanceSettings settings={localSettings} onChange={handleChange} />
-            )}
-            {activeTab === 'query' && (
-              <QuerySettings settings={localSettings} onChange={handleChange} />
-            )}
-            {activeTab === 'editor' && (
-              <EditorSettings settings={localSettings} onChange={handleChange} />
-            )}
-            {activeTab === 'connection' && (
-              <ConnectionSettings settings={localSettings} onChange={handleChange} />
-            )}
-            {activeTab === 'workspace' && (
-              <WorkspaceSettings settings={localSettings} onChange={handleChange} />
-            )}
-            {activeTab === 'telemetry' && (
-              <TelemetrySettings settings={localSettings} onChange={handleChange} />
-            )}
-          </div>
+        <div className="flex-1 overflow-y-auto p-6">
+          {activeTab === 'appearance' && (
+            <AppearanceSettings settings={localSettings} onChange={handleChange} />
+          )}
+          {activeTab === 'query' && (
+            <QuerySettings settings={localSettings} onChange={handleChange} />
+          )}
+          {activeTab === 'editor' && (
+            <EditorSettings settings={localSettings} onChange={handleChange} />
+          )}
+          {activeTab === 'connection' && (
+            <ConnectionSettings settings={localSettings} onChange={handleChange} />
+          )}
+          {activeTab === 'workspace' && (
+            <WorkspaceSettings settings={localSettings} onChange={handleChange} />
+          )}
+          {activeTab === 'telemetry' && (
+            <TelemetrySettings settings={localSettings} onChange={handleChange} />
+          )}
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700">
