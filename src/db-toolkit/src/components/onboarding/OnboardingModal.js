@@ -48,7 +48,7 @@ export function OnboardingModal({ onComplete }) {
         </button>
 
         {/* Step content - Fixed height */}
-        <div className="px-8 py-6 h-[500px] overflow-y-auto">
+        <div className="px-8 py-6 h-[500px] flex items-center">
           <CurrentStepComponent
             onNext={handleNext}
             onComplete={handleComplete}

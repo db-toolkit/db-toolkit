@@ -3,7 +3,7 @@ import { Button } from '../common/Button';
 
 export function WelcomeStep({ onNext }) {
   return (
-    <div className="flex items-center gap-8 py-8 px-6">
+    <div className="flex items-center gap-8 py-8 px-6 mt-8">
       {/* Hero Image - Left Side */}
       <div className="flex-1 rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
         <img 
