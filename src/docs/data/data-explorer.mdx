@@ -1,0 +1,137 @@
+# Data Explorer
+
+## Viewing Data
+
+1. Navigate to table in Schema Explorer
+2. Right-click → **"Browse Data"**
+3. Data loads in Data Explorer tab
+
+## Inline Editing
+
+1. Double-click cell
+2. Modify value
+3. Press **Enter** to save
+4. Press **Escape** to cancel
+
+Changes save immediately to database.
+
+## Insert & Delete Rows
+
+### Insert
+
+1. Click **"Insert Row"**
+2. Fill in values
+3. Click **"Save"**
+
+### Delete
+
+1. Select row(s) with checkbox
+2. Click **"Delete"**
+3. Confirm deletion
+
+## Pagination
+
+- Rows per page: 10, 25, 50, 100
+- Previous/Next buttons
+- Page number input
+- Total rows display
+
+Default: 50 rows per page
+
+## Sorting & Filtering
+
+### Sorting
+
+- Click column header to sort
+- First click: Ascending
+- Second click: Descending
+- Third click: Remove sort
+
+### Filtering
+
+- Click filter icon in header
+- Enter filter value
+- Select operator (Equals, Contains, etc.)
+- Click **"Apply"**
+
+## Export Data
+
+### CSV Export
+
+1. Click **"Export"**
+2. Select **"CSV"**
+3. Choose location
+
+### JSON Export
+
+1. Click **"Export"**
+2. Select **"JSON"**
+3. Choose location
+
+Export options:
+- Current page only
+- All pages
+- Filtered results only
+
+## Import Data
+
+### CSV Import
+
+1. Click **"Import"**
+2. Select CSV file
+3. Map columns to table fields
+4. Click **"Import"**
+
+Features:
+- Header row detection
+- Column mapping
+- Data validation
+- Error reporting
+
+## Cell Preview
+
+For large text/blob fields:
+
+1. Click **"Preview"** icon in cell
+2. View full content in modal
+3. Copy or edit content
+4. Close modal to return
+
+Useful for:
+- Long text fields
+- JSON data
+- Binary data (base64)
+- XML content
+
+## Refresh Data
+
+Click **"Refresh"** button to reload table data after:
+- External changes
+- Concurrent edits
+- Database updates
+
+Keyboard shortcut: **Ctrl/Cmd + R**
+
+## Tips
+
+### Performance
+
+For tables with millions of rows:
+- Use filters to reduce dataset
+- Increase rows per page cautiously
+- Use indexes for faster sorting
+- Consider query editor for complex filters
+
+### Bulk Operations
+
+For bulk updates:
+- Use SQL UPDATE in Query Editor
+- More efficient than inline editing
+- Supports complex conditions
+
+### Data Integrity
+
+- Foreign key violations prevent save
+- Unique constraint violations show error
+- NOT NULL fields require values
+- Check constraints validated before save
