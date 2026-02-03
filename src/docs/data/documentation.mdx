@@ -1,0 +1,1162 @@
+# Documentation
+
+## SQL Basics
+
+### SELECT Statement
+
+The SELECT statement retrieves data from one or more tables.
+
+**Basic Syntax:**
+```sql
+SELECT column1, column2 FROM table_name;
+```
+
+**Select All Columns:**
+```sql
+SELECT * FROM users;
+```
+
+**Select Specific Columns:**
+```sql
+SELECT name, email FROM users;
+```
+
+### WHERE Clause
+
+The WHERE clause filters records based on conditions.
+
+**Basic Syntax:**
+```sql
+SELECT * FROM table_name WHERE condition;
+```
+
+**Examples:**
+```sql
+SELECT * FROM users WHERE age > 18;
+SELECT * FROM products WHERE price BETWEEN 10 AND 50;
+SELECT * FROM customers WHERE city IN ('New York', 'London');
+```
+
+### INSERT Statement
+
+The INSERT statement adds new records to a table.
+
+**Basic Syntax:**
+```sql
+INSERT INTO table_name (column1, column2) VALUES (value1, value2);
+```
+
+**Examples:**
+```sql
+INSERT INTO users (name, email) VALUES ('John Doe', 'john@example.com');
+
+INSERT INTO products (name, price, stock)
+VALUES ('Laptop', 999.99, 50);
+```
+
+### UPDATE Statement
+
+The UPDATE statement modifies existing records.
+
+**Basic Syntax:**
+```sql
+UPDATE table_name SET column1 = value1 WHERE condition;
+```
+
+**Examples:**
+```sql
+UPDATE users SET email = 'newemail@example.com' WHERE id = 1;
+
+UPDATE products SET price = price * 1.1 WHERE category = 'Electronics';
+```
+
+### DELETE Statement
+
+The DELETE statement removes records from a table.
+
+**Basic Syntax:**
+```sql
+DELETE FROM table_name WHERE condition;
+```
+
+**Examples:**
+```sql
+DELETE FROM users WHERE id = 1;
+
+DELETE FROM orders WHERE status = 'cancelled';
+```
+
+⚠️ **Warning:** Always use WHERE clause to avoid deleting all records!
+
+## Joins
+
+### INNER JOIN
+
+Returns records with matching values in both tables.
+
+**Syntax:**
+```sql
+SELECT columns
+FROM table1
+INNER JOIN table2 ON table1.column = table2.column;
+```
+
+**Example:**
+```sql
+SELECT orders.id, customers.name, orders.total
+FROM orders
+INNER JOIN customers ON orders.customer_id = customers.id;
+```
+
+### LEFT JOIN
+
+Returns all records from the left table and matched records from the right table.
+
+**Syntax:**
+```sql
+SELECT columns
+FROM table1
+LEFT JOIN table2 ON table1.column = table2.column;
+```
+
+**Example:**
+```sql
+SELECT customers.name, orders.id
+FROM customers
+LEFT JOIN orders ON customers.id = orders.customer_id;
+```
+
+### RIGHT JOIN
+
+Returns all records from the right table and matched records from the left table.
+
+**Syntax:**
+```sql
+SELECT columns
+FROM table1
+RIGHT JOIN table2 ON table1.column = table2.column;
+```
+
+### FULL OUTER JOIN
+
+Returns all records when there is a match in either table.
+
+**Syntax:**
+```sql
+SELECT columns
+FROM table1
+FULL OUTER JOIN table2 ON table1.column = table2.column;
+```
+
+## Aggregate Functions
+
+### COUNT
+
+Returns the number of rows.
+
+**Syntax:**
+```sql
+SELECT COUNT(column) FROM table_name;
+```
+
+**Examples:**
+```sql
+SELECT COUNT(*) FROM users;
+SELECT COUNT(DISTINCT country) FROM customers;
+```
+
+### SUM
+
+Returns the sum of numeric values.
+
+**Syntax:**
+```sql
+SELECT SUM(column) FROM table_name;
+```
+
+**Example:**
+```sql
+SELECT SUM(amount) FROM orders WHERE status = 'completed';
+```
+
+### AVG
+
+Returns the average value.
+
+**Syntax:**
+```sql
+SELECT AVG(column) FROM table_name;
+```
+
+**Example:**
+```sql
+SELECT AVG(price) FROM products;
+```
+
+### MIN and MAX
+
+Returns the minimum or maximum value.
+
+**Syntax:**
+```sql
+SELECT MIN(column), MAX(column) FROM table_name;
+```
+
+**Example:**
+```sql
+SELECT MIN(price), MAX(price) FROM products;
+```
+
+### GROUP BY
+
+Groups rows with the same values.
+
+**Syntax:**
+```sql
+SELECT column, COUNT(*)
+FROM table_name
+GROUP BY column;
+```
+
+**Example:**
+```sql
+SELECT country, COUNT(*) as customer_count
+FROM customers
+GROUP BY country
+ORDER BY customer_count DESC;
+```
+
+## Advanced SQL
+
+### Subqueries
+
+A query nested inside another query.
+
+**Syntax:**
+```sql
+SELECT column FROM table1
+WHERE column IN (SELECT column FROM table2);
+```
+
+**Example:**
+```sql
+SELECT name FROM products
+WHERE price > (SELECT AVG(price) FROM products);
+```
+
+### Common Table Expressions (CTE)
+
+Temporary result set that can be referenced within a SELECT, INSERT, UPDATE, or DELETE statement.
+
+**Syntax:**
+```sql
+WITH cte_name AS (
+  SELECT columns FROM table
+)
+SELECT * FROM cte_name;
+```
+
+**Example:**
+```sql
+WITH high_value_customers AS (
+  SELECT customer_id, SUM(total) as total_spent
+  FROM orders
+  GROUP BY customer_id
+  HAVING SUM(total) > 1000
+)
+SELECT c.name, hvc.total_spent
+FROM customers c
+JOIN high_value_customers hvc ON c.id = hvc.customer_id;
+```
+
+### Window Functions
+
+Performs calculations across rows related to the current row.
+
+**Common Functions:**
+- ROW_NUMBER()
+- RANK()
+- DENSE_RANK()
+- LAG()
+- LEAD()
+
+**Example:**
+```sql
+SELECT 
+  name,
+  salary,
+  ROW_NUMBER() OVER (ORDER BY salary DESC) as rank
+FROM employees;
+```
+
+### Indexes
+
+Indexes improve query performance by allowing faster data retrieval.
+
+**Create Index:**
+```sql
+CREATE INDEX idx_name ON table_name(column);
+```
+
+**Create Unique Index:**
+```sql
+CREATE UNIQUE INDEX idx_email ON users(email);
+```
+
+**Drop Index:**
+```sql
+DROP INDEX idx_name;
+```
+
+## Functions
+
+### String Functions
+
+Common string manipulation functions.
+
+**CONCAT:** Concatenate strings
+```sql
+SELECT CONCAT(first_name, ' ', last_name) as full_name FROM users;
+```
+
+**UPPER/LOWER:** Change case
+```sql
+SELECT UPPER(name), LOWER(email) FROM users;
+```
+
+**SUBSTRING:** Extract substring
+```sql
+SELECT SUBSTRING(name, 1, 3) FROM products;
+```
+
+**LENGTH:** Get string length
+```sql
+SELECT name, LENGTH(name) FROM products;
+```
+
+### Date Functions
+
+Common date and time functions.
+
+**NOW/CURRENT_TIMESTAMP:** Current date and time
+```sql
+SELECT NOW();
+```
+
+**DATE:** Extract date part
+```sql
+SELECT DATE(created_at) FROM orders;
+```
+
+**DATE_ADD/DATE_SUB:** Add or subtract intervals
+```sql
+SELECT DATE_ADD(NOW(), INTERVAL 7 DAY);
+```
+
+**DATEDIFF:** Difference between dates
+```sql
+SELECT DATEDIFF(end_date, start_date) FROM projects;
+```
+
+### Numeric Functions
+
+Common numeric functions.
+
+**ROUND:** Round to specified decimals
+```sql
+SELECT ROUND(price, 2) FROM products;
+```
+
+**CEIL/FLOOR:** Round up or down
+```sql
+SELECT CEIL(price), FLOOR(price) FROM products;
+```
+
+**ABS:** Absolute value
+```sql
+SELECT ABS(balance) FROM accounts;
+```
+
+## Features
+
+### Workspaces
+
+Work with multiple database connections simultaneously using isolated workspace tabs.
+
+**Features:**
+- Multiple workspace tabs (up to 20 configurable)
+- Each workspace has isolated state (connection, queries, pages)
+- Custom workspace names and colors
+- Keyboard shortcuts for quick switching
+- Unsaved changes tracking
+- Context menu for workspace management
+
+**Creating Workspaces:**
+- Click "+ " button in titlebar
+- Or use `Ctrl/Cmd + T` shortcut
+- Default workspace created automatically on first launch
+
+**Switching Workspaces:**
+- Click workspace tab in titlebar
+- Use `Ctrl/Cmd + 1-9` to switch to workspace 1-9
+- Each workspace remembers its active page
+
+**Workspace Management:**
+- **Rename**: Right-click tab → Rename
+- **Change Color**: Right-click tab → Change Color (17 colors available)
+- **Close**: Click X button or `Ctrl/Cmd + W`
+- **Close Others**: Right-click tab → Close Others
+- **Close All**: Right-click tab → Close All
+
+**Workspace State:**
+Each workspace maintains its own:
+- Database connection
+- Active page (Query Editor, Analytics, etc.)
+- Query tabs and content
+- Schema cache
+- Unsaved changes indicator (orange dot)
+
+**Settings:**
+- Navigate to Settings → Workspace tab
+- **Enable Workspaces**: Toggle workspace feature on/off
+- **Max Workspaces**: Set limit (1-20, default 10)
+- Warning shown when limit >10 (RAM impact)
+
+**Keyboard Shortcuts:**
+- `Ctrl/Cmd + T` - New workspace
+- `Ctrl/Cmd + W` - Close current workspace
+- `Ctrl/Cmd + 1-9` - Switch to workspace 1-9
+
+**Unsaved Changes:**
+- Orange dot appears on tab when queries are unsaved
+- Warning prompt before closing workspace with unsaved changes
+- Tracks unsaved state per workspace
+
+**Workspace Limits:**
+- Default limit: 10 workspaces
+- Configurable up to 20 in settings
+- Hard limit enforced (cannot exceed max)
+- RAM warning for >10 workspaces
+
+**Persistence:**
+- Workspaces saved automatically
+- State persists across app restarts
+- Stored in `~/.db-toolkit/workspaces/`
+
+**Tips:**
+- Use different workspaces for different databases
+- Color-code workspaces by environment (dev/staging/prod)
+- Keep related work in same workspace
+- Close unused workspaces to free RAM
+- Rename workspaces for easy identification
+
+**When Workspaces Disabled:**
+- Titlebar shows "DB Toolkit" instead of tabs
+- Single connection mode (no workspace isolation)
+- Requires app restart to apply setting change
+
+### Query Editor Usage
+
+The Query Editor provides a powerful environment for writing and executing SQL queries.
+
+**Features:**
+- Syntax highlighting for SQL
+- Auto-completion (Ctrl+Space)
+- Multiple query tabs
+- Query history tracking
+- Format SQL (Ctrl+Shift+F)
+
+**Keyboard Shortcuts:**
+- `Ctrl/Cmd + R` - Execute query
+- `Ctrl/Cmd + Shift + F` - Format SQL
+- `Ctrl/Cmd + /` - Toggle comment
+- `Ctrl/Cmd + S` - Save query
+
+**Tips:**
+- Use semicolons to separate multiple queries
+- Select specific text to execute only that query
+- Results are paginated automatically
+- Export results to CSV or JSON
+
+### CSV Export
+
+Export query results to CSV files with custom formatting.
+
+**How to Export:**
+1. Execute a query in Query Editor
+2. Click "Export CSV" button
+3. Configure export options:
+   - Filename
+   - Delimiter (comma, tab, semicolon, etc.)
+   - Include/exclude headers
+4. Click Export to download
+
+**Features:**
+- Exports current query results
+- Custom delimiter support
+- Optional column headers
+- Shows row × column count before export
+
+**Supported Delimiters:**
+- Comma (,) - default
+- Tab (\t)
+- Semicolon (;)
+- Pipe (|)
+
+**Tips:**
+- Execute query first to see what will be exported
+- Use headers for easier data import elsewhere
+- Choose delimiter based on your data content
+- Large exports may take a few seconds
+
+### Connection Management
+
+Manage database connections with support for PostgreSQL, MySQL, MongoDB, and SQLite.
+
+**Create Connection:**
+1. Click "New Connection" button
+2. Enter connection name
+3. Select database type
+4. Enter host, port, username, password, database
+5. Or use "Database URL" checkbox for full URL
+6. Click "Test Connection" to verify
+7. Save connection
+
+**Database URL Format:**
+```
+postgresql://user:pass@host:5432/database
+mysql://user:pass@host:3306/database
+mongodb://user:pass@host:27017/database
+sqlite:///path/to/database.db
+```
+
+**Supported Protocols:**
+- `postgresql+asyncpg://` - PostgreSQL with asyncpg
+- `mysql+aiomysql://` - MySQL with aiomysql
+- `mongodb+srv://` - MongoDB Atlas
+
+**Features:**
+- Save multiple connections
+- Test connection before saving
+- Edit existing connections
+- Delete connections
+- Connection status indicators
+- Session persistence (auto-restore on startup)
+
+**Tips:**
+- Use descriptive connection names
+- Test connections before saving
+- Store credentials securely
+- Use environment variables for sensitive data
+
+### Data Explorer
+
+Browse and edit table data with inline editing and CSV import/export.
+
+**Features:**
+- Visual schema tree browser
+- Inline cell editing (double-click)
+- Insert and delete rows
+- Pagination for large datasets
+- Column sorting and filtering
+- CSV/JSON export
+- CSV import with validation
+- Cell preview for large data
+
+**How to Use:**
+1. Select connection
+2. Browse schema tree
+3. Click table to view data
+4. Double-click cell to edit
+5. Use toolbar for actions
+
+**Editing Data:**
+- Double-click cell to edit
+- Press Enter to save
+- Press Escape to cancel
+- Click "Insert Row" to add
+- Select row and click "Delete" to remove
+
+**Import CSV:**
+1. Click "Import CSV" button
+2. Upload CSV file
+3. Map columns to table fields
+4. Validate data
+5. Import
+
+**Export Data:**
+- Click "CSV" or "JSON" button
+- Select columns to export
+- Download file
+
+**Tips:**
+- Use filters before loading large tables
+- Validate data before importing
+- Backup before bulk operations
+- Use pagination for performance
+
+### Database Analytics
+
+Real-time database monitoring with charts and query analysis.
+
+**Metrics:**
+- Active/idle connections
+- Database size
+- CPU, memory, disk usage
+- Current queries with duration
+- Long-running queries (>30s)
+- Blocked queries and locks
+- Query type distribution
+- Connection pool statistics
+- Table-level statistics
+- Slow query log (24h)
+
+**Features:**
+- Real-time updates (5s interval)
+- Historical data (up to 3 hours)
+- Interactive charts with tooltips
+- Time range selector (1h/2h/3h)
+- Query execution plan viewer
+- Kill running queries
+- Dark/light mode charts
+- PDF export for reports
+
+**Query Monitoring:**
+- View all active queries
+- Query type classification (SELECT/INSERT/UPDATE/DELETE)
+- Duration tracking
+- Click "Plan" to view execution plan
+- Click "Kill" to terminate query
+- Slow query log with timestamps
+
+**Connection Pool Stats:**
+- Current connections
+- Average connections
+- Peak connections
+- Minimum connections
+
+**Table Statistics:**
+- Table sizes (top 20)
+- Row counts
+- Index counts
+- Most queried tables
+
+**Export:**
+- Click "Export PDF" button
+- Generates comprehensive report
+- Includes metrics, charts, slow queries, table stats
+
+**Database Support:**
+- PostgreSQL: Full support
+- MySQL: Enhanced (query types, locks)
+- MongoDB: Enhanced (operations, lock waits)
+- SQLite: Enhanced (table stats, page info)
+
+**Usage:**
+1. Navigate to Analytics
+2. Select connection
+3. Choose time range
+4. Monitor metrics and queries
+5. Analyze query plans
+6. Export PDF reports
+7. Kill problematic queries
+
+**Tips:**
+- Monitor during peak hours
+- Watch for long-running queries
+- Check blocked queries regularly
+- Review slow query log daily
+- Export reports for analysis
+
+### ER Diagram
+
+Visualize database schema relationships with interactive ER diagrams.
+
+**Features:**
+- Auto-generated entity-relationship diagrams
+- Interactive node navigation
+- Multiple layout directions
+- Search and filter tables
+- Relationship detection
+- Export to PNG
+- Click-to-highlight connections
+
+**Access ER Diagram:**
+1. Navigate to Schema Explorer
+2. Click "ER Diagram" button
+3. View full-screen interactive diagram
+
+**Layout Directions:**
+Choose from 4 layout options:
+- **Top to Bottom** (↓) - Vertical hierarchy
+- **Left to Right** (→) - Horizontal flow (default)
+- **Bottom to Top** (↑) - Inverted vertical
+- **Right to Left** (←) - Reverse horizontal
+
+**Search & Filter:**
+- Type in search box to filter tables
+- Searches table names, schemas, and columns
+- Filtered tables remain visible, others dim
+- Clear search to show all tables
+
+**Relationship Detection:**
+- **Foreign Keys** - Solid blue lines with arrows
+- **Inferred Relationships** - Dashed gray lines
+- Detects naming conventions (e.g., user_id → users.id)
+- Shows source and target columns on hover
+
+**Interactive Features:**
+- **Click Table** - Highlights connected tables and relationships
+- **Click Background** - Resets highlighting
+- **Zoom** - Mouse wheel or controls
+- **Pan** - Click and drag background
+- **Minimap** - Navigate large diagrams
+
+**Table Nodes:**
+- Table name and schema
+- Column list with data types
+- Primary keys highlighted in yellow
+- Foreign keys highlighted in blue
+
+**Controls:**
+- **Reset** - Clears search and fits view
+- **Export PNG** - Downloads diagram as image
+- **Close** - Returns to Schema Explorer
+
+**Legend:**
+- Yellow box - Primary Key
+- Blue box - Foreign Key
+- Solid line - Foreign Key relationship
+- Dashed line - Inferred relationship
+
+**Dynamic Spacing:**
+- Automatically adjusts for table count
+- Compact layout for 20+ tables
+- Spacious layout for small schemas
+- Prevents node overlap
+
+**Tips:**
+- Use Left→Right layout for wide schemas
+- Use Top→Bottom for deep hierarchies
+- Search to focus on specific tables
+- Click tables to trace relationships
+- Export diagrams for documentation
+- Use minimap for large schemas (50+ tables)
+
+**Keyboard Shortcuts:**
+- `Escape` - Close diagram
+- `Ctrl/Cmd + F` - Focus search
+- Mouse wheel - Zoom in/out
+- Space + Drag - Pan view
+
+**Best For:**
+- Understanding schema structure
+- Documenting database design
+- Finding table relationships
+- Onboarding new developers
+- Database architecture reviews
+
+### DBAssist AI Features
+
+AI-powered database assistance for intelligent query generation and optimization.
+
+**Query Editor AI:**
+- Natural language to SQL conversion
+- Query optimization suggestions
+- Error fixing and debugging
+- Query explanation in plain English
+
+**Schema Explorer AI:**
+- Table analysis and insights
+- Index recommendations
+- Relationship suggestions
+- Common query generation
+- Data quality insights
+
+**How to Use Query AI:**
+1. Open Query Editor
+2. Click "AI Assistant" button (right sidebar)
+3. Type natural language query (e.g., "show users from last week")
+4. Click "Generate Query" to convert to SQL
+5. Use optimization and explanation features
+
+**Natural Language Examples:**
+- "Find all users created in the last 30 days"
+- "Show top 10 products by sales"
+- "Get customers with more than 5 orders"
+- "List employees hired this year"
+
+**Query Optimization:**
+- Analyzes query performance
+- Suggests index improvements
+- Recommends query rewrites
+- Identifies bottlenecks
+- Provides cost estimates
+
+**Error Fixing:**
+- Explains SQL syntax errors
+- Suggests corrections
+- Provides educational tips
+- Fixes common mistakes
+
+**Schema AI Features:**
+1. Navigate to Schema Explorer
+2. Click on any table name
+3. AI Insights panel appears
+4. View table analysis and suggestions
+
+**Table Analysis Includes:**
+- Table purpose explanation
+- Column analysis
+- Index suggestions
+- Relationship recommendations
+- Common queries for the table
+
+**Tips:**
+- Be specific in natural language queries
+- Review generated SQL before execution
+- Use optimization suggestions for better performance
+- Check AI explanations to learn SQL concepts
+
+### Backup & Restore
+
+Automated and manual database backups with scheduling.
+
+**Features:**
+- Manual on-demand backups
+- Automated scheduled backups
+- Backup compression
+- Retention policies
+- Backup verification
+- Real-time progress via WebSocket
+- Native tools (pg_dump, mysqldump, mongodump)
+- Python fallback for compatibility
+
+**Create Manual Backup:**
+1. Navigate to Backups page
+2. Select connection
+3. Click "Create Backup"
+4. Enter backup name
+5. Choose compression
+6. Wait for completion
+
+**Schedule Automated Backups:**
+1. Click "Schedule Backup"
+2. Select connection
+3. Choose frequency (daily/weekly/monthly)
+4. Set time
+5. Configure retention (keep last N backups)
+6. Enable schedule
+
+**Restore Backup:**
+1. Select backup from list
+2. Click "Restore"
+3. Confirm target database
+4. Wait for completion
+
+**Backup Locations:**
+- Default: `~/db-toolkit-backups/`
+- Organized by connection name
+- Timestamped filenames
+
+**Retention Policies:**
+- Keep last N backups
+- Automatic cleanup of old backups
+- Configurable per schedule
+
+**Notifications:**
+- Real-time progress updates
+- Success/failure notifications
+- Backup completion alerts
+
+**Tips:**
+- Test restores regularly
+- Keep multiple backup versions
+- Store backups in different locations
+- Schedule during off-peak hours
+- Verify backup integrity
+- Monitor backup success/failure
+
+### Database Migrations
+
+Manage database schema changes with version control.
+
+**Features:**
+- Project-based migration management
+- Link projects to database connections
+- Real-time command output with clear button
+- Migration file browser (view, edit, delete, rename)
+- Resizable sidebar for file browser
+- Migration history tracking
+- Rollback support
+
+**How It Works:**
+
+**1. Create Migration Project:**
+- Click "New Project" button
+- Enter project name
+- Select project folder (where migrations will be stored)
+- Link to database connection
+
+**2. Initialize Migrations:**
+- Select your project
+- Click "Init" button
+- Creates migrations folder structure
+
+**3. Create Migration:**
+- Click "Create" button
+- Enter migration description
+- Generates timestamped migration file
+
+**4. Apply Migrations:**
+- Click "Apply" button
+- Runs pending migrations
+- Updates database schema
+
+**5. View History:**
+- Click "History" button
+- Shows applied migrations
+- Displays timestamps and status
+
+**6. Rollback:**
+- Click "Rollback" button
+- Reverts last migration
+- Restores previous schema state
+
+**Commands:**
+- **Init** - Initialize migration system
+- **Create** - Generate new migration file
+- **Apply** - Run pending migrations
+- **Rollback** - Revert last migration
+- **History** - View migration log
+
+**Project Management:**
+- Save multiple projects
+- Switch between projects
+- Delete projects (keeps files, removes from list)
+- Projects persist across app restarts
+
+**Output Panel:**
+- Real-time command execution
+- Color-coded output (commands, errors, success)
+- Auto-scroll to latest output
+- Clear button to reset output
+
+**File Browser:**
+- View migration files in sidebar
+- Click to view file contents
+- Open files in system editor
+- Rename or delete migration files
+- Drag divider to resize sidebar
+- Open migrations folder
+
+**Tips:**
+- Test migrations on dev environment first
+- Use descriptive migration names
+- Review generated migration files
+- Keep migrations in version control
+
+## Troubleshooting
+
+### Common Connection Errors
+
+Solutions for database connection issues.
+
+**Error: Connection Refused**
+- Check if database server is running
+- Verify host and port are correct
+- Check firewall settings
+- Ensure database accepts remote connections
+
+**Error: Authentication Failed**
+- Verify username and password
+- Check user permissions in database
+- Ensure user has access from your IP
+- Try connecting with database client directly
+
+**Error: Database Does Not Exist**
+- Verify database name spelling
+- Check if database was created
+- Ensure you have access to the database
+- Try listing all databases first
+
+**Error: SSL/TLS Required**
+- Enable SSL in connection settings
+- Provide SSL certificate if required
+- Check if server requires encrypted connections
+
+**Error: Too Many Connections**
+- Close unused connections
+- Increase max_connections in database
+- Check for connection leaks in your app
+- Use connection pooling
+
+**Timeout Errors:**
+- Increase connection timeout setting
+- Check network latency
+- Verify no network issues between client and server
+- Try connecting from same network as server
+
+### Performance Tips
+
+Optimize your database operations for better performance.
+
+**Query Optimization:**
+- Use indexes on frequently queried columns
+- Avoid SELECT * - specify needed columns
+- Use LIMIT for large result sets
+- Optimize JOIN operations
+- Use EXPLAIN to analyze query plans
+
+**Index Best Practices:**
+- Index foreign keys
+- Index columns used in WHERE clauses
+- Index columns used in ORDER BY
+- Don't over-index (slows INSERT/UPDATE)
+- Use composite indexes for multiple columns
+
+**Connection Management:**
+- Close connections when done
+- Use connection pooling
+- Limit concurrent connections
+- Set appropriate timeout values
+
+**Data Explorer:**
+- Use pagination for large tables
+- Apply filters before loading data
+- Limit displayed columns
+- Use search instead of loading all rows
+
+**Backup Performance:**
+- Schedule backups during off-peak hours
+- Use incremental backups when possible
+- Compress backup files
+- Store backups on fast storage
+
+**General Tips:**
+- Keep database statistics updated
+- Regularly vacuum/optimize tables
+- Monitor slow query log
+- Archive old data
+- Use appropriate data types
+
+### Backup Failures
+
+Troubleshoot backup and restore issues.
+
+**Backup Fails to Start:**
+- Check disk space on backup location
+- Verify write permissions
+- Ensure database is accessible
+- Check if another backup is running
+
+**Backup Incomplete:**
+- Increase backup timeout
+- Check for database locks
+- Verify network stability
+- Look for disk space issues
+
+**Restore Fails:**
+- Verify backup file integrity
+- Check backup file format
+- Ensure target database exists
+- Verify user has restore permissions
+- Check for version compatibility
+
+**Scheduled Backup Not Running:**
+- Verify schedule is enabled
+- Check application is running
+- Review backup logs for errors
+- Ensure system time is correct
+
+**Backup File Corrupted:**
+- Always verify backups after creation
+- Use checksums to validate integrity
+- Keep multiple backup copies
+- Test restore process regularly
+
+**Solutions:**
+```bash
+# Check backup file
+file backup.sql
+
+# Verify backup size
+ls -lh backup.sql
+
+# Test backup integrity (PostgreSQL)
+pg_restore --list backup.dump
+
+# Test backup integrity (MySQL)
+mysqlcheck backup.sql
+```
+
+**Best Practices:**
+- Test restores regularly
+- Keep multiple backup versions
+- Store backups in different locations
+- Monitor backup success/failure
+- Document restore procedures
+
+### Migration Issues
+
+Solve common database migration problems.
+
+**Migration Init Fails:**
+- Ensure project directory is correct
+- Check if migrations folder already exists
+- Verify database connection
+- Use --base flag if Base class not found
+
+**Cannot Find Base Class:**
+```bash
+# Specify Base location explicitly
+migrator init --base app.database:Base
+migrator init --base src.models:Base
+```
+
+**Migration Creation Fails:**
+- Ensure models are importable
+- Check for syntax errors in models
+- Verify SQLAlchemy Base is defined
+- Check DATABASE_URL is set
+
+**Migration Apply Fails:**
+- Check database connectivity
+- Verify migration file syntax
+- Look for conflicting migrations
+- Check database user permissions
+- Review migration history
+
+**Rollback Issues:**
+- Ensure downgrade() is implemented
+- Check for data dependencies
+- Verify no manual schema changes
+- Review migration order
+
+**Common Errors:**
+
+**Error: DATABASE_URL not found**
+```bash
+# Set in .env file
+DATABASE_URL=postgresql://user:pass@localhost/db
+
+# Or export as environment variable
+export DATABASE_URL=postgresql://user:pass@localhost/db
+```
+
+**Error: Table already exists**
+- Use `migrator stamp head` for existing databases
+- Check if migration was partially applied
+- Review migration history
+
+**Error: Column does not exist**
+- Ensure migrations are in correct order
+- Check if migration was skipped
+- Verify database schema state
+
+**Best Practices:**
+- Always backup before migrating
+- Test migrations on dev/staging first
+- Review generated migrations
+- Keep migrations small and focused
+- Document complex migrations
