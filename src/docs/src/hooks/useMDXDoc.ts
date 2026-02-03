@@ -60,6 +60,11 @@ function parseMDXContent(mdxContent: string): DocData {
   let title = '';
 
   for (const line of lines) {
+    // Skip source map comments
+    if (line.includes('sourceMappingURL=')) {
+      continue;
+    }
+
     // Extract main title (# Title)
     if (line.startsWith('# ') && !title) {
       title = line.replace('# ', '').trim();
