@@ -12,6 +12,7 @@ interface DocSection {
 interface DocData {
   title: string;
   sections: DocSection[];
+  rawContent: string;
 }
 
 /**
@@ -35,7 +36,7 @@ export function useMDXDoc(filename: string) {
 
         const mdxContent = await response.text();
         const parsed = parseMDXContent(mdxContent);
-        setData(parsed);
+        setData({ ...parsed, rawContent: mdxContent });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load documentation');
         console.error('Error loading MDX:', err);
@@ -53,25 +54,18 @@ export function useMDXDoc(filename: string) {
 /**
  * Parse MDX content into title and sections
  */
-function parseMDXContent(mdxContent: string): DocData {
+function parseMDXContent(mdxContent: string): Omit<DocData, 'rawContent'> {
   const lines = mdxContent.split('\n');
   const sections: DocSection[] = [];
   let currentSection: DocSection | null = null;
   let title = '';
 
   for (const line of lines) {
-    // Skip source map comments
-    if (line.includes('sourceMappingURL=')) {
-      continue;
-    }
-
-    // Extract main title (# Title)
     if (line.startsWith('# ') && !title) {
       title = line.replace('# ', '').trim();
       continue;
     }
 
-    // Extract section headings (## Section)
     if (line.startsWith('## ')) {
       if (currentSection) {
         sections.push(currentSection);
@@ -83,20 +77,11 @@ function parseMDXContent(mdxContent: string): DocData {
       continue;
     }
 
-    // Convert ### to bold subsection in content
-    if (line.startsWith('### ') && currentSection) {
-      const subsectionTitle = line.replace('### ', '').trim();
-      currentSection.content += `\n**${subsectionTitle}**\n\n`;
-      continue;
-    }
-
-    // Accumulate content
     if (currentSection) {
       currentSection.content += line + '\n';
     }
   }
 
-  // Push last section
   if (currentSection) {
     sections.push(currentSection);
   }

@@ -1,9 +1,15 @@
 import { memo } from 'react';
-import type { DocData } from '../data';
 import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer } from '../utils/motion';
-import { ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
-import { parseContent } from '../utils/contentParser';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+interface DocData {
+  title: string;
+  sections: { heading: string; content: string }[];
+  rawContent: string;
+}
 
 interface DocContentProps {
   data: DocData;
@@ -33,24 +39,15 @@ function DocContent({ data, prevSection, nextSection, onNavigate }: DocContentPr
       >
         {data.title}
       </motion.h1>
-      {data.sections.map((section, index) => (
-        <motion.section 
-          key={index} 
-          className={`mb-8 md:mb-12 p-4 md:p-6 lg:p-8 rounded-xl ${index % 2 === 0 ? 'bg-gray-50/50 dark:bg-gray-800/30' : ''}`}
-          variants={fadeInUp}
-        >
-          <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
-            <div className="w-1 h-6 md:h-8 bg-gradient-to-b from-emerald-600 to-teal-600 rounded-full" />
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
-              {section.heading}
-            </h2>
-            <Sparkles size={16} className="md:w-5 md:h-5 text-emerald-600 dark:text-emerald-400" />
-          </div>
-          <div className="space-y-2">
-            {parseContent(section.content)}
-          </div>
-        </motion.section>
-      ))}
+      
+      <motion.div 
+        className="prose prose-lg dark:prose-invert max-w-none"
+        variants={fadeInUp}
+      >
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {data.rawContent}
+        </ReactMarkdown>
+      </motion.div>
       
       {(prevSection || nextSection) && onNavigate && (
         <motion.div 
