@@ -35,7 +35,7 @@ export function OnboardingModal({ onComplete }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-4xl w-full mx-4 relative">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-4xl w-full mx-4 relative border-2 border-gray-300 dark:border-gray-700">
         {/* Skip button */}
         <button
           onClick={handleSkip}
@@ -56,7 +56,7 @@ export function OnboardingModal({ onComplete }) {
         <div className="flex items-center justify-between px-8 pb-6">
           <button
             onClick={handleSkip}
-            className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
             Skip
           </button>
