@@ -83,6 +83,13 @@ function parseMDXContent(mdxContent: string): DocData {
       continue;
     }
 
+    // Convert ### to bold subsection in content
+    if (line.startsWith('### ') && currentSection) {
+      const subsectionTitle = line.replace('### ', '').trim();
+      currentSection.content += `\n**${subsectionTitle}**\n\n`;
+      continue;
+    }
+
     // Accumulate content
     if (currentSection) {
       currentSection.content += line + '\n';
