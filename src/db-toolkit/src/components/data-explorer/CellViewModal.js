@@ -1,14 +1,19 @@
 /**
  * Modal for viewing full cell content
  */
-import { X, Copy } from 'lucide-react';
+import { useState } from 'react';
+import { X, Copy, Check } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useToast } from '../../contexts/ToastContext';
 
 export function CellViewModal({ isOpen, onClose, data, column }) {
   const toast = useToast();
+  const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
+
+  // Extract actual data if it's wrapped in response object
+  const actualData = data?.data !== undefined ? data.data : data;
 
   // Format data for display
   const formatData = (value) => {
@@ -23,11 +28,13 @@ export function CellViewModal({ isOpen, onClose, data, column }) {
     return String(value);
   };
 
-  const displayData = formatData(data);
+  const displayData = formatData(actualData);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(displayData);
     toast.success('Copied to clipboard');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -38,8 +45,13 @@ export function CellViewModal({ isOpen, onClose, data, column }) {
             {column}
           </h3>
           <div className="flex gap-2">
-            <Button variant="secondary" size="sm" icon={<Copy size={16} />} onClick={handleCopy}>
-              Copy
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              icon={copied ? <Check size={16} /> : <Copy size={16} />} 
+              onClick={handleCopy}
+            >
+              {copied ? 'Copied' : 'Copy'}
             </Button>
             <button
               onClick={onClose}
