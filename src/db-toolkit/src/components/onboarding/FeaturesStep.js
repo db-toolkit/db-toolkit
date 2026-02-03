@@ -30,16 +30,9 @@ export function FeaturesStep({ onNext }) {
   ];
 
   return (
-    <div className="flex flex-col items-center py-4 px-6 w-full">
-      <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2 text-center">
-        Powerful Features
-      </h2>
-      <p className="text-base text-gray-600 dark:text-gray-400 mb-6 text-center max-w-2xl">
-        Everything you need to manage your databases efficiently
-      </p>
-
+    <div className="flex flex-col h-full w-full py-4 px-6">
       {/* Feature List */}
-      <div className="w-full max-w-2xl space-y-3 mb-6">
+      <div className="flex-1 space-y-4">
         {features.map((feature) => (
           <div
             key={feature.title}
@@ -58,9 +51,12 @@ export function FeaturesStep({ onNext }) {
         ))}
       </div>
 
-      <Button onClick={onNext} className="px-10 py-3 text-base">
-        Next
-      </Button>
+      {/* Next button - bottom right */}
+      <div className="flex justify-end mt-6">
+        <Button onClick={onNext} className="px-10 py-3 text-base">
+          Next
+        </Button>
+      </div>
     </div>
   );
 }
