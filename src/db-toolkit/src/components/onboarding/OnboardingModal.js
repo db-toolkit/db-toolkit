@@ -52,18 +52,29 @@ export function OnboardingModal({ onComplete }) {
           />
         </div>
 
-        {/* Progress indicator */}
-        <div className="flex justify-center gap-2 pb-6">
-          {steps.map((_, index) => (
-            <div
-              key={index}
-              className={`h-2 rounded-full transition-all ${
-                index === currentStep
-                  ? 'w-8 bg-green-500'
-                  : 'w-2 bg-gray-300 dark:bg-gray-700'
-              }`}
-            />
-          ))}
+        {/* Progress indicator and Skip button */}
+        <div className="flex items-center justify-between px-8 pb-6">
+          <button
+            onClick={handleSkip}
+            className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
+          >
+            Skip
+          </button>
+          
+          <div className="flex gap-2">
+            {steps.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 rounded-full transition-all ${
+                  index === currentStep
+                    ? 'w-8 bg-green-500'
+                    : 'w-2 bg-gray-300 dark:bg-gray-700'
+                }`}
+              />
+            ))}
+          </div>
+          
+          <div className="w-10" /> {/* Spacer for centering */}
         </div>
       </div>
     </div>
