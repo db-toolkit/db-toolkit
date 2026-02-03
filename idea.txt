@@ -1,7 +1,1 @@
-redesign the application so that connecting to a database would open a new workspace tab with the database name, and it should be a full page with all the sidebar tabs a database needs like query editor, migration, data explorer, backup
-
-why do we have different schama explorer and. dats explorer pages
-
 add ssh tunnelling that is the ability to connect to a database on a remote server
-
-there is not user onboarding we need that are 3 step onboarding showing features
