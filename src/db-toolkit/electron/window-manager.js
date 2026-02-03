@@ -11,8 +11,8 @@ function createWindow() {
   const isWindows = process.platform === "win32";
 
   const win = new BrowserWindow({
-    width: 1050,
-    height: 700,
+    width: 1100,
+    height: 750,
     title: "DB Toolkit",
     icon: iconPath,
     frame: false,

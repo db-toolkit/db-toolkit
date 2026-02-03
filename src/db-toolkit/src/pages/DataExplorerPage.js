@@ -60,7 +60,7 @@ function DataExplorerPage() {
   const breadcrumbItems = useMemo(() => {
     const items = [];
     if (connectionId) {
-      items.push({ label: 'Connections', href: '/' });
+      items.push({ label: 'Connections', href: '/connections' });
       items.push({ label: connectionName, href: null });
       if (selectedTable) {
         items.push({ label: selectedTable.schema });
