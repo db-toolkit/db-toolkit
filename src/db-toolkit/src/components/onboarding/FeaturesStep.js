@@ -43,6 +43,11 @@ export function FeaturesStep({ onNext }) {
 
   return (
     <div className="flex flex-col h-full w-full py-4 px-6">
+      {/* Header */}
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Features</h2>
+      </div>
+
       {/* Feature List */}
       <div className="flex-1 space-y-3 overflow-y-auto">
         {features.map((feature) => (

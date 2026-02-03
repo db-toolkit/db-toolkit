@@ -37,6 +37,9 @@ export function ReadyToStartStep({ onComplete }) {
             </div>
           ))}
         </div>
+        <p className="text-xs text-gray-400 dark:text-gray-500 italic mt-2">
+          More database support coming soon
+        </p>
       </div>
     </div>
   );
