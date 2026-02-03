@@ -1,0 +1,212 @@
+# Database Migrations
+
+## Overview
+
+DB Toolkit provides a built-in Migration Panel powered by Migrator CLI.
+
+Manage database schema changes with:
+- Project-based migrations - Link migration folders to database connections
+- Real-time terminal output via WebSocket
+- Execute migration commands directly from the UI
+- Track migration history and status
+- No manual configuration needed
+
+## Getting Started
+
+### 1. Open Migration Panel
+
+Click "Migrations" in the sidebar
+
+### 2. Create Migration Project
+
+- Click "New Project" or go to Settings > Migrations
+- Select your project folder (where your Python code lives)
+- Link it to a database connection
+- DB Toolkit will remember this setup
+
+### 3. Initialize Migrations
+
+In the terminal panel, run:
+
+```bash
+migrator init
+```
+
+This creates a migrations/ folder in your project with all necessary files.
+
+## Creating Migrations
+
+### 1. Make changes to your SQLAlchemy models
+
+Edit your Python files with model definitions
+
+### 2. Generate migration
+
+In the Migration Panel terminal:
+
+```bash
+migrator makemigrations "describe your changes"
+```
+
+Example:
+
+```bash
+migrator makemigrations "add email column to users"
+```
+
+### 3. Review the migration
+
+DB Toolkit shows the generated migration file. Check the upgrade() and downgrade() functions
+
+### 4. Apply migration
+
+```bash
+migrator migrate
+```
+
+The terminal shows real-time output as the migration runs.
+
+## Migration Projects
+
+DB Toolkit uses a project-based approach:
+
+### What is a Migration Project?
+
+A migration project links:
+- Your project folder (where Python code lives)
+- A database connection
+- Migration settings (auto-detected or custom)
+
+### Managing Projects
+
+1. Go to Settings > Migrations
+2. Click "Add Project"
+3. Select folder with your SQLAlchemy models
+4. Choose database connection
+5. Save
+
+### Switching Projects
+
+Use the dropdown in Migration Panel to switch between projects. Each project has its own migration history and settings.
+
+## Commands
+
+**Initialize migration environment:**
+```bash
+migrator init
+```
+
+**Create new migration:**
+```bash
+migrator makemigrations "add email to users"
+```
+
+**Apply migrations:**
+```bash
+migrator migrate
+```
+
+**Rollback migrations:**
+```bash
+migrator downgrade
+```
+
+**Show migration history:**
+```bash
+migrator history
+```
+
+**Show current revision:**
+```bash
+migrator current
+```
+
+**Mark database as migrated (for existing databases):**
+```bash
+migrator stamp head
+```
+
+**Show migration status:**
+```bash
+migrator status
+```
+
+## Migration Terminal
+
+The Migration Panel includes an integrated terminal:
+
+### Features
+
+- Real-time command output via WebSocket
+- Drag to resize terminal height
+- Auto-scroll to latest output
+- Command history
+- Color-coded output (errors in red)
+
+### Available Commands
+
+- `migrator init` - Initialize migrations
+- `migrator makemigrations "message"` - Create migration
+- `migrator migrate` - Apply migrations
+- `migrator downgrade` - Rollback last migration
+- `migrator history` - Show migration history
+- `migrator current` - Show current revision
+- `migrator status` - Show migration status
+- `migrator stamp head` - Mark existing DB as migrated
+
+## Working with Existing Databases
+
+If you have an existing database with tables:
+
+### 1. Initialize migrations
+
+```bash
+migrator init
+```
+
+### 2. Mark current state
+
+```bash
+migrator stamp head
+```
+
+This tells Migrator your database is already at the "head" revision.
+
+### 3. Make changes
+
+Now you can create new migrations for future changes:
+
+```bash
+migrator makemigrations "add new column"
+migrator migrate
+```
+
+## Troubleshooting
+
+### Project not showing?
+
+Go to Settings > Migrations and verify:
+- Folder path is correct
+- Database connection is active
+- Project is saved
+
+### Base class not found?
+
+Use --base flag in terminal:
+
+```bash
+migrator init --base app.database:Base
+```
+
+### Migration failed?
+
+- Check terminal output for errors
+- Verify database connection is active
+- Check your model definitions
+- Try: `migrator downgrade` (to rollback)
+
+### Terminal not responding?
+
+- Check WebSocket connection
+- Refresh the page
+- Verify backend is running
