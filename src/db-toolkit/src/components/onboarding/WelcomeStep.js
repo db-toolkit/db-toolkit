@@ -35,10 +35,6 @@ export function WelcomeStep({ onNext }) {
             <span className="text-base font-medium">AI Assistant</span>
           </div>
         </div>
-
-        <Button onClick={onNext} className="mt-4 px-10 py-3 text-base">
-          View Features
-        </Button>
       </div>
     </div>
   );

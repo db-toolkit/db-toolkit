@@ -81,7 +81,7 @@ export function OnboardingModal({ onComplete }) {
           {currentStep < steps.length - 1 ? (
             <button
               onClick={handleNext}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-lg transition-colors"
             >
               Next
             </button>

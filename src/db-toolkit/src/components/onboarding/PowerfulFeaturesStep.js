@@ -10,7 +10,7 @@ export function PowerfulFeaturesStep({ onComplete }) {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center text-center space-y-8 py-12">
+    <div className="flex flex-col items-center justify-center text-center space-y-8 py-12 h-full">
       <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center">
         <CheckCircle className="w-12 h-12 text-white" />
       </div>
@@ -39,10 +39,6 @@ export function PowerfulFeaturesStep({ onComplete }) {
           ))}
         </div>
       </div>
-
-      <Button onClick={onComplete} className="mt-6 px-12 py-3 text-base">
-        Create Connection
-      </Button>
     </div>
   );
 }
