@@ -1,7 +1,7 @@
 import { Code, Zap, Lock, BarChart3 } from 'lucide-react';
 import { Button } from '../common/Button';
 
-export function ConnectAnywhereStep({ onNext }) {
+export function FeaturesStep({ onNext }) {
   const features = [
     {
       icon: Code,

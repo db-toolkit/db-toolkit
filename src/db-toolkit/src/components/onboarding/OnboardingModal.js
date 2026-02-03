@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { WelcomeStep } from './WelcomeStep';
-import { ConnectAnywhereStep } from './ConnectAnywhereStep';
+import { FeaturesStep } from './FeaturesStep';
 import { PowerfulFeaturesStep } from './PowerfulFeaturesStep';
 import { onboardingUtils } from '../../utils/onboarding';
 
@@ -10,7 +10,7 @@ export function OnboardingModal({ onComplete }) {
 
   const steps = [
     { component: WelcomeStep },
-    { component: ConnectAnywhereStep },
+    { component: FeaturesStep },
     { component: PowerfulFeaturesStep }
   ];
 
@@ -30,8 +30,11 @@ export function OnboardingModal({ onComplete }) {
     onComplete();
   };
 
+  const handleStepClick = (index) => {
+    setCurrentStep(index);
+  };
+
   const CurrentStepComponent = steps[currentStep].component;
-  const isLastStep = currentStep === steps.length - 1;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50">
@@ -44,8 +47,8 @@ export function OnboardingModal({ onComplete }) {
           <X className="w-5 h-5" />
         </button>
 
-        {/* Step content */}
-        <div className="px-8 py-6">
+        {/* Step content - Fixed height */}
+        <div className="px-8 py-6 h-[500px] overflow-y-auto">
           <CurrentStepComponent
             onNext={handleNext}
             onComplete={handleComplete}
@@ -63,9 +66,10 @@ export function OnboardingModal({ onComplete }) {
           
           <div className="flex gap-2">
             {steps.map((_, index) => (
-              <div
+              <button
                 key={index}
-                className={`h-2 rounded-full transition-all ${
+                onClick={() => handleStepClick(index)}
+                className={`h-2 rounded-full transition-all cursor-pointer hover:opacity-80 ${
                   index === currentStep
                     ? 'w-8 bg-green-500'
                     : 'w-2 bg-gray-300 dark:bg-gray-700'
