@@ -1,7 +1,6 @@
 import { CheckCircle, Database } from 'lucide-react';
-import { Button } from '../common/Button';
 
-export function PowerfulFeaturesStep({ onComplete }) {
+export function ReadyToStartStep({ onComplete }) {
   const databases = [
     { name: 'PostgreSQL', color: 'bg-blue-500' },
     { name: 'MySQL', color: 'bg-orange-500' },
@@ -10,7 +9,7 @@ export function PowerfulFeaturesStep({ onComplete }) {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center text-center space-y-8 py-12 h-full">
+    <div className="flex flex-col items-center justify-center text-center space-y-8 w-full">
       <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center">
         <CheckCircle className="w-12 h-12 text-white" />
       </div>

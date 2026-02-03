@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
 import { WelcomeStep } from './WelcomeStep';
 import { FeaturesStep } from './FeaturesStep';
-import { PowerfulFeaturesStep } from './PowerfulFeaturesStep';
+import { ReadyToStartStep } from './ReadyToStartStep';
 import { onboardingUtils } from '../../utils/onboarding';
 
 export function OnboardingModal({ onComplete }) {
@@ -11,7 +10,7 @@ export function OnboardingModal({ onComplete }) {
   const steps = [
     { component: WelcomeStep },
     { component: FeaturesStep },
-    { component: PowerfulFeaturesStep }
+    { component: ReadyToStartStep }
   ];
 
   const handleNext = () => {
@@ -39,16 +38,8 @@ export function OnboardingModal({ onComplete }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-4xl w-full mx-4 relative border-2 border-gray-300 dark:border-gray-700">
-        {/* Skip button */}
-        <button
-          onClick={handleSkip}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors z-10"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
         {/* Step content - Fixed height */}
-        <div className="px-8 py-6 h-[500px] flex items-center">
+        <div className="px-8 py-6 h-[500px] flex items-center justify-center">
           <CurrentStepComponent
             onNext={handleNext}
             onComplete={handleComplete}
