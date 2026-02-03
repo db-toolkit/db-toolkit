@@ -1,4 +1,4 @@
-import { Code, Zap, Lock, BarChart3 } from 'lucide-react';
+import { Code, Zap, Lock, BarChart3, Database, Layers } from 'lucide-react';
 import { Button } from '../common/Button';
 
 export function FeaturesStep({ onNext }) {
@@ -16,6 +16,12 @@ export function FeaturesStep({ onNext }) {
       color: 'text-purple-500'
     },
     {
+      icon: Database,
+      title: 'Schema Explorer',
+      description: 'Browse table structures, columns, indexes, and relationships visually.',
+      color: 'text-cyan-500'
+    },
+    {
       icon: Lock,
       title: 'Automated Backups',
       description: 'Schedule backups with retention policies and one-click restore.',
@@ -26,6 +32,12 @@ export function FeaturesStep({ onNext }) {
       title: 'Analytics',
       description: 'Monitor performance with live metrics and query insights.',
       color: 'text-orange-500'
+    },
+    {
+      icon: Layers,
+      title: 'Workspaces',
+      description: 'Multiple isolated workspace tabs for working with different databases.',
+      color: 'text-indigo-500'
     }
   ];
 
