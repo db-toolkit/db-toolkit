@@ -1,16 +1,18 @@
 import { memo, useState } from 'react';
+import type { ReactNode } from 'react';
 import { Copy, Check } from 'lucide-react';
 
 interface CodeBlockProps {
-  code: string;
-  language?: string;
+  children: ReactNode;
+  className?: string;
 }
 
-function CodeBlock({ code }: CodeBlockProps) {
+function CodeBlock({ children, className }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const codeText = String(children ?? '').replace(/\n$/, '');
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(code);
+    navigator.clipboard.writeText(codeText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -31,7 +33,7 @@ function CodeBlock({ code }: CodeBlockProps) {
         </button>
       </div>
       <pre className="bg-gray-900 dark:bg-gray-950 text-gray-100 p-4 rounded-lg overflow-x-auto">
-        <code className="text-sm font-mono">{code}</code>
+        <code className={`text-sm font-mono ${className || ''}`.trim()}>{codeText}</code>
       </pre>
     </div>
   );
