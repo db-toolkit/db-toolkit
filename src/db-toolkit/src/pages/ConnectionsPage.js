@@ -10,14 +10,12 @@ import { LoadingState } from '../components/common/LoadingState';
 import { EmptyState } from '../components/common/EmptyState';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 import { ConnectionCard } from '../components/connections/ConnectionCard';
-import { ConnectionModal } from '../components/connections/ConnectionModal';
 import { ConnectionSidebar } from '../components/connections/ConnectionSidebar';
 import { AddConnectionButton } from '../components/connections/AddConnectionButton';
 
 function ConnectionsPage() {
   const navigate = useNavigate();
   const toast = useToast();
-  const [showModal, setShowModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [modalError, setModalError] = useState('');
@@ -65,7 +63,6 @@ function ConnectionsPage() {
         await createConnection(data);
         toast.success('Connection created');
       }
-      setShowModal(false);
       setShowSidebar(false);
       setEditingConnection(null);
     } catch (err) {
@@ -76,11 +73,6 @@ function ConnectionsPage() {
   const handleEdit = useCallback((connection) => {
     setEditingConnection(connection);
     setShowSidebar(true);
-  }, []);
-
-  const handleCloseModal = useCallback(() => {
-    setShowModal(false);
-    setEditingConnection(null);
   }, []);
 
   const handleCloseSidebar = useCallback(() => {
@@ -138,7 +130,7 @@ function ConnectionsPage() {
           title="No connections yet"
           description="Create your first database connection to get started"
           action={
-            <Button icon={<Plus size={20} />} onClick={() => { setEditingConnection(null); setShowModal(true); }}>
+            <Button icon={<Plus size={20} />} onClick={() => { setEditingConnection(null); setShowSidebar(true); }}>
               Create Connection
             </Button>
           }
@@ -157,13 +149,6 @@ function ConnectionsPage() {
           ))}
         </div>
       )}
-
-      <ConnectionModal
-        isOpen={showModal}
-        onClose={handleCloseModal}
-        onSave={handleSave}
-        connection={editingConnection}
-      />
 
       <ConnectionSidebar
         isOpen={showSidebar}
