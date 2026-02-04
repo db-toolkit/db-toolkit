@@ -22,3 +22,4 @@ src/docs/.next
 *.njsproj
 *.sln
 *.sw?
+.next
