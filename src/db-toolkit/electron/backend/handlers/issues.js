@@ -5,7 +5,7 @@
 const { ipcMain } = require('electron');
 const { logger } = require('../utils/logger.js');
 
-const API_URL = 'https://db-toolkit.vercel.app/api/issues/report';
+const API_URL = 'https://db-toolkit-api.vercel.app/api/issues/report';
 
 function registerIssuesHandlers() {
   ipcMain.handle('issues:create', async (event, issue) => {
