@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { docsConfig } from '@/lib/config';
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -11,9 +11,9 @@ export function Sidebar() {
     Object.fromEntries(docsConfig.sections.map((s) => [s.title, true]))
   );
 
-  const toggleSection = (title: string) => {
+  const toggleSection = useCallback((title: string) => {
     setOpenSections((prev) => ({ ...prev, [title]: !prev[title] }));
-  };
+  }, []);
 
   return (
     <aside className="w-64 border-r border-slate-200 dark:border-slate-800 h-[calc(100vh-4rem)] overflow-y-auto sticky top-16">
