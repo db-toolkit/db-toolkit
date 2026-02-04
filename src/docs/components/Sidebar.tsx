@@ -22,7 +22,7 @@ export function Sidebar() {
           <div key={section.title}>
             <button
               onClick={() => toggleSection(section.title)}
-              className="flex items-center justify-between w-full text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 hover:text-cyan-600 dark:hover:text-cyan-400"
+              className="flex items-center justify-between w-full text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 hover:text-emerald-600 dark:hover:text-emerald-400"
             >
               {section.title}
               <svg
@@ -46,7 +46,7 @@ export function Sidebar() {
                         href={`/docs/${item.slug}`}
                         className={`block px-3 py-1.5 text-sm rounded-md transition-colors ${
                           isActive
-                            ? 'bg-cyan-50 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 font-medium'
+                            ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 font-medium'
                             : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900'
                         }`}
                       >

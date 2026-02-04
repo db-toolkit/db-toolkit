@@ -1,7 +1,7 @@
 export const docsConfig = {
   sections: [
     {
-      title: 'Getting Started',
+      title: 'Getting started',
       items: [
         { title: 'Introduction', slug: 'getting-started' },
         { title: 'Connections', slug: 'connections' },
@@ -10,9 +10,9 @@ export const docsConfig = {
     {
       title: 'Features',
       items: [
-        { title: 'Query Editor', slug: 'query-editor' },
-        { title: 'Data Explorer', slug: 'data-explorer' },
-        { title: 'Schema Explorer', slug: 'schema-explorer' },
+        { title: 'Query editor', slug: 'query-editor' },
+        { title: 'Data explorer', slug: 'data-explorer' },
+        { title: 'Schema explorer', slug: 'schema-explorer' },
         { title: 'Workspaces', slug: 'workspaces' },
       ],
     },

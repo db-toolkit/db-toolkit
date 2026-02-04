@@ -7,9 +7,8 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-          <span className="text-cyan-600 dark:text-cyan-400">DB Toolkit</span>
-          <span className="text-slate-400 dark:text-slate-600">/</span>
-          <span>Docs</span>
+          <span className="text-emerald-600 dark:text-emerald-400">DB Toolkit</span>
+          <span className="text-slate-900 dark:text-slate-100">Docs</span>
         </Link>
         
         <div className="flex-1 max-w-md mx-8">

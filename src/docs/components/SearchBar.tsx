@@ -78,7 +78,7 @@ export function SearchBar() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50"
+        className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40"
         onClick={() => setIsOpen(false)}
       />
 
@@ -117,7 +117,7 @@ export function SearchBar() {
                 onClick={() => handleSelect(result.slug)}
                 className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                   index === selectedIndex
-                    ? 'bg-cyan-50 dark:bg-cyan-950'
+                    ? 'bg-emerald-50 dark:bg-emerald-950'
                     : 'hover:bg-slate-100 dark:hover:bg-slate-800'
                 }`}
               >
