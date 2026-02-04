@@ -32,15 +32,17 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
               <Breadcrumbs />
               
               <header className="mb-8">
-                <h1 className="text-4xl font-bold mb-3">{doc.title}</h1>
+                <div className="flex items-center gap-3 mb-3">
+                  <h1 className="text-4xl font-bold">{doc.title}</h1>
+                  <span className="px-3 py-1 text-xs font-medium bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 rounded-full">
+                    {doc.readingTime}
+                  </span>
+                </div>
                 {doc.description && (
-                  <p className="text-lg text-slate-600 dark:text-slate-400 mb-2">
+                  <p className="text-lg text-slate-600 dark:text-slate-400">
                     {doc.description}
                   </p>
                 )}
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {doc.readingTime}
-                </p>
               </header>
               
               <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:scroll-mt-24 prose-a:text-emerald-600 dark:prose-a:text-emerald-400 prose-code:text-emerald-600 dark:prose-code:text-emerald-400 prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-slate-900 dark:prose-pre:bg-slate-900 prose-h1:hidden">
