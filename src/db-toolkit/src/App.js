@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route, useNavigate, useLocation } from 'r
 import { useWorkspaceShortcuts } from './hooks/workspace/useWorkspaceShortcuts';
 import { useBackupWebSocket } from './websockets/useBackupWebSocket';
 import { useTelemetry } from './hooks/system/useTelemetry';
+import { useToast } from './contexts/ToastContext';
 import Layout from './components/common/Layout';
 import SplashScreen from './components/common/SplashScreen';
 import { Spinner } from './components/common/Spinner';
@@ -34,6 +35,7 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
   const { trackFeature } = useTelemetry();
+  const toast = useToast();
   const [showOnboarding, setShowOnboarding] = useState(false);
   
   useMenuActions();
@@ -89,6 +91,23 @@ function AppContent() {
       navigate('/', { replace: true });
     }
   }, [navigate]);
+
+  useEffect(() => {
+    const handleUpdateAvailable = (event, data) => {
+      if (!data?.latestVersion) return;
+      toast.info(`Update available: ${data.latestVersion}. Check Help → Check for Updates.`);
+    };
+
+    if (window.electron?.ipcRenderer?.on) {
+      window.electron.ipcRenderer.on('update:available', handleUpdateAvailable);
+    }
+
+    return () => {
+      if (window.electron?.ipcRenderer?.removeAllListeners) {
+        window.electron.ipcRenderer.removeAllListeners('update:available');
+      }
+    };
+  }, [toast]);
 
   return (
     <WorkspaceProvider>

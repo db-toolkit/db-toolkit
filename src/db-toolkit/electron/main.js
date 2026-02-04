@@ -29,7 +29,7 @@ app.whenReady().then(async () => {
   // Auto-check for updates shortly after app launch (packaged only)
   if (app.isPackaged) {
     setTimeout(() => {
-      checkForUpdates();
+      checkForUpdates({ silent: true, notifyWindow: mainWindow });
     }, 6000);
   }
   

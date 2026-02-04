@@ -192,13 +192,26 @@ async function downloadUpdate(release) {
   }
 }
 
-async function checkForUpdates() {
+async function checkForUpdates(options = {}) {
+  const { silent = false, notifyWindow = null } = options;
   try {
     const release = await fetchLatestRelease();
     const latestVersion = release.tag_name;
     const comparison = compareVersions(CURRENT_VERSION, latestVersion);
 
     if (comparison < 0) {
+      if (silent) {
+        if (notifyWindow?.webContents) {
+          notifyWindow.webContents.send('update:available', {
+            latestVersion,
+            currentVersion: CURRENT_VERSION,
+            releaseName: release.name,
+            releaseNotes: release.body || ''
+          });
+        }
+        return;
+      }
+
       const response = await dialog.showMessageBox({
         type: 'info',
         title: 'Update Available',
@@ -212,22 +225,26 @@ async function checkForUpdates() {
         await downloadUpdate(release);
       }
     } else {
+      if (!silent) {
+        dialog.showMessageBox({
+          type: 'info',
+          title: 'No Updates',
+          message: 'You\'re up to date!',
+          detail: `DB Toolkit ${CURRENT_VERSION} is the latest version.`,
+          buttons: ['OK']
+        });
+      }
+    }
+  } catch (error) {
+    if (!silent) {
       dialog.showMessageBox({
-        type: 'info',
-        title: 'No Updates',
-        message: 'You\'re up to date!',
-        detail: `DB Toolkit ${CURRENT_VERSION} is the latest version.`,
+        type: 'error',
+        title: 'Update Check Failed',
+        message: 'Unable to check for updates',
+        detail: 'Please check your internet connection and try again.',
         buttons: ['OK']
       });
     }
-  } catch (error) {
-    dialog.showMessageBox({
-      type: 'error',
-      title: 'Update Check Failed',
-      message: 'Unable to check for updates',
-      detail: 'Please check your internet connection and try again.',
-      buttons: ['OK']
-    });
   }
 }
 
