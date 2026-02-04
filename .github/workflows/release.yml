@@ -93,7 +93,7 @@ jobs:
         with:
           files: |
             src/db-toolkit/release/*.dmg
-            src/db-toolkit/release/*.zip
             src/db-toolkit/release/*.exe
+            src/db-toolkit/release/*.msi
             src/db-toolkit/release/*.AppImage
             src/db-toolkit/release/*.deb
