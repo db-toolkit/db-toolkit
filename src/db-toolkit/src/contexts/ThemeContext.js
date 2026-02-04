@@ -5,17 +5,21 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState('light');
-  const [settingsTheme, setSettingsTheme] = useState('auto');
+  const [settingsTheme, setSettingsTheme] = useState('system');
 
   useEffect(() => {
     // Load theme from settings
-    settingsAPI.get().then(response => {
-      setSettingsTheme(response.data.theme);
-    }).catch(() => {});
+    settingsAPI
+      .get()
+      .then((response) => {
+        const nextTheme = response?.data?.theme || response?.theme || 'system';
+        setSettingsTheme(normalizeTheme(nextTheme));
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (settingsTheme === 'auto') {
+    if (settingsTheme === 'system') {
       // Detect OS theme preference
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       setTheme(mediaQuery.matches ? 'dark' : 'light');
@@ -44,8 +48,14 @@ export function ThemeProvider({ children }) {
     }
   }, [theme]);
 
-  const updateTheme = (newTheme) => {
-    setSettingsTheme(newTheme);
+  const updateTheme = async (newTheme) => {
+    const normalized = normalizeTheme(newTheme);
+    setSettingsTheme(normalized);
+    try {
+      await settingsAPI.update({ theme: normalized });
+    } catch (err) {
+      console.error('Failed to save theme:', err);
+    }
   };
 
   const toggleTheme = async () => {
@@ -70,6 +80,12 @@ export function ThemeProvider({ children }) {
       {children}
     </ThemeContext.Provider>
   );
+}
+
+function normalizeTheme(value) {
+  if (value === 'auto') return 'system';
+  if (value === 'system' || value === 'light' || value === 'dark') return value;
+  return 'system';
 }
 
 export function useTheme() {
