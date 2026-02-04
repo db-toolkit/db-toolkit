@@ -25,16 +25,16 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
               <header className="mb-8">
                 <h1 className="text-4xl font-bold mb-3">{doc.title}</h1>
                 {doc.description && (
-                  <p className="text-lg text-slate-600 dark:text-slate-400">
+                  <p className="text-lg text-slate-600 dark:text-slate-400 mb-2">
                     {doc.description}
                   </p>
                 )}
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   {doc.readingTime}
                 </p>
               </header>
               
-              <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:scroll-mt-24 prose-a:text-cyan-600 dark:prose-a:text-cyan-400 prose-code:text-cyan-600 dark:prose-code:text-cyan-400 prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-slate-900 dark:prose-pre:bg-slate-900">
+              <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:scroll-mt-24 prose-a:text-cyan-600 dark:prose-a:text-cyan-400 prose-code:text-cyan-600 dark:prose-code:text-cyan-400 prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-slate-900 dark:prose-pre:bg-slate-900 prose-h1:hidden">
                 <MDXRemote source={doc.content} />
               </article>
             </div>

@@ -32,7 +32,10 @@ export function TableOfContents() {
           }
         });
       },
-      { rootMargin: '-100px 0px -80% 0px' }
+      { 
+        rootMargin: '-80px 0px -80% 0px',
+        threshold: 1.0
+      }
     );
 
     elements.forEach((el) => observer.observe(el));
@@ -46,7 +49,7 @@ export function TableOfContents() {
       <h4 className="font-semibold text-sm mb-4 text-slate-900 dark:text-slate-100">
         On This Page
       </h4>
-      <ul className="space-y-2 text-sm">
+      <ul className="space-y-2 text-sm border-l-2 border-slate-200 dark:border-slate-800">
         {headings.map((heading) => (
           <li
             key={heading.id}
@@ -54,10 +57,10 @@ export function TableOfContents() {
           >
             <a
               href={`#${heading.id}`}
-              className={`block py-1 transition-colors ${
+              className={`block py-1 pl-4 -ml-px border-l-2 transition-colors ${
                 activeId === heading.id
-                  ? 'text-cyan-600 dark:text-cyan-400 font-medium'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                  ? 'border-cyan-500 text-cyan-600 dark:text-cyan-400 font-medium'
+                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-slate-700'
               }`}
             >
               {heading.text}
