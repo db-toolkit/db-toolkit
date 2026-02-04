@@ -2,12 +2,14 @@ import { Sparkles, Code, Lock } from 'lucide-react';
 import { Button } from '../common/Button';
 
 export function WelcomeStep({ onNext }) {
+  const previewUrl = `${import.meta.env.BASE_URL}assets/preview.png`;
+
   return (
     <div className="flex items-center gap-8 py-8 px-6 mt-8">
       {/* Hero Image - Left Side */}
       <div className="flex-1 rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
         <img 
-          src="/assets/preview.png" 
+          src={previewUrl} 
           alt="DB Toolkit Preview" 
           className="w-full h-auto"
         />
