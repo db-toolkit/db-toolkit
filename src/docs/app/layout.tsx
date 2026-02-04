@@ -4,15 +4,15 @@ import { Header } from '@/components/Header';
 
 export const metadata = {
   title: 'DB Toolkit Documentation',
-  description: 'Modern cross-platform database management application - Documentation for PostgreSQL, MySQL, SQLite, and MongoDB',
-  keywords: ['database', 'postgresql', 'mysql', 'sqlite', 'mongodb', 'database management', 'sql editor', 'query builder'],
+  description: 'Free, open-source, and modern cross-platform database management application - Documentation for PostgreSQL, MySQL, SQLite, and MongoDB',
+  keywords: ['database', 'postgresql', 'mysql', 'sqlite', 'mongodb', 'database management', 'sql editor', 'free', 'open source', 'modern'],
   authors: [{ name: 'DB Toolkit Team' }],
   icons: {
     icon: '/icon.png',
   },
   openGraph: {
     title: 'DB Toolkit Documentation',
-    description: 'Modern cross-platform database management application',
+    description: 'Free, open-source, and modern cross-platform database management application',
     type: 'website',
   },
 };
