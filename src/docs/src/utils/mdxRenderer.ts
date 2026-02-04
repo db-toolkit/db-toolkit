@@ -6,12 +6,22 @@ import { compile } from '@mdx-js/mdx';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 
+export interface DocSection {
+  heading: string;
+  content: string;
+}
+
+export interface ParsedDoc {
+  title: string;
+  sections: DocSection[];
+}
+
 /**
  * Load and compile MDX file
  * @param {string} filename - MDX filename (e.g., 'getting-started.mdx')
  * @returns {Promise<string>} Compiled MDX code
  */
-export async function loadMDX(filename) {
+export async function loadMDX(filename: string) {
   try {
     const response = await fetch(`/data/${filename}`);
     if (!response.ok) {
@@ -38,40 +48,63 @@ export async function loadMDX(filename) {
  * @param {string} mdxContent - Raw MDX content
  * @returns {Object} { title, sections }
  */
-export function parseMDXContent(mdxContent) {
+export function parseMDXContent(mdxContent: string): ParsedDoc {
   const lines = mdxContent.split('\n');
-  const sections = [];
-  let currentSection = null;
+  const sections: DocSection[] = [];
+  let currentSection: DocSection | null = null;
   let title = '';
+  let preContent = '';
+  let inCodeBlock = false;
 
   for (const line of lines) {
-    // Extract main title (# Title)
-    if (line.startsWith('# ') && !title) {
-      title = line.replace('# ', '').trim();
-      continue;
-    }
+    const trimmed = line.trim();
 
-    // Extract section headings (## Section)
-    if (line.startsWith('## ')) {
+    if (trimmed.startsWith('```')) {
+      inCodeBlock = !inCodeBlock;
       if (currentSection) {
-        sections.push(currentSection);
+        currentSection.content += line + '\n';
+      } else {
+        preContent += line + '\n';
       }
-      currentSection = {
-        heading: line.replace('## ', '').trim(),
-        content: '',
-      };
       continue;
     }
 
-    // Accumulate content
+    if (!inCodeBlock) {
+      if (line.startsWith('# ') && !title) {
+        title = line.replace('# ', '').trim();
+        continue;
+      }
+
+      if (line.startsWith('## ')) {
+        if (currentSection) {
+          sections.push(currentSection);
+        }
+        currentSection = {
+          heading: line.replace('## ', '').trim(),
+          content: '',
+        };
+        continue;
+      }
+    }
+
     if (currentSection) {
       currentSection.content += line + '\n';
+    } else {
+      preContent += line + '\n';
     }
   }
 
-  // Push last section
   if (currentSection) {
     sections.push(currentSection);
+  }
+
+  const trimmedPre = preContent.trim();
+  if (trimmedPre) {
+    if (sections.length === 0) {
+      sections.push({ heading: 'Overview', content: preContent });
+    } else {
+      sections[0].content = `${preContent}\n${sections[0].content}`.trimEnd() + '\n';
+    }
   }
 
   return { title, sections };

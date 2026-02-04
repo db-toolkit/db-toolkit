@@ -3,11 +3,8 @@
  * Loads and parses MDX files from /data folder
  */
 import { useState, useEffect } from 'react';
-
-interface DocSection {
-  heading: string;
-  content: string;
-}
+import type { DocSection, ParsedDoc } from '../utils/mdxRenderer';
+import { parseMDXContent } from '../utils/mdxRenderer';
 
 interface DocData {
   title: string;
@@ -35,7 +32,7 @@ export function useMDXDoc(filename: string) {
         }
 
         const mdxContent = await response.text();
-        const parsed = parseMDXContent(mdxContent);
+        const parsed: ParsedDoc = parseMDXContent(mdxContent);
         setData({ ...parsed, rawContent: mdxContent });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load documentation');
@@ -54,37 +51,4 @@ export function useMDXDoc(filename: string) {
 /**
  * Parse MDX content into title and sections
  */
-function parseMDXContent(mdxContent: string): Omit<DocData, 'rawContent'> {
-  const lines = mdxContent.split('\n');
-  const sections: DocSection[] = [];
-  let currentSection: DocSection | null = null;
-  let title = '';
-
-  for (const line of lines) {
-    if (line.startsWith('# ') && !title) {
-      title = line.replace('# ', '').trim();
-      continue;
-    }
-
-    if (line.startsWith('## ')) {
-      if (currentSection) {
-        sections.push(currentSection);
-      }
-      currentSection = {
-        heading: line.replace('## ', '').trim(),
-        content: '',
-      };
-      continue;
-    }
-
-    if (currentSection) {
-      currentSection.content += line + '\n';
-    }
-  }
-
-  if (currentSection) {
-    sections.push(currentSection);
-  }
-
-  return { title, sections };
-}
+// parseMDXContent lives in ../utils/mdxRenderer
