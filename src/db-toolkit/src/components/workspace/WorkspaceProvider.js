@@ -96,8 +96,8 @@ export function WorkspaceProvider({ children }) {
         if (workspaces.length >= maxWorkspaces) {
           const message =
             maxWorkspaces > 10
-              ? `You have reached the maximum limit of ${maxWorkspaces} workspaces.\n\nPlease close some workspaces before creating new ones, or increase the limit in Settings.`
-              : `You have reached the recommended limit of ${maxWorkspaces} workspaces.\n\nHaving more than 10 workspaces open simultaneously may impact RAM usage and application performance.\n\nDo you want to continue and create another workspace?`;
+              ? `You have reached your workspace limit of ${maxWorkspaces} (set in Settings).\n\nPlease close some workspaces before creating new ones, or increase the limit in Settings.`
+              : `You have reached your workspace limit of ${maxWorkspaces} (set in Settings).\n\nYou can increase it in Settings, but higher limits may impact RAM usage and performance.\n\nDo you want to continue and create another workspace?`;
 
           if (maxWorkspaces > 10) {
             window.alert(message);
