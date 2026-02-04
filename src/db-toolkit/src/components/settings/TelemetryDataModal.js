@@ -8,18 +8,20 @@ import { Button } from "../common/Button";
 
 export function TelemetryDataModal({ isOpen, onClose, getTelemetryReport, clearTelemetryData }) {
   const [report, setReport] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       loadReport();
+    } else {
+      setReport(null);
     }
   }, [isOpen]);
 
   const loadReport = async () => {
     setLoading(true);
     const data = await getTelemetryReport();
-    setReport(data);
+    setReport(normalizeReport(data));
     setLoading(false);
   };
 
@@ -52,99 +54,53 @@ export function TelemetryDataModal({ isOpen, onClose, getTelemetryReport, clearT
               <Loader2 className="w-8 h-8 animate-spin text-green-500" />
             </div>
           ) : !report || report.error ? (
-            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-12 text-gray-500 dark:text-gray-400 space-y-2">
               <p>No telemetry data collected yet.</p>
+              <p className="text-xs text-gray-400">
+                Telemetry only tracks your usage when the feature is enabled.
+              </p>
             </div>
           ) : (
-            <div className="space-y-6">
-              {/* Status */}
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Status</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Pending Events:</span>
-                    <span className="ml-2 text-gray-900 dark:text-gray-100">{report.status?.pendingEvents || 0}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Last Upload:</span>
-                    <span className="ml-2 text-gray-900 dark:text-gray-100">
-                      {report.status?.lastUpload ? new Date(report.status.lastUpload).toLocaleDateString() : 'Never'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Feature Usage */}
-              {report.features?.topUsed?.length > 0 && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                    <Activity size={16} />
-                    Feature Usage
-                  </h3>
-                  <div className="space-y-2">
-                    {report.features.topUsed.slice(0, 5).map((feature, idx) => (
-                      <div key={idx} className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-300">{feature.name || feature.feature}</span>
-                        <span className="text-gray-900 dark:text-gray-100">{feature.count} uses</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Session Stats */}
-              {report.sessions?.stats && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                    <Clock size={16} />
-                    Session Statistics
-                  </h3>
+            <>
+              <TelemetryStatus status={report.status} />
+              <TelemetryListBlock
+                title="Feature Usage"
+                icon={<Activity size={16} />}
+                items={report.features.topUsed}
+                labelParser={(item) => item.label}
+                valueParser={(item) => `${item.count} uses`}
+              />
+              <TelemetryListBlock
+                title="Database Types Used"
+                icon={<Database size={16} />}
+                items={report.databases.topTypes}
+                labelParser={(item) => item.label}
+                valueParser={(item) => `${item.count} connections`}
+              />
+              {report.sessions && (
+                <TelemetryBlock title="Session Statistics" icon={<Clock size={16} />}>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-gray-500 dark:text-gray-400">Total Sessions:</span>
-                      <span className="ml-2 text-gray-900 dark:text-gray-100">{report.sessions.stats.totalSessions || 0}</span>
+                      <span className="ml-2 text-gray-900 dark:text-gray-100">{report.sessions.totalSessions}</span>
                     </div>
                     <div>
                       <span className="text-gray-500 dark:text-gray-400">Avg Duration:</span>
                       <span className="ml-2 text-gray-900 dark:text-gray-100">
-                        {report.sessions.stats.avgDuration ? `${Math.round(report.sessions.stats.avgDuration / 60000)}m` : 'N/A'}
+                        {report.sessions.avgDuration ? `${report.sessions.avgDuration}m` : 'N/A'}
                       </span>
                     </div>
                   </div>
-                </div>
+                </TelemetryBlock>
               )}
-
-              {/* Database Usage */}
-              {report.databases?.topTypes?.length > 0 && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                    <Database size={16} />
-                    Database Types Used
-                  </h3>
-                  <div className="space-y-2">
-                    {report.databases.topTypes.map((db, idx) => (
-                      <div key={idx} className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-300">{db.type || db.name}</span>
-                        <span className="text-gray-900 dark:text-gray-100">{db.count} connections</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Workspace Usage */}
               {report.workspaces && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                    <Layout size={16} />
-                    Workspace Usage
-                  </h3>
+                <TelemetryBlock title="Workspace Usage" icon={<Layout size={16} />}>
                   <div className="text-sm text-gray-600 dark:text-gray-300">
                     {report.workspaces.avgCount ? `Average ${report.workspaces.avgCount} workspaces` : 'No data'}
                   </div>
-                </div>
+                </TelemetryBlock>
               )}
-            </div>
+            </>
           )}
         </div>
 
@@ -159,5 +115,96 @@ export function TelemetryDataModal({ isOpen, onClose, getTelemetryReport, clearT
         </div>
       </div>
     </div>
+  );
+}
+
+function normalizeReport(payload) {
+  if (!payload || payload.error) {
+    return { error: payload?.error || 'Telemetry report unavailable' };
+  }
+
+  const status = {
+    pendingEvents: payload.status?.pendingEvents ?? 0,
+    lastUpload: payload.status?.lastUpload || null
+  };
+
+  const featuresTop = (payload.features?.topUsed || []).map((feature) => ({
+    label: feature.name || feature.feature || 'Feature',
+    count: feature.count || 0
+  }));
+
+  const databasesTop = (payload.databases?.topTypes || []).map((db) => ({
+    label: db.type || db.name || 'Database',
+    count: db.count || 0
+  }));
+
+  const sessions = payload.sessions?.stats
+    ? {
+        totalSessions: payload.sessions.stats.totalSessions || 0,
+        avgDuration: payload.sessions.stats.avgDuration
+          ? Math.round(payload.sessions.stats.avgDuration / 60000)
+          : 0
+      }
+    : null;
+
+  const workspaces = payload.workspaces
+    ? { avgCount: payload.workspaces.avgCount || 0 }
+    : null;
+
+  return {
+    ...payload,
+    status,
+    features: { topUsed: featuresTop },
+    databases: { topTypes: databasesTop },
+    sessions,
+    workspaces
+  };
+}
+
+function TelemetryStatus({ status }) {
+  return (
+    <TelemetryBlock title="Status" icon={<Activity size={16} />}>
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div>
+          <span className="text-gray-500 dark:text-gray-400">Pending Events:</span>
+          <span className="ml-2 text-gray-900 dark:text-gray-100">{status.pendingEvents}</span>
+        </div>
+        <div>
+          <span className="text-gray-500 dark:text-gray-400">Last Upload:</span>
+          <span className="ml-2 text-gray-900 dark:text-gray-100">
+            {status.lastUpload ? new Date(status.lastUpload).toLocaleDateString() : 'Never'}
+          </span>
+        </div>
+      </div>
+    </TelemetryBlock>
+  );
+}
+
+function TelemetryBlock({ title, icon, children }) {
+  return (
+    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-2">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1 flex items-center gap-2">
+        {icon}
+        {title}
+      </h3>
+      {children}
+    </div>
+  );
+}
+
+function TelemetryListBlock({ title, icon, items, labelParser, valueParser }) {
+  if (!items || items.length === 0) return null;
+
+  return (
+    <TelemetryBlock title={title} icon={icon}>
+      <div className="space-y-2 text-sm">
+        {items.slice(0, 5).map((item, idx) => (
+          <div key={idx} className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-300">{labelParser(item)}</span>
+            <span className="text-gray-900 dark:text-gray-100">{valueParser(item)}</span>
+          </div>
+        ))}
+      </div>
+    </TelemetryBlock>
   );
 }
