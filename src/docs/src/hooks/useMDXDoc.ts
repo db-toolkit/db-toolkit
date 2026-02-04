@@ -3,16 +3,8 @@
  * Loads and parses MDX files from /data folder
  */
 import { useState, useEffect } from 'react';
-import type { DocSection, ParsedDoc } from '../utils/mdxRenderer';
-import { parseMDXContent } from '../utils/mdxRenderer';
-
-const mdxFiles = import.meta.glob('../data/*.mdx?raw', { import: 'default' }) as Record<string, () => Promise<string>>;
-
-interface DocData {
-  title: string;
-  sections: DocSection[];
-  rawContent: string;
-}
+import { loadDocData } from '../utils/docsLoader';
+import type { DocData } from '../utils/docsLoader';
 
 /**
  * Hook to load MDX documentation
@@ -28,16 +20,8 @@ export function useMDXDoc(filename: string) {
         setLoading(true);
         setError(null);
 
-        const key = `../data/${filename}?raw`;
-        const loader = mdxFiles[key];
-        if (!loader) {
-          throw new Error(`Failed to load ${filename}`);
-        }
-
-        const mdxContent = await loader();
-        const sanitized = stripSourceMapComments(mdxContent);
-        const parsed: ParsedDoc = parseMDXContent(sanitized);
-        setData({ ...parsed, rawContent: sanitized });
+        const doc = await loadDocData(filename);
+        setData(doc);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load documentation');
         console.error('Error loading MDX:', err);
@@ -51,20 +35,3 @@ export function useMDXDoc(filename: string) {
 
   return { data, loading, error };
 }
-
-function stripSourceMapComments(content: string) {
-  return content
-    .split('\n')
-    .filter((line) => {
-      const trimmed = line.trim();
-      if (trimmed.startsWith('//# sourceMappingURL=')) return false;
-      if (trimmed.startsWith('/*# sourceMappingURL=')) return false;
-      return true;
-    })
-    .join('\n');
-}
-
-/**
- * Parse MDX content into title and sections
- */
-// parseMDXContent lives in ../utils/mdxRenderer
