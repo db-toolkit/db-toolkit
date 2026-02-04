@@ -5,7 +5,10 @@ import { ArrowRight, ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeRaw from 'rehype-raw';
 import { CodeBlock } from './CodeBlock';
+import ContentBlock from './ContentBlock';
+import { slugify } from '../utils/slugify';
 
 interface DocData {
   title: string;
@@ -57,11 +60,27 @@ function DocContent({ data, prevSection, nextSection, onNavigate }: DocContentPr
       >
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight]}
+          rehypePlugins={[rehypeRaw, rehypeHighlight]}
           components={{
             h1: ({ children }) => <h1 className="font-semibold">{children}</h1>,
-            h2: ({ children }) => <h2 className="font-semibold">{children}</h2>,
-            h3: ({ children }) => <h3 className="font-semibold">{children}</h3>,
+            h2: ({ children }) => {
+              const text = String(children);
+              const id = slugify(text);
+              return (
+                <h2 id={id} className="font-semibold">
+                  {children}
+                </h2>
+              );
+            },
+            h3: ({ children }) => {
+              const text = String(children);
+              const id = slugify(text);
+              return (
+                <h3 id={id} className="font-semibold">
+                  {children}
+                </h3>
+              );
+            },
             p: ({ children }) => <p className="leading-relaxed">{children}</p>,
             a: ({ children, href }) => (
               <a href={href} className="font-medium">
@@ -103,6 +122,9 @@ function DocContent({ data, prevSection, nextSection, onNavigate }: DocContentPr
             ol: ({ children }) => <ol className="list-decimal pl-6">{children}</ol>,
             li: ({ children }) => <li className="my-1">{children}</li>,
             hr: () => <hr className="border-slate-200 dark:border-slate-800" />,
+            tip: ({ children }) => <ContentBlock type="tip">{children}</ContentBlock>,
+            note: ({ children }) => <ContentBlock type="note">{children}</ContentBlock>,
+            warning: ({ children }) => <ContentBlock type="warning">{children}</ContentBlock>,
           }}
         >
           {data.rawContent}

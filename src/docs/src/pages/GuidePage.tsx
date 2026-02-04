@@ -5,6 +5,7 @@ import DocContent from '../components/DocContent';
 import ScrollToTop from '../components/ScrollToTop';
 import BottomBar from '../components/BottomBar';
 import { useMDXDoc } from '../hooks/useMDXDoc';
+import RightToc from '../components/RightToc';
 
 const getMDXFilename = (section: string) => {
   return `${section}.mdx`;
@@ -60,13 +61,16 @@ export default function GuidePage({ navigateToSection }: GuidePageProps) {
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
         />
-        <div className="w-full lg:w-auto">
+        <div className="flex w-full">
           {currentData && <DocContent 
             data={currentData} 
             prevSection={prevSection}
             nextSection={nextSection}
             onNavigate={setActiveSection}
           />}
+          {currentData && (
+            <RightToc items={currentData.sections.map((s) => ({ heading: s.heading }))} />
+          )}
         </div>
       </div>
       
