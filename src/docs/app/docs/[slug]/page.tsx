@@ -11,16 +11,18 @@ export function generateStaticParams() {
   return getAllDocs().map((doc) => ({ slug: doc.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const doc = getDocBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const doc = getDocBySlug(slug);
   return {
     title: `${doc.title} - DB Toolkit Docs`,
     description: doc.description || `Learn about ${doc.title} in DB Toolkit`,
   };
 }
 
-export default async function DocPage({ params }: { params: { slug: string } }) {
-  const doc = getDocBySlug(params.slug);
+export default async function DocPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const doc = getDocBySlug(slug);
 
   return (
     <div className="flex">
