@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
-import { CodeBlock } from './CodeBlock';
+import CodeBlock from './CodeBlock';
 import ContentBlock from './ContentBlock';
 import { slugify } from '../utils/slugify';
 
