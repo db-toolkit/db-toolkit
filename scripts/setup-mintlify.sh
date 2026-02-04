@@ -25,19 +25,14 @@ read -p "Enter your project URL (e.g., https://dbtoolkit.dev): " PROJECT_URL
 read -p "Enter primary color (hex, e.g., #10b981): " PRIMARY_COLOR
 read -p "Enter GitHub repo URL (optional, press enter to skip): " GITHUB_URL
 
-# Create mintlify directory
-MINT_DIR="mintlify-docs"
+# Use existing docs directory
+DOCS_DIR="src/docs"
 echo ""
-echo "📁 Creating $MINT_DIR directory..."
-mkdir -p "$MINT_DIR"
-
-# Copy MDX files
-echo "📄 Copying MDX files..."
-cp -r src/docs/data/*.mdx "$MINT_DIR/"
+echo "📁 Using existing directory: $DOCS_DIR"
 
 # Create mint.json configuration
 echo "⚙️  Creating mint.json configuration..."
-cat > "$MINT_DIR/mint.json" << EOF
+cat > "$DOCS_DIR/mint.json" << EOF
 {
   "name": "$DOC_NAME",
   "logo": {
@@ -63,24 +58,24 @@ cat > "$MINT_DIR/mint.json" << EOF
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["getting-started"]
+      "pages": ["data/getting-started"]
     },
     {
       "group": "Core Features",
       "pages": [
-        "connections",
-        "workspaces",
-        "query-editor",
-        "schema-explorer",
-        "data-explorer"
+        "data/connections",
+        "data/workspaces",
+        "data/query-editor",
+        "data/schema-explorer",
+        "data/data-explorer"
       ]
     },
     {
       "group": "Advanced",
       "pages": [
-        "migrations",
-        "backups",
-        "settings"
+        "data/migrations",
+        "data/backups",
+        "data/settings"
       ]
     }
   ],
@@ -90,28 +85,11 @@ cat > "$MINT_DIR/mint.json" << EOF
 }
 EOF
 
-# Create README
-cat > "$MINT_DIR/README.md" << EOF
-# Mintlify Documentation
-
-## Local Development
-\`\`\`bash
-mintlify dev
-\`\`\`
-
-## Deploy
-\`\`\`bash
-mintlify deploy
-\`\`\`
-
-Or connect your GitHub repo to Mintlify for auto-deployment.
-EOF
-
 echo ""
 echo "✅ Setup complete!"
 echo ""
 echo "📚 Next steps:"
-echo "1. cd $MINT_DIR"
+echo "1. cd $DOCS_DIR"
 echo "2. mintlify dev (preview locally)"
 echo "3. mintlify deploy (deploy to Mintlify)"
 echo ""

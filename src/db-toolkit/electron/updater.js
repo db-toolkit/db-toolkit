@@ -8,13 +8,30 @@ const GITHUB_REPO = 'db-toolkit/db-toolkit';
 const CURRENT_VERSION = '0.1.0-beta';
 
 function compareVersions(current, latest) {
-  const c = current.replace('v', '').split('.').map(Number);
-  const l = latest.replace('v', '').split('.').map(Number);
-  
-  for (let i = 0; i < 3; i++) {
-    if (l[i] > c[i]) return 1;
-    if (l[i] < c[i]) return -1;
-  }
+  const parse = (v) => {
+    const clean = v.replace(/^v/, '');
+    const [core, pre] = clean.split('-', 2);
+    const parts = core.split('.').map((n) => Number(n));
+    while (parts.length < 3) parts.push(0);
+    return {
+      major: parts[0] || 0,
+      minor: parts[1] || 0,
+      patch: parts[2] || 0,
+      prerelease: Boolean(pre),
+      prereleaseTag: pre || null,
+    };
+  };
+
+  const c = parse(current);
+  const l = parse(latest);
+
+  if (l.major !== c.major) return l.major > c.major ? 1 : -1;
+  if (l.minor !== c.minor) return l.minor > c.minor ? 1 : -1;
+  if (l.patch !== c.patch) return l.patch > c.patch ? 1 : -1;
+
+  // If core versions equal, stable > prerelease
+  if (c.prerelease && !l.prerelease) return 1;
+  if (!c.prerelease && l.prerelease) return -1;
   return 0;
 }
 
@@ -46,12 +63,17 @@ function getAssetForPlatform(assets) {
   const platform = process.platform;
   
   if (platform === 'darwin') {
-    return assets.find(a => a.name.endsWith('.dmg'));
+    return assets.find(a => a.name.endsWith('.dmg')) ||
+           assets.find(a => a.name.endsWith('.zip'));
   } else if (platform === 'win32') {
-    return assets.find(a => a.name.endsWith('.exe'));
+    return assets.find(a => a.name.endsWith('.exe')) ||
+           assets.find(a => a.name.endsWith('.msi')) ||
+           assets.find(a => a.name.endsWith('.zip'));
   } else if (platform === 'linux') {
     return assets.find(a => a.name.endsWith('.AppImage')) || 
-           assets.find(a => a.name.endsWith('.deb'));
+           assets.find(a => a.name.endsWith('.deb')) ||
+           assets.find(a => a.name.endsWith('.rpm')) ||
+           assets.find(a => a.name.endsWith('.tar.gz'));
   }
   return null;
 }
