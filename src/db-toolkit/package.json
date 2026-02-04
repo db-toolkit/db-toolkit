@@ -83,6 +83,12 @@
       "electron/**/*",
       "build/icons/**/*"
     ],
+    "extraResources": [
+      {
+        "from": ".env",
+        "to": ".env"
+      }
+    ],
     "directories": {
       "buildResources": "build",
       "output": "release"
