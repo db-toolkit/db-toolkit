@@ -1,5 +1,7 @@
 import { docsConfig } from '@/lib/config';
 
+export const dynamic = 'force-static';
+
 export default function sitemap() {
   const baseUrl = 'https://docs.dbtoolkit.app';
   
