@@ -141,7 +141,7 @@ export default function OverviewPage() {
               <span>Run queries and manage your data</span>
             </li>
           </ol>
-          <Button onClick={() => setShowModal(true)}>
+          <Button onClick={() => navigate('/connections')}>
             Get Started <ArrowRight size={16} className="ml-1" />
           </Button>
         </div>
