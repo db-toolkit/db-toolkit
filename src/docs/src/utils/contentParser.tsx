@@ -31,7 +31,11 @@ export function parseContent(content: string) {
         if (lines[j].trim()) codeBlock += '\n' + lines[j];
         j++;
       }
-      elements.push(<CodeBlock key={currentIndex++} code={codeBlock.trim()} />);
+      elements.push(
+        <CodeBlock key={currentIndex++}>
+          {codeBlock.trim()}
+        </CodeBlock>
+      );
       i = j - 1;
       continue;
     }
