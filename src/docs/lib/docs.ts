@@ -1,11 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { serialize } from 'next-mdx-remote/serialize';
-import readingTime from 'reading-time';
-import remarkGfm from 'remark-gfm';
 
-const dataDir = path.join(process.cwd(), 'src/docs/data');
+const dataDir = path.join(process.cwd(), 'data');
 
 export interface DocPost {
   slug: string;
@@ -19,6 +16,13 @@ export interface DocPost {
 function readDocFile(slug: string) {
   const fullPath = path.join(dataDir, `${slug}.mdx`);
   return fs.readFileSync(fullPath, 'utf8');
+}
+
+function calculateReadingTime(text: string): string {
+  const wordsPerMinute = 200;
+  const words = text.trim().split(/\s+/).length;
+  const minutes = Math.ceil(words / wordsPerMinute);
+  return `${minutes} min read`;
 }
 
 export function getAllDocs(): DocPost[] {
@@ -36,7 +40,7 @@ export function getAllDocs(): DocPost[] {
         title: data.title || slug,
         description: data.description,
         date: data.date,
-        readingTime: readingTime(content).text,
+        readingTime: calculateReadingTime(content),
       };
     })
     .sort((a, b) => (a.title < b.title ? -1 : 1));
@@ -51,14 +55,6 @@ export function getDocBySlug(slug: string): DocPost {
     title: data.title || slug,
     description: data.description,
     date: data.date,
-    readingTime: readingTime(content).text,
+    readingTime: calculateReadingTime(content),
   };
-}
-
-export async function renderDocContent(content: string) {
-  return await serialize(content, {
-    mdxOptions: {
-      remarkPlugins: [remarkGfm],
-    },
-  });
 }
