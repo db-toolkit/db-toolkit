@@ -48,6 +48,26 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave)
     }
   }, [connection, isOpen, settings]);
 
+  useEffect(() => {
+    if (!isOpen || connection || hasChanges) return;
+    const preferred = settings?.default_db_type;
+    if (!preferred) return;
+    const defaultPorts = {
+      postgresql: 5432,
+      mysql: 3306,
+      mongodb: 27017,
+      sqlite: 0,
+    };
+    setFormData((prev) => {
+      if (prev.db_type === preferred) return prev;
+      return {
+        ...prev,
+        db_type: preferred,
+        port: defaultPorts[preferred] ?? prev.port,
+      };
+    });
+  }, [settings?.default_db_type, isOpen, connection, hasChanges]);
+
   const resetForm = useCallback(() => {
     setFormData({
       name: '',
