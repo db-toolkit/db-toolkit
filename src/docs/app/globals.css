@@ -12,4 +12,9 @@
   body {
     @apply bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100;
   }
+  
+  /* Fix backdrop blur covering entire viewport */
+  body:has(.fixed.inset-0) {
+    overflow: hidden;
+  }
 }

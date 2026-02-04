@@ -3,9 +3,18 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { Sidebar } from '@/components/Sidebar';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { TableOfContents } from '@/components/TableOfContents';
+import { CodeBlock } from '@/components/CodeBlock';
 
 export function generateStaticParams() {
   return getAllDocs().map((doc) => ({ slug: doc.slug }));
+}
+
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const doc = getDocBySlug(params.slug);
+  return {
+    title: `${doc.title} - DB Toolkit Docs`,
+    description: doc.description || `Learn about ${doc.title} in DB Toolkit`,
+  };
 }
 
 export default async function DocPage({ params }: { params: { slug: string } }) {
@@ -35,7 +44,12 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
               </header>
               
               <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:scroll-mt-24 prose-a:text-emerald-600 dark:prose-a:text-emerald-400 prose-code:text-emerald-600 dark:prose-code:text-emerald-400 prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-slate-900 dark:prose-pre:bg-slate-900 prose-h1:hidden">
-                <MDXRemote source={doc.content} />
+                <MDXRemote 
+                  source={doc.content}
+                  components={{
+                    pre: ({ children }: any) => <CodeBlock>{children}</CodeBlock>,
+                  }}
+                />
               </article>
             </div>
             

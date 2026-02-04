@@ -3,13 +3,23 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { docsConfig } from '@/lib/config';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>(
-    Object.fromEntries(docsConfig.sections.map((s) => [s.title, true]))
-  );
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+
+  // Initialize open sections based on current page
+  useEffect(() => {
+    const initialState: Record<string, boolean> = {};
+    docsConfig.sections.forEach((section) => {
+      const hasActivePage = section.items.some(
+        (item) => pathname === `/docs/${item.slug}`
+      );
+      initialState[section.title] = hasActivePage;
+    });
+    setOpenSections(initialState);
+  }, [pathname]);
 
   const toggleSection = (title: string) => {
     setOpenSections((prev) => ({ ...prev, [title]: !prev[title] }));
