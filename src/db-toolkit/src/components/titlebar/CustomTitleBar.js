@@ -2,12 +2,14 @@
  * Custom Titlebar Component (Wave Terminal style)
  */
 import { useState, useEffect } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Minus, Square, X } from "lucide-react";
 import { WorkspaceTabBar } from "../workspace/WorkspaceTabBar";
 import { Tooltip } from "../common/Tooltip";
 
 export function CustomTitleBar({ onToggleSidebar }) {
   const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+  const isWindows = navigator.platform.toUpperCase().indexOf("WIN") >= 0;
+  const isLinux = !isMac && !isWindows;
   const [workspacesEnabled, setWorkspacesEnabled] = useState(null);
 
   useEffect(() => {
@@ -67,6 +69,35 @@ export function CustomTitleBar({ onToggleSidebar }) {
           </div>
         )}
       </div>
+
+      {(isWindows || isLinux) && (
+        <div
+          className="flex items-center h-full"
+          style={{ WebkitAppRegion: "no-drag" }}
+        >
+          <button
+            onClick={() => window.electron.ipcRenderer.invoke("window:minimize")}
+            className="h-10 w-12 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            title="Minimize"
+          >
+            <Minus size={14} className="text-gray-700 dark:text-gray-200" />
+          </button>
+          <button
+            onClick={() => window.electron.ipcRenderer.invoke("window:maximize")}
+            className="h-10 w-12 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            title="Maximize"
+          >
+            <Square size={12} className="text-gray-700 dark:text-gray-200" />
+          </button>
+          <button
+            onClick={() => window.electron.ipcRenderer.invoke("window:close")}
+            className="h-10 w-12 flex items-center justify-center hover:bg-red-500 hover:text-white transition"
+            title="Close"
+          >
+            <X size={14} className="text-gray-700 dark:text-gray-200" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

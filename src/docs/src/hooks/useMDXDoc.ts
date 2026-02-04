@@ -32,8 +32,9 @@ export function useMDXDoc(filename: string) {
         }
 
         const mdxContent = await response.text();
-        const parsed: ParsedDoc = parseMDXContent(mdxContent);
-        setData({ ...parsed, rawContent: mdxContent });
+        const sanitized = stripSourceMapComments(mdxContent);
+        const parsed: ParsedDoc = parseMDXContent(sanitized);
+        setData({ ...parsed, rawContent: sanitized });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load documentation');
         console.error('Error loading MDX:', err);
@@ -46,6 +47,18 @@ export function useMDXDoc(filename: string) {
   }, [filename]);
 
   return { data, loading, error };
+}
+
+function stripSourceMapComments(content: string) {
+  return content
+    .split('\n')
+    .filter((line) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('//# sourceMappingURL=')) return false;
+      if (trimmed.startsWith('/*# sourceMappingURL=')) return false;
+      return true;
+    })
+    .join('\n');
 }
 
 /**
