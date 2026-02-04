@@ -1,0 +1,29 @@
+{
+  "name": "db-toolkit-docs-next",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@mdx-js/mdx": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "gray-matter": "^4.0.3",
+    "next": "14.2.0",
+    "next-mdx-remote": "^4.4.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.13.8",
+    "@types/react": "18.4.35",
+    "@types/react-dom": "18.2.21",
+    "eslint": "9.0.0",
+    "eslint-config-next": "13.6.0",
+    "typescript": "^5.5.2"
+  }
+}
