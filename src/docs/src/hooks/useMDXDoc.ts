@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import type { DocSection, ParsedDoc } from '../utils/mdxRenderer';
 import { parseMDXContent } from '../utils/mdxRenderer';
 
+const mdxFiles = import.meta.glob('../data/*.mdx?raw', { import: 'default' }) as Record<string, () => Promise<string>>;
+
 interface DocData {
   title: string;
   sections: DocSection[];
@@ -26,12 +28,13 @@ export function useMDXDoc(filename: string) {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`/data/${filename}`);
-        if (!response.ok) {
+        const key = `../data/${filename}`;
+        const loader = mdxFiles[key];
+        if (!loader) {
           throw new Error(`Failed to load ${filename}`);
         }
 
-        const mdxContent = await response.text();
+        const mdxContent = await loader();
         const sanitized = stripSourceMapComments(mdxContent);
         const parsed: ParsedDoc = parseMDXContent(sanitized);
         setData({ ...parsed, rawContent: sanitized });
