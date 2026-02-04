@@ -18,3 +18,9 @@
     overflow: hidden;
   }
 }
+
+@layer utilities {
+  .font-display {
+    font-display: swap;
+  }
+}

@@ -32,9 +32,9 @@ export default async function DocPage({ params }: { params: { slug: string } }) 
               <Breadcrumbs />
               
               <header className="mb-8">
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-2 mb-3">
                   <h1 className="text-4xl font-bold">{doc.title}</h1>
-                  <span className="px-3 py-1 text-xs font-medium bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 rounded-full">
+                  <span className="px-2 py-0.5 text-xs font-medium bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 rounded-full">
                     {doc.readingTime}
                   </span>
                 </div>

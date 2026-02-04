@@ -7,6 +7,9 @@ export const metadata = {
   description: 'Modern cross-platform database management application - Documentation for PostgreSQL, MySQL, SQLite, and MongoDB',
   keywords: ['database', 'postgresql', 'mysql', 'sqlite', 'mongodb', 'database management', 'sql editor', 'query builder'],
   authors: [{ name: 'DB Toolkit Team' }],
+  icons: {
+    icon: '/icon.png',
+  },
   openGraph: {
     title: 'DB Toolkit Documentation',
     description: 'Modern cross-platform database management application',
