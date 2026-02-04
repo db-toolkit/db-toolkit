@@ -103,13 +103,6 @@
             "x64",
             "arm64"
           ]
-        },
-        {
-          "target": "zip",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
         }
       ],
       "minimumSystemVersion": "10.13",
@@ -140,7 +133,10 @@
           ]
         }
       ],
-      "artifactName": "${productName}-win-${arch}.${ext}"
+      "artifactName": "${productName}-win-${arch}.${ext}",
+      "nsis": {
+        "artifactName": "DB.Toolkit-win.exe"
+      }
     },
     "linux": {
       "icon": "build/icons/icon.png",
