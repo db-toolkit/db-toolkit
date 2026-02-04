@@ -6,6 +6,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
+import type { Components } from 'react-markdown';
+import type { ReactNode } from 'react';
 import CodeBlock from './CodeBlock';
 import ContentBlock from './ContentBlock';
 import { slugify } from '../utils/slugify';
@@ -22,6 +24,78 @@ interface DocContentProps {
   nextSection?: { id: string; label: string };
   onNavigate?: (id: string) => void;
 }
+
+const markdownComponents: Components = {
+  h1: ({ children }) => <h1 className="font-semibold">{children}</h1>,
+  h2: ({ children }) => {
+    const text = String(children);
+    const id = slugify(text);
+    return (
+      <h2 id={id} className="font-semibold">
+        {children}
+      </h2>
+    );
+  },
+  h3: ({ children }) => {
+    const text = String(children);
+    const id = slugify(text);
+    return (
+      <h3 id={id} className="font-semibold">
+        {children}
+      </h3>
+    );
+  },
+  p: ({ children }) => <p className="leading-relaxed">{children}</p>,
+  a: ({ children, href }) => (
+    <a href={href} className="font-medium">
+      {children}
+    </a>
+  ),
+  code: ({ inline, className, children }: { inline?: boolean; className?: string; children?: ReactNode }) => {
+    if (inline) {
+      return (
+        <code className="rounded bg-emerald-50 dark:bg-emerald-950/40 px-1 py-0.5">
+          {children}
+        </code>
+      );
+    }
+    return <CodeBlock className={className}>{children}</CodeBlock>;
+  },
+  pre: ({ children }) => <pre className="not-prose">{children}</pre>,
+  blockquote: ({ children }) => (
+    <blockquote className="border-l-4 border-emerald-400/60 bg-emerald-50/50 dark:bg-emerald-950/30 px-4 py-3 rounded-r-lg">
+      {children}
+    </blockquote>
+  ),
+  table: ({ children }) => (
+    <div className="overflow-x-auto">
+      <table className="w-full">{children}</table>
+    </div>
+  ),
+  th: ({ children }) => (
+    <th className="bg-slate-100 dark:bg-slate-900 px-3 py-2 text-left">
+      {children}
+    </th>
+  ),
+  td: ({ children }) => (
+    <td className="border-t border-slate-200 dark:border-slate-800 px-3 py-2">
+      {children}
+    </td>
+  ),
+  ul: ({ children }) => <ul className="list-disc pl-6">{children}</ul>,
+  ol: ({ children }) => <ol className="list-decimal pl-6">{children}</ol>,
+  li: ({ children }) => <li className="my-1">{children}</li>,
+  hr: () => <hr className="border-slate-200 dark:border-slate-800" />,
+  tip: ({ children }: { children?: ReactNode }) => (
+    <ContentBlock type="tip">{children}</ContentBlock>
+  ),
+  note: ({ children }: { children?: ReactNode }) => (
+    <ContentBlock type="note">{children}</ContentBlock>
+  ),
+  warning: ({ children }: { children?: ReactNode }) => (
+    <ContentBlock type="warning">{children}</ContentBlock>
+  ),
+} as Components;
 
 function DocContent({ data, prevSection, nextSection, onNavigate }: DocContentProps) {
   const handleNavigate = (id: string) => {
@@ -61,71 +135,7 @@ function DocContent({ data, prevSection, nextSection, onNavigate }: DocContentPr
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw, rehypeHighlight]}
-          components={{
-            h1: ({ children }) => <h1 className="font-semibold">{children}</h1>,
-            h2: ({ children }) => {
-              const text = String(children);
-              const id = slugify(text);
-              return (
-                <h2 id={id} className="font-semibold">
-                  {children}
-                </h2>
-              );
-            },
-            h3: ({ children }) => {
-              const text = String(children);
-              const id = slugify(text);
-              return (
-                <h3 id={id} className="font-semibold">
-                  {children}
-                </h3>
-              );
-            },
-            p: ({ children }) => <p className="leading-relaxed">{children}</p>,
-            a: ({ children, href }) => (
-              <a href={href} className="font-medium">
-                {children}
-              </a>
-            ),
-            code: ({ inline, className, children }) => {
-              if (inline) {
-                return (
-                  <code className="rounded bg-emerald-50 dark:bg-emerald-950/40 px-1 py-0.5">
-                    {children}
-                  </code>
-                );
-              }
-              return <CodeBlock className={className}>{children}</CodeBlock>;
-            },
-            pre: ({ children }) => <pre className="not-prose">{children}</pre>,
-            blockquote: ({ children }) => (
-              <blockquote className="border-l-4 border-emerald-400/60 bg-emerald-50/50 dark:bg-emerald-950/30 px-4 py-3 rounded-r-lg">
-                {children}
-              </blockquote>
-            ),
-            table: ({ children }) => (
-              <div className="overflow-x-auto">
-                <table className="w-full">{children}</table>
-              </div>
-            ),
-            th: ({ children }) => (
-              <th className="bg-slate-100 dark:bg-slate-900 px-3 py-2 text-left">
-                {children}
-              </th>
-            ),
-            td: ({ children }) => (
-              <td className="border-t border-slate-200 dark:border-slate-800 px-3 py-2">
-                {children}
-              </td>
-            ),
-            ul: ({ children }) => <ul className="list-disc pl-6">{children}</ul>,
-            ol: ({ children }) => <ol className="list-decimal pl-6">{children}</ol>,
-            li: ({ children }) => <li className="my-1">{children}</li>,
-            hr: () => <hr className="border-slate-200 dark:border-slate-800" />,
-            tip: ({ children }) => <ContentBlock type="tip">{children}</ContentBlock>,
-            note: ({ children }) => <ContentBlock type="note">{children}</ContentBlock>,
-            warning: ({ children }) => <ContentBlock type="warning">{children}</ContentBlock>,
-          }}
+          components={markdownComponents}
         >
           {data.rawContent}
         </ReactMarkdown>

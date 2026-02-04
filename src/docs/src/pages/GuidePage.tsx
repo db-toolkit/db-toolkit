@@ -31,7 +31,7 @@ export default function GuidePage({ navigateToSection }: GuidePageProps) {
   const [activeSection, setActiveSection] = useState('getting-started');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
-  const { data: currentData, loading, error } = useMDXDoc(getMDXFilename(activeSection));
+  const { data: currentData } = useMDXDoc(getMDXFilename(activeSection));
 
   useEffect(() => {
     if (navigateToSection) {
