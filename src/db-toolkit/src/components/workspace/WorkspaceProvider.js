@@ -32,16 +32,21 @@ export function WorkspaceProvider({ children }) {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const result = await window.electron.ipcRenderer.invoke("settings:get");
-        if (result.success) {
-          setMaxWorkspaces(result.settings.workspaces?.maxWorkspaces || 10);
-          setWorkspacesEnabled(result.settings.workspaces?.enabled ?? true);
-        }
+        const settings = await window.electron.ipcRenderer.invoke("settings:get");
+        setMaxWorkspaces(settings?.workspaces?.maxWorkspaces || 10);
+        setWorkspacesEnabled(settings?.workspaces?.enabled ?? true);
       } catch (error) {
         console.error("Failed to load workspace settings:", error);
       }
     };
     loadSettings(); // Non-blocking - runs in background
+
+    const handleSettingsUpdate = () => {
+      loadSettings();
+    };
+    window.addEventListener("settings-updated", handleSettingsUpdate);
+    return () =>
+      window.removeEventListener("settings-updated", handleSettingsUpdate);
   }, []);
 
   // Load workspaces on mount and create default if none exist (only if enabled)
