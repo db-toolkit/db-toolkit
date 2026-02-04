@@ -28,7 +28,7 @@ export function useMDXDoc(filename: string) {
         setLoading(true);
         setError(null);
 
-        const key = `../data/${filename}`;
+        const key = `../data/${filename}?raw`;
         const loader = mdxFiles[key];
         if (!loader) {
           throw new Error(`Failed to load ${filename}`);
