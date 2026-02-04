@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { docsConfig } from '@/lib/config';
 
@@ -43,24 +43,26 @@ export function SearchBar() {
   }, [isOpen]);
 
   // Filter results
-  const results = query
-    ? docsConfig.sections.flatMap((section) =>
-        section.items
-          .filter((item) =>
-            item.title.toLowerCase().includes(query.toLowerCase())
-          )
-          .map((item) => ({ ...item, section: section.title }))
-      )
-    : [];
+  const results = useMemo(() => 
+    query
+      ? docsConfig.sections.flatMap((section) =>
+          section.items
+            .filter((item) =>
+              item.title.toLowerCase().includes(query.toLowerCase())
+            )
+            .map((item) => ({ ...item, section: section.title }))
+        )
+      : []
+  , [query]);
 
-  const handleSelect = (slug: string) => {
+  const handleSelect = useCallback((slug: string) => {
     router.push(`/docs/${slug}`);
     setIsOpen(false);
     setQuery('');
     setSelectedIndex(0);
-  };
+  }, [router]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setSelectedIndex((i) => (i + 1) % results.length);
@@ -71,7 +73,7 @@ export function SearchBar() {
       e.preventDefault();
       handleSelect(results[selectedIndex].slug);
     }
-  };
+  }, [results, selectedIndex, handleSelect]);
 
   if (!isOpen) {
     return (

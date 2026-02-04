@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 
 interface TocItem {
   id: string;
@@ -42,7 +42,7 @@ export function TableOfContents() {
     return () => observer.disconnect();
   }, []);
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+  const handleClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
@@ -58,7 +58,26 @@ export function TableOfContents() {
       window.history.pushState(null, '', `#${id}`);
       setActiveId(id);
     }
-  };
+  }, []);
+
+  const tocItems = useMemo(() => headings.map((heading) => (
+    <li
+      key={heading.id}
+      className={heading.level === 3 ? 'pl-4' : ''}
+    >
+      <a
+        href={`#${heading.id}`}
+        onClick={(e) => handleClick(e, heading.id)}
+        className={`block py-1 transition-colors ${
+          activeId === heading.id
+            ? 'text-emerald-600 dark:text-emerald-400 font-medium'
+            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+        }`}
+      >
+        {heading.text}
+      </a>
+    </li>
+  )), [headings, activeId, handleClick]);
 
   if (headings.length === 0) return null;
 
@@ -68,24 +87,7 @@ export function TableOfContents() {
         On this page
       </h4>
       <ul className="space-y-2 text-sm">
-        {headings.map((heading) => (
-          <li
-            key={heading.id}
-            className={heading.level === 3 ? 'pl-4' : ''}
-          >
-            <a
-              href={`#${heading.id}`}
-              onClick={(e) => handleClick(e, heading.id)}
-              className={`block py-1 transition-colors ${
-                activeId === heading.id
-                  ? 'text-emerald-600 dark:text-emerald-400 font-medium'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
-              }`}
-            >
-              {heading.text}
-            </a>
-          </li>
-        ))}
+        {tocItems}
       </ul>
     </nav>
   );
