@@ -66,6 +66,7 @@ function ConnectionsPage() {
         toast.success('Connection created');
       }
       setShowModal(false);
+      setShowSidebar(false);
       setEditingConnection(null);
     } catch (err) {
       toast.error(data.id ? 'Failed to update connection' : 'Failed to create connection');
@@ -74,11 +75,16 @@ function ConnectionsPage() {
 
   const handleEdit = useCallback((connection) => {
     setEditingConnection(connection);
-    setShowModal(true);
+    setShowSidebar(true);
   }, []);
 
   const handleCloseModal = useCallback(() => {
     setShowModal(false);
+    setEditingConnection(null);
+  }, []);
+
+  const handleCloseSidebar = useCallback(() => {
+    setShowSidebar(false);
     setEditingConnection(null);
   }, []);
 
@@ -161,9 +167,9 @@ function ConnectionsPage() {
 
       <ConnectionSidebar
         isOpen={showSidebar}
-        onClose={() => setShowSidebar(false)}
+        onClose={handleCloseSidebar}
         onSave={handleSave}
-        connection={null}
+        connection={editingConnection}
       />
 
       {showErrorModal && (
