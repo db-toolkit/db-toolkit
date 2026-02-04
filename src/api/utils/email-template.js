@@ -222,3 +222,162 @@ export function generateStatsEmailHTML(downloadStats, telemetryStats) {
 </html>
   `;
 }
+
+export function generateIssueReportHTML(issue) {
+  const { title, description, issue_type, environment, issue_id, created_at } = issue;
+  
+  const badgeColors = {
+    bug: '#ef4444',
+    feature: '#f59e0b',
+    question: '#3b82f6',
+    documentation: '#10b981'
+  };
+
+  const env = environment || {};
+  const timestamp = new Date(created_at).toLocaleString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    timeZone: 'UTC'
+  });
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DB Toolkit Issue Report</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #1f2937;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f3f4f6;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      margin-bottom: 30px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: ${badgeColors[issue_type] || '#6b7280'};
+      color: white;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #111827;
+      margin: 15px 0;
+    }
+    .section {
+      margin: 25px 0;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .description {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid ${badgeColors[issue_type] || '#6b7280'};
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .meta {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .meta-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .meta-item:last-child {
+      border-bottom: none;
+    }
+    .meta-label {
+      font-weight: 600;
+      color: #6b7280;
+    }
+    .meta-value {
+      color: #111827;
+      font-weight: 500;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #e5e7eb;
+      text-align: center;
+      color: #6b7280;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span class="badge">${issue_type}</span>
+      <div class="title">${title}</div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">Description</div>
+      <div class="description">${description}</div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">Environment Details</div>
+      <div class="meta">
+        <div class="meta-item">
+          <span class="meta-label">Operating System</span>
+          <span class="meta-value">${env.os || 'Unknown'}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">App Version</span>
+          <span class="meta-value">${env.version || 'Unknown'}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Issue ID</span>
+          <span class="meta-value">${issue_id}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Reported At</span>
+          <span class="meta-value">${timestamp} UTC</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>This issue was reported from DB Toolkit</p>
+      <p>© ${new Date().getFullYear()} DB Toolkit. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+}
+

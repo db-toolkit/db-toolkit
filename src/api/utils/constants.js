@@ -1,5 +1,6 @@
 export const EMAIL_CONFIG = {
   TO: 'adelodunpeter24@gmail.com',
   FROM: 'noreply@estateman.online',
-  SUBJECT: 'DB Toolkit - Daily Stats Report'
+  SUBJECT: 'DB Toolkit - Daily Stats Report',
+  ISSUE_SUBJECT_PREFIX: 'DB Toolkit Issue Report'
 };
