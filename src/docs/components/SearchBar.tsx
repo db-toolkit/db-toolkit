@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { docsConfig } from '@/lib/config';
 
@@ -9,6 +9,7 @@ export function SearchBar() {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // Keyboard shortcut
   useEffect(() => {
@@ -25,6 +26,21 @@ export function SearchBar() {
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
   }, []);
+
+  // Click outside to close
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
 
   // Filter results
   const results = query
@@ -77,13 +93,10 @@ export function SearchBar() {
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40"
-        onClick={() => setIsOpen(false)}
-      />
+      <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40" />
 
       {/* Modal */}
-      <div className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-3xl z-50 px-4">
+      <div ref={modalRef} className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-3xl z-50 px-4">
         <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
           {/* Search Input */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-200 dark:border-slate-800">

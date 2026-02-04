@@ -46,7 +46,7 @@ export function TableOfContents() {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      const offset = 100; // Account for sticky header
+      const offset = 100;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
       
@@ -55,7 +55,6 @@ export function TableOfContents() {
         behavior: 'smooth'
       });
       
-      // Update URL without triggering navigation
       window.history.pushState(null, '', `#${id}`);
       setActiveId(id);
     }
@@ -68,7 +67,7 @@ export function TableOfContents() {
       <h4 className="font-semibold text-sm mb-4 text-slate-900 dark:text-slate-100">
         On this page
       </h4>
-      <ul className="space-y-2 text-sm border-l-2 border-slate-200 dark:border-slate-800">
+      <ul className="space-y-2 text-sm">
         {headings.map((heading) => (
           <li
             key={heading.id}
@@ -77,10 +76,10 @@ export function TableOfContents() {
             <a
               href={`#${heading.id}`}
               onClick={(e) => handleClick(e, heading.id)}
-              className={`block py-1 pl-4 -ml-px border-l-2 transition-colors ${
+              className={`block py-1 transition-colors ${
                 activeId === heading.id
-                  ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 font-medium'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-slate-700'
+                  ? 'text-emerald-600 dark:text-emerald-400 font-medium'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               {heading.text}
