@@ -37,7 +37,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.png" />
-        {/* <script defer src="https://cloud.umami.is/script.js" data-website-id="47cd7af1-cab5-45dc-b6b6-f6809eae9649"></script> */}
+        <script defer src="https://cloud.umami.is/script.js" data-website-id="47cd7af1-cab5-45dc-b6b6-f6809eae9649"></script>
       </head>
       <body className={playfair.className}>
         <ThemeProvider>

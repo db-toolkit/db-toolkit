@@ -94,9 +94,6 @@ export function SearchBar() {
 
   return (
     <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40" />
-
       {/* Modal */}
       <div ref={modalRef} className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-3xl z-50 px-4">
         <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
