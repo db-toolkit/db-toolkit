@@ -65,7 +65,6 @@ function compareVersions(current, latest) {
   
   return 0;
 }
-}
 
 function fetchLatestRelease() {
   return new Promise((resolve, reject) => {
