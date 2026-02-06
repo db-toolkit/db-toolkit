@@ -5,7 +5,7 @@ const path = require('path');
 const os = require('os');
 
 const GITHUB_REPO = 'db-toolkit/db-toolkit';
-const CURRENT_VERSION = '0.1.0-beta';
+const CURRENT_VERSION = '0.1.0-beta6';
 
 function compareVersions(current, latest) {
   const parse = (v) => {
@@ -13,26 +13,58 @@ function compareVersions(current, latest) {
     const [core, pre] = clean.split('-', 2);
     const parts = core.split('.').map((n) => Number(n));
     while (parts.length < 3) parts.push(0);
+    
+    // Parse prerelease tag (e.g., "beta6" -> {type: "beta", number: 6})
+    let prereleaseType = null;
+    let prereleaseNumber = 0;
+    if (pre) {
+      const match = pre.match(/^([a-z]+)(\d+)?$/i);
+      if (match) {
+        prereleaseType = match[1];
+        prereleaseNumber = match[2] ? parseInt(match[2], 10) : 0;
+      }
+    }
+    
     return {
       major: parts[0] || 0,
       minor: parts[1] || 0,
       patch: parts[2] || 0,
       prerelease: Boolean(pre),
-      prereleaseTag: pre || null,
+      prereleaseType,
+      prereleaseNumber,
     };
   };
 
   const c = parse(current);
   const l = parse(latest);
 
+  // Compare core version
   if (l.major !== c.major) return l.major > c.major ? 1 : -1;
   if (l.minor !== c.minor) return l.minor > c.minor ? 1 : -1;
   if (l.patch !== c.patch) return l.patch > c.patch ? 1 : -1;
 
-  // If core versions equal, stable > prerelease
+  // If core versions equal, compare prerelease
+  // Stable > prerelease
   if (c.prerelease && !l.prerelease) return 1;
   if (!c.prerelease && l.prerelease) return -1;
+  
+  // Both prerelease - compare type and number
+  if (c.prerelease && l.prerelease) {
+    if (c.prereleaseType !== l.prereleaseType) {
+      // alpha < beta < rc
+      const order = { alpha: 1, beta: 2, rc: 3 };
+      const cOrder = order[c.prereleaseType] || 0;
+      const lOrder = order[l.prereleaseType] || 0;
+      if (lOrder !== cOrder) return lOrder > cOrder ? 1 : -1;
+    }
+    // Same type, compare number
+    if (l.prereleaseNumber !== c.prereleaseNumber) {
+      return l.prereleaseNumber > c.prereleaseNumber ? 1 : -1;
+    }
+  }
+  
   return 0;
+}
 }
 
 function fetchLatestRelease() {
