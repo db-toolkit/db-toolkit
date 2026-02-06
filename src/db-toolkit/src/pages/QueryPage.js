@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useWorkspace } from "../components/workspace/WorkspaceProvider";
-import { Download, Bot, Loader2, Workflow } from "lucide-react";
+import { Download, Bot, Loader2, Workflow, Database } from "lucide-react";
 import Split from "react-split";
 import { useQuery, useSchema } from "../hooks";
 import { useQueryTabs } from "../hooks/query/useQueryTabs";
