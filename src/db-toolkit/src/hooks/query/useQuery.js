@@ -11,7 +11,7 @@ export function useQuery(connectionId) {
   const { addNotification } = useNotifications();
   const { dedupedRequest } = useRequestDeduplication();
 
-  const executeQuery = useCallback(async (query, limit = 1000, offset = 0, timeout = 30) => {
+  const executeQuery = useCallback(async (query, limit = 1000, offset = 0, timeout = 30, skipValidation = false) => {
     if (!connectionId) return;
     
     const requestKey = `query_${connectionId}_${query}_${limit}_${offset}`;
@@ -25,8 +25,25 @@ export function useQuery(connectionId) {
           limit,
           offset,
           timeout,
+          skipValidation,
         })
       );
+      
+      // Check if confirmation is required
+      if (response.data.requiresConfirmation) {
+        const confirmed = window.confirm(
+          `⚠️ ${response.data.error}\n\nThis operation cannot be undone. Do you want to proceed?`
+        );
+        
+        if (confirmed) {
+          // Re-execute with skipValidation=true
+          return executeQuery(query, limit, offset, timeout, true);
+        } else {
+          setLoading(false);
+          return null;
+        }
+      }
+      
       setResult(response.data);
       return response.data;
     } catch (err) {

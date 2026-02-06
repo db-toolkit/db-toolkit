@@ -24,7 +24,8 @@ function registerQueryHandlers() {
         request.query,
         request.limit,
         request.offset || 0,
-        request.timeout
+        request.timeout,
+        request.skipValidation || false
       );
 
       if (result.success) {
@@ -33,15 +34,17 @@ function registerQueryHandlers() {
         logger.error(`Query failed: ${result.error}`);
       }
 
-      // Save to history
-      await queryHistory.addQuery(
-        connectionId,
-        request.query,
-        result.success,
-        result.execution_time,
-        result.total_rows,
-        result.error
-      );
+      // Save to history only if not requiring confirmation
+      if (!result.requiresConfirmation) {
+        await queryHistory.addQuery(
+          connectionId,
+          request.query,
+          result.success,
+          result.execution_time,
+          result.total_rows,
+          result.error
+        );
+      }
 
       return { data: result };
     } catch (error) {

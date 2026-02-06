@@ -12,7 +12,7 @@ class QueryExecutor {
     this.defaultLimit = defaultLimit;
   }
 
-  async executeQuery(connection, query, limit = null, offset = 0, timeout = null) {
+  async executeQuery(connection, query, limit = null, offset = 0, timeout = null, skipValidation = false) {
     if (!query || !query.trim()) {
       return {
         success: false,
@@ -28,16 +28,20 @@ class QueryExecutor {
     limit = limit || this.defaultLimit;
     timeout = timeout || this.defaultTimeout;
 
-    const validation = this.validateQuery(query, connection.db_type);
-    if (!validation.safe) {
-      return {
-        success: false,
-        error: validation.error,
-        columns: [],
-        rows: [],
-        total_rows: 0,
-        execution_time: 0.0,
-      };
+    // Check for dangerous operations unless explicitly skipped
+    if (!skipValidation) {
+      const validation = this.validateQuery(query, connection.db_type);
+      if (!validation.safe) {
+        return {
+          success: false,
+          error: validation.error,
+          requiresConfirmation: true,
+          columns: [],
+          rows: [],
+          total_rows: 0,
+          execution_time: 0.0,
+        };
+      }
     }
 
     const startTime = Date.now();
