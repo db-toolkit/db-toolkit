@@ -193,6 +193,20 @@ export function useDataExplorer() {
     }
   }, [selectedTable, insertRow, loadTableData, page, pageSize, sortColumn, sortOrder, filters]);
 
+  const handleDeleteRow = useCallback(async (row) => {
+    if (!selectedTable) return;
+    
+    try {
+      const rowId = { [columns[0]]: row[0] };
+      await deleteRow(selectedTable.table, selectedTable.schema, rowId);
+      toast.success('Row deleted successfully');
+      loadTableData(selectedTable.schema, selectedTable.table, page * pageSize, sortColumn, sortOrder, filters);
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Failed to delete row');
+      throw err;
+    }
+  }, [selectedTable, columns, deleteRow, toast, loadTableData, page, pageSize, sortColumn, sortOrder, filters]);
+
   const exportToCSV = useCallback(() => {
     if (!data || data.length === 0) return;
     
@@ -298,6 +312,7 @@ export function useDataExplorer() {
     handleCellClick,
     handleCellUpdate,
     handleAddRow,
+    handleDeleteRow,
     exportToCSV,
     exportToJSON,
     handleNextPage,

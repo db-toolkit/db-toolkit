@@ -22,6 +22,7 @@ export function DataExplorerContent({
   onCellClick,
   onCellUpdate,
   onFilterByValue,
+  onDeleteRow,
 }) {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -54,6 +55,7 @@ export function DataExplorerContent({
               onCellClick={onCellClick}
               onCellUpdate={onCellUpdate}
               onFilterByValue={onFilterByValue}
+              onDeleteRow={onDeleteRow}
             />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">

@@ -2,11 +2,11 @@
  * Data grid component for displaying table data
  */
 import { useState, useMemo, useCallback } from 'react';
-import { ChevronUp, ChevronDown, Eye, Check, X, Copy, Filter, FilterX } from 'lucide-react';
+import { ChevronUp, ChevronDown, Eye, Check, X, Copy, Filter, FilterX, Trash2 } from 'lucide-react';
 import { ContextMenu, useContextMenu } from '../common/ContextMenu';
 import { useToast } from '../../contexts/ToastContext';
 
-export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellClick, onCellUpdate, onFilterByValue }) {
+export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellClick, onCellUpdate, onFilterByValue, onDeleteRow }) {
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState('');
   const [saving, setSaving] = useState(false);
@@ -227,6 +227,18 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
             icon: <Eye size={16} />,
             onClick: () => onCellClick(cellContextMenu.data.row, cellContextMenu.data.column, cellContextMenu.data.colIndex),
             disabled: !isTruncated(cellContextMenu.data.value)
+          },
+          { separator: true },
+          {
+            label: 'Delete Row',
+            icon: <Trash2 size={16} />,
+            onClick: () => {
+              if (window.confirm('Are you sure you want to delete this row?')) {
+                onDeleteRow?.(cellContextMenu.data.row);
+              }
+            },
+            disabled: !onDeleteRow,
+            className: 'text-red-600 dark:text-red-400'
           }
         ] : []}
       />

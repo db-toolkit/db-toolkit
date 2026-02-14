@@ -47,6 +47,7 @@ function DataExplorerPage() {
     handleCellClick,
     handleCellUpdate,
     handleAddRow,
+    handleDeleteRow,
     exportToCSV,
     exportToJSON,
     handleNextPage,
@@ -136,6 +137,7 @@ function DataExplorerPage() {
           onCellClick={handleCellClick}
           onCellUpdate={handleCellUpdate}
           onFilterByValue={handleFilterByValue}
+          onDeleteRow={handleDeleteRow}
         />
       </div>
 
