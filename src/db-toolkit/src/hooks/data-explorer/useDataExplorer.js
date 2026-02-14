@@ -185,7 +185,6 @@ export function useDataExplorer() {
     
     try {
       await insertRow(selectedTable.table, selectedTable.schema, rowData);
-      toast.success('Row added successfully');
       // Refresh table data
       loadTableData(selectedTable.schema, selectedTable.table, page * pageSize, sortColumn, sortOrder, filters);
     } catch (err) {
