@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:11-alpine
+    container_name: db-toolkit-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:
