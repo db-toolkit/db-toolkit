@@ -188,10 +188,10 @@ export function useDataExplorer() {
       // Refresh table data
       loadTableData(selectedTable.schema, selectedTable.table, page * pageSize, sortColumn, sortOrder, filters);
     } catch (err) {
-      toast.error(err.message || 'Failed to add row');
+      // Error toast is shown in AddRowModal
       throw err;
     }
-  }, [selectedTable, insertRow, toast, loadTableData, page, pageSize, sortColumn, sortOrder, filters]);
+  }, [selectedTable, insertRow, loadTableData, page, pageSize, sortColumn, sortOrder, filters]);
 
   const exportToCSV = useCallback(() => {
     if (!data || data.length === 0) return;
