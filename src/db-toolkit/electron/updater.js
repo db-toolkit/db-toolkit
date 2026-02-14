@@ -1,19 +1,19 @@
-const { dialog, shell, BrowserWindow } = require('electron');
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+const { dialog, shell, BrowserWindow } = require("electron");
+const https = require("https");
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
 
-const GITHUB_REPO = 'db-toolkit/db-toolkit';
-const CURRENT_VERSION = '0.1.0-beta6';
+const GITHUB_REPO = "db-toolkit/db-toolkit";
+const CURRENT_VERSION = "0.1.0-beta7";
 
 function compareVersions(current, latest) {
   const parse = (v) => {
-    const clean = v.replace(/^v/, '');
-    const [core, pre] = clean.split('-', 2);
-    const parts = core.split('.').map((n) => Number(n));
+    const clean = v.replace(/^v/, "");
+    const [core, pre] = clean.split("-", 2);
+    const parts = core.split(".").map((n) => Number(n));
     while (parts.length < 3) parts.push(0);
-    
+
     // Parse prerelease tag (e.g., "beta6" -> {type: "beta", number: 6})
     let prereleaseType = null;
     let prereleaseNumber = 0;
@@ -24,7 +24,7 @@ function compareVersions(current, latest) {
         prereleaseNumber = match[2] ? parseInt(match[2], 10) : 0;
       }
     }
-    
+
     return {
       major: parts[0] || 0,
       minor: parts[1] || 0,
@@ -47,7 +47,7 @@ function compareVersions(current, latest) {
   // Stable > prerelease
   if (c.prerelease && !l.prerelease) return 1;
   if (!c.prerelease && l.prerelease) return -1;
-  
+
   // Both prerelease - compare type and number
   if (c.prerelease && l.prerelease) {
     if (c.prereleaseType !== l.prereleaseType) {
@@ -62,49 +62,57 @@ function compareVersions(current, latest) {
       return l.prereleaseNumber > c.prereleaseNumber ? 1 : -1;
     }
   }
-  
+
   return 0;
 }
 
 function fetchLatestRelease() {
   return new Promise((resolve, reject) => {
     const options = {
-      hostname: 'api.github.com',
+      hostname: "api.github.com",
       path: `/repos/${GITHUB_REPO}/releases/latest`,
-      headers: { 
-        'User-Agent': 'DB-Toolkit'
-      }
+      headers: {
+        "User-Agent": "DB-Toolkit",
+      },
     };
 
-    https.get(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => data += chunk);
-      res.on('end', () => {
-        if (res.statusCode === 200) {
-          resolve(JSON.parse(data));
-        } else {
-          reject(new Error('Failed to fetch release'));
-        }
-      });
-    }).on('error', reject);
+    https
+      .get(options, (res) => {
+        let data = "";
+        res.on("data", (chunk) => (data += chunk));
+        res.on("end", () => {
+          if (res.statusCode === 200) {
+            resolve(JSON.parse(data));
+          } else {
+            reject(new Error("Failed to fetch release"));
+          }
+        });
+      })
+      .on("error", reject);
   });
 }
 
 function getAssetForPlatform(assets) {
   const platform = process.platform;
-  
-  if (platform === 'darwin') {
-    return assets.find(a => a.name.endsWith('.dmg')) ||
-           assets.find(a => a.name.endsWith('.zip'));
-  } else if (platform === 'win32') {
-    return assets.find(a => a.name.endsWith('.exe')) ||
-           assets.find(a => a.name.endsWith('.msi')) ||
-           assets.find(a => a.name.endsWith('.zip'));
-  } else if (platform === 'linux') {
-    return assets.find(a => a.name.endsWith('.AppImage')) || 
-           assets.find(a => a.name.endsWith('.deb')) ||
-           assets.find(a => a.name.endsWith('.rpm')) ||
-           assets.find(a => a.name.endsWith('.tar.gz'));
+
+  if (platform === "darwin") {
+    return (
+      assets.find((a) => a.name.endsWith(".dmg")) ||
+      assets.find((a) => a.name.endsWith(".zip"))
+    );
+  } else if (platform === "win32") {
+    return (
+      assets.find((a) => a.name.endsWith(".exe")) ||
+      assets.find((a) => a.name.endsWith(".msi")) ||
+      assets.find((a) => a.name.endsWith(".zip"))
+    );
+  } else if (platform === "linux") {
+    return (
+      assets.find((a) => a.name.endsWith(".AppImage")) ||
+      assets.find((a) => a.name.endsWith(".deb")) ||
+      assets.find((a) => a.name.endsWith(".rpm")) ||
+      assets.find((a) => a.name.endsWith(".tar.gz"))
+    );
   }
   return null;
 }
@@ -112,37 +120,47 @@ function getAssetForPlatform(assets) {
 function downloadFile(url, destPath, progressCallback) {
   return new Promise((resolve, reject) => {
     const file = fs.createWriteStream(destPath);
-    
-    https.get(url, { 
-      headers: { 
-        'User-Agent': 'DB-Toolkit'
-      } 
-    }, (response) => {
-      if (response.statusCode === 302 || response.statusCode === 301) {
-        return downloadFile(response.headers.location, destPath, progressCallback)
-          .then(resolve)
-          .catch(reject);
-      }
-      
-      const totalSize = parseInt(response.headers['content-length'], 10);
-      let downloadedSize = 0;
-      
-      response.on('data', (chunk) => {
-        downloadedSize += chunk.length;
-        const progress = (downloadedSize / totalSize) * 100;
-        progressCallback(progress);
+
+    https
+      .get(
+        url,
+        {
+          headers: {
+            "User-Agent": "DB-Toolkit",
+          },
+        },
+        (response) => {
+          if (response.statusCode === 302 || response.statusCode === 301) {
+            return downloadFile(
+              response.headers.location,
+              destPath,
+              progressCallback,
+            )
+              .then(resolve)
+              .catch(reject);
+          }
+
+          const totalSize = parseInt(response.headers["content-length"], 10);
+          let downloadedSize = 0;
+
+          response.on("data", (chunk) => {
+            downloadedSize += chunk.length;
+            const progress = (downloadedSize / totalSize) * 100;
+            progressCallback(progress);
+          });
+
+          response.pipe(file);
+
+          file.on("finish", () => {
+            file.close();
+            resolve(destPath);
+          });
+        },
+      )
+      .on("error", (err) => {
+        fs.unlink(destPath, () => {});
+        reject(err);
       });
-      
-      response.pipe(file);
-      
-      file.on('finish', () => {
-        file.close();
-        resolve(destPath);
-      });
-    }).on('error', (err) => {
-      fs.unlink(destPath, () => {});
-      reject(err);
-    });
   });
 }
 
@@ -159,12 +177,12 @@ function createProgressWindow() {
     alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
-    }
+      contextIsolation: false,
+    },
   });
-  
-  win.loadFile(path.join(__dirname, 'progress.html'));
-  
+
+  win.loadFile(path.join(__dirname, "progress.html"));
+
   return win;
 }
 
@@ -172,20 +190,20 @@ async function downloadUpdate(release) {
   // Get the installer file for current platform from GitHub release assets
   // asset.browser_download_url contains the direct download URL from GitHub
   const asset = getAssetForPlatform(release.assets);
-  
+
   if (!asset) {
     dialog.showMessageBox({
-      type: 'error',
-      title: 'Download Failed',
-      message: 'No installer found for your platform',
-      buttons: ['OK']
+      type: "error",
+      title: "Download Failed",
+      message: "No installer found for your platform",
+      buttons: ["OK"],
     });
     return;
   }
-  
+
   const progressWin = createProgressWindow();
-  const downloadPath = path.join(os.homedir(), 'Downloads', asset.name);
-  
+  const downloadPath = path.join(os.homedir(), "Downloads", asset.name);
+
   try {
     await downloadFile(asset.browser_download_url, downloadPath, (progress) => {
       progressWin.webContents.executeJavaScript(`
@@ -193,18 +211,18 @@ async function downloadUpdate(release) {
         document.getElementById('percentage').textContent = '${Math.round(progress)}%';
       `);
     });
-    
+
     progressWin.close();
-    
+
     const response = await dialog.showMessageBox({
-      type: 'info',
-      title: 'Download Complete',
-      message: 'Update downloaded successfully!',
+      type: "info",
+      title: "Download Complete",
+      message: "Update downloaded successfully!",
       detail: `The installer has been saved to your Downloads folder.\n\nClick "Quit and Install" to close DB Toolkit and open the installer.`,
-      buttons: ['Quit and Install', 'Install Later'],
-      defaultId: 0
+      buttons: ["Quit and Install", "Install Later"],
+      defaultId: 0,
     });
-    
+
     if (response.response === 0) {
       shell.openPath(downloadPath);
       process.exit(0);
@@ -214,11 +232,11 @@ async function downloadUpdate(release) {
   } catch (error) {
     progressWin.close();
     dialog.showMessageBox({
-      type: 'error',
-      title: 'Download Failed',
-      message: 'Failed to download update',
+      type: "error",
+      title: "Download Failed",
+      message: "Failed to download update",
       detail: error.message,
-      buttons: ['OK']
+      buttons: ["OK"],
     });
   }
 }
@@ -233,23 +251,23 @@ async function checkForUpdates(options = {}) {
     if (comparison < 0) {
       if (silent) {
         if (notifyWindow?.webContents) {
-          notifyWindow.webContents.send('update:available', {
+          notifyWindow.webContents.send("update:available", {
             latestVersion,
             currentVersion: CURRENT_VERSION,
             releaseName: release.name,
-            releaseNotes: release.body || ''
+            releaseNotes: release.body || "",
           });
         }
         return;
       }
 
       const response = await dialog.showMessageBox({
-        type: 'info',
-        title: 'Update Available',
+        type: "info",
+        title: "Update Available",
         message: `DB Toolkit ${latestVersion} is available!`,
-        detail: `You are currently using version ${CURRENT_VERSION}.\n\n${release.name}\n\n${release.body?.substring(0, 200) || ''}...`,
-        buttons: ['Download Update', 'Later'],
-        defaultId: 0
+        detail: `You are currently using version ${CURRENT_VERSION}.\n\n${release.name}\n\n${release.body?.substring(0, 200) || ""}...`,
+        buttons: ["Download Update", "Later"],
+        defaultId: 0,
       });
 
       if (response.response === 0) {
@@ -258,22 +276,22 @@ async function checkForUpdates(options = {}) {
     } else {
       if (!silent) {
         dialog.showMessageBox({
-          type: 'info',
-          title: 'No Updates',
-          message: 'You\'re up to date!',
+          type: "info",
+          title: "No Updates",
+          message: "You're up to date!",
           detail: `DB Toolkit ${CURRENT_VERSION} is the latest version.`,
-          buttons: ['OK']
+          buttons: ["OK"],
         });
       }
     }
   } catch (error) {
     if (!silent) {
       dialog.showMessageBox({
-        type: 'error',
-        title: 'Update Check Failed',
-        message: 'Unable to check for updates',
-        detail: 'Please check your internet connection and try again.',
-        buttons: ['OK']
+        type: "error",
+        title: "Update Check Failed",
+        message: "Unable to check for updates",
+        detail: "Please check your internet connection and try again.",
+        buttons: ["OK"],
       });
     }
   }
