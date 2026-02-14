@@ -3,8 +3,10 @@ const { logger } = require('../../utils/logger.js');
  * MySQL-specific analytics operations.
  */
 
-async function getMySQLAnalytics(connection) {
+async function getMySQLAnalytics(connector) {
   try {
+    const connection = connector.connection; // Get actual MySQL connection
+    
     const currentQueriesSql = `
       SELECT ID as pid, USER as usename, HOST as client_addr,
              DB as database_name, COMMAND as state, 

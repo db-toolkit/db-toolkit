@@ -23,7 +23,7 @@ class AnalyticsManager {
 
     if (dbType === 'postgresql') {
       result = await getPostgreSQLAnalytics(this.connection);
-    } else if (dbType === 'mysql') {
+    } else if (dbType === 'mysql' || dbType === 'mariadb') {
       result = await getMySQLAnalytics(this.connection);
     } else if (dbType === 'mongodb') {
       result = await getMongoDBAnalytics(this.connection);
@@ -82,7 +82,7 @@ class AnalyticsManager {
 
     if (dbType === 'postgresql') {
       return await getTableStatsPostgreSQL(this.connection);
-    } else if (dbType === 'mysql') {
+    } else if (dbType === 'mysql' || dbType === 'mariadb') {
       return await getTableStatsMySQL(this.connection);
     } else if (dbType === 'mongodb') {
       return await getTableStatsMongoDB(this.connection);
