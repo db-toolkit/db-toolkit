@@ -171,7 +171,7 @@ export const ConnectionFormFields = memo(({ formData, handleChange, showPassword
                       <option value="verify-full">Verify Full</option>
                     </>
                   )}
-                  {formData.db_type === 'mysql' && (
+                  {(formData.db_type === 'mysql' || formData.db_type === 'mariadb') && (
                     <>
                       <option value="disable">Disable</option>
                       <option value="require">Require</option>

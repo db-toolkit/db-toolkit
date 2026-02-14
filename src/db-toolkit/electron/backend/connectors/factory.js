@@ -4,12 +4,14 @@
 
 const PostgreSQLConnector = require('./postgresql');
 const MySQLConnector = require('./mysql');
+const MariaDBConnector = require('./mariadb');
 const SQLiteConnector = require('./sqlite');
 const MongoDBConnector = require('./mongodb');
 
 const connectors = {
   postgresql: PostgreSQLConnector,
   mysql: MySQLConnector,
+  mariadb: MariaDBConnector,
   sqlite: SQLiteConnector,
   mongodb: MongoDBConnector,
 };

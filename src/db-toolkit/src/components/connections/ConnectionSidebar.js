@@ -45,6 +45,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
     const defaultPorts = {
       postgresql: 5432,
       mysql: 3306,
+      mariadb: 3306,
       mongodb: 27017,
       sqlite: 0
     };
@@ -113,7 +114,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
                     Database Type
                   </label>
                   <div className="grid grid-cols-2 gap-3">
-                    {['postgresql', 'mysql', 'mongodb', 'sqlite'].map((type) => (
+                    {['postgresql', 'mysql', 'mariadb', 'mongodb', 'sqlite'].map((type) => (
                       <button
                         key={type}
                         type="button"
@@ -124,7 +125,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
                             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300'
                         }`}
                       >
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                        {type === 'mariadb' ? 'MariaDB' : type.charAt(0).toUpperCase() + type.slice(1)}
                       </button>
                     ))}
                   </div>
