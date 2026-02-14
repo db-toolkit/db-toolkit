@@ -16,7 +16,7 @@ export function useDataExplorer() {
   const setConnection = useConnectionStore((state) => state.setConnection);
   const [connecting, setConnecting] = useState(null);
   const { schema, loading: schemaLoading, error: schemaError, fetchSchemaTree } = useSchema(connectionId);
-  const { insertRow } = useData(connectionId);
+  const { insertRow, deleteRow } = useData(connectionId);
   const [selectedTable, setSelectedTable] = useState(null);
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
