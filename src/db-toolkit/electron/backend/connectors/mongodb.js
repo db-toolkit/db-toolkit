@@ -98,27 +98,50 @@ class MongoDBConnector extends BaseConnector {
     }));
   }
 
-  async executeQuery(query) {
+  async executeQuery(query, database = null, collection = null) {
     try {
+      // Parse query - support JSON filter or MongoDB shell-like syntax
       let filter = {};
+      let options = { limit: 100 };
+      
       if (query.trim().startsWith('{')) {
         filter = JSON.parse(query);
+      } else if (query.trim().startsWith('db.')) {
+        // Parse db.collection.find() syntax
+        const match = query.match(/db\.(\w+)\.find\((.*?)\)/);
+        if (match) {
+          collection = match[1];
+          if (match[2]) {
+            filter = JSON.parse(match[2] || '{}');
+          }
+        }
       }
       
-      const dbList = await this.getSchemas();
-      if (dbList.length === 0) {
-        return { success: false, error: 'No database specified' };
+      // Determine which database to use
+      let db;
+      if (database) {
+        db = this.connection.db(database);
+      } else {
+        const dbList = await this.getSchemas();
+        if (dbList.length === 0) {
+          return { success: false, error: 'No database available' };
+        }
+        db = this.connection.db(dbList[0]);
       }
       
-      const db = this.connection.db(dbList[0]);
-      const collections = await db.listCollections().toArray();
-      
-      if (collections.length === 0) {
-        return { success: false, error: 'No collections found' };
+      // Determine which collection to use
+      let coll;
+      if (collection) {
+        coll = db.collection(collection);
+      } else {
+        const collections = await db.listCollections().toArray();
+        if (collections.length === 0) {
+          return { success: false, error: 'No collections found' };
+        }
+        coll = db.collection(collections[0].name);
       }
       
-      const collection = db.collection(collections[0].name);
-      const documents = await collection.find(filter).limit(100).toArray();
+      const documents = await coll.find(filter).limit(options.limit).toArray();
       
       if (documents.length > 0) {
         const allKeys = new Set();
@@ -128,7 +151,12 @@ class MongoDBConnector extends BaseConnector {
         
         const columns = Array.from(allKeys);
         const data = documents.map(doc => 
-          columns.map(col => String(doc[col] || ''))
+          columns.map(col => {
+            const val = doc[col];
+            if (val === null || val === undefined) return '';
+            if (typeof val === 'object') return JSON.stringify(val);
+            return String(val);
+          })
         );
         
         return {

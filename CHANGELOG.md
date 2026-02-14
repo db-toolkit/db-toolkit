@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Beta release of DB Toolkit - a modern, cross-platform database management application.
 
 ### Features
-- **Multi-Database Support** - PostgreSQL, MySQL, SQLite, MongoDB
+- **Multi-Database Support** - PostgreSQL, MySQL, MariaDB, SQLite, MongoDB
 - **Connection Management** - Save, test, and manage multiple database connections
 - **Schema Explorer** - Visual tree browser for databases, schemas, tables, and columns with ER diagram visualization
 - **Query Editor** - Monaco-based editor with syntax highlighting, auto-complete, and formatting

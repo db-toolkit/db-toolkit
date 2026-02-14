@@ -21,7 +21,7 @@ class DataEditor {
 
       let result;
       if (connection.db_type === 'mongodb') {
-        result = await this.updateMongoDB(connector, table, primaryKey, changes);
+        result = await this.updateMongoDB(connector, table, primaryKey, changes, schemaName);
       } else {
         result = await this.updateSQL(connector, table, schemaName, primaryKey, changes, connection.db_type);
       }
@@ -45,7 +45,7 @@ class DataEditor {
 
       let result;
       if (connection.db_type === 'mongodb') {
-        result = await this.insertMongoDB(connector, table, data);
+        result = await this.insertMongoDB(connector, table, data, schemaName);
       } else {
         result = await this.insertSQL(connector, table, schemaName, data, connection.db_type);
       }
@@ -69,7 +69,7 @@ class DataEditor {
 
       let result;
       if (connection.db_type === 'mongodb') {
-        result = await this.deleteMongoDB(connector, table, primaryKey);
+        result = await this.deleteMongoDB(connector, table, primaryKey, schemaName);
       } else {
         result = await this.deleteSQL(connector, table, schemaName, primaryKey, connection.db_type);
       }
@@ -154,9 +154,9 @@ class DataEditor {
     }
   }
 
-  async updateMongoDB(connector, collection, filterDoc, changes) {
+  async updateMongoDB(connector, collection, filterDoc, changes, database) {
     try {
-      const db = connector.connection.db();
+      const db = database ? connector.connection.db(database) : connector.connection.db();
       const coll = db.collection(collection);
       const result = await coll.updateOne(filterDoc, { $set: changes });
 
@@ -170,9 +170,9 @@ class DataEditor {
     }
   }
 
-  async insertMongoDB(connector, collection, data) {
+  async insertMongoDB(connector, collection, data, database) {
     try {
-      const db = connector.connection.db();
+      const db = database ? connector.connection.db(database) : connector.connection.db();
       const coll = db.collection(collection);
       const result = await coll.insertOne(data);
 
@@ -186,9 +186,9 @@ class DataEditor {
     }
   }
 
-  async deleteMongoDB(connector, collection, filterDoc) {
+  async deleteMongoDB(connector, collection, filterDoc, database) {
     try {
-      const db = connector.connection.db();
+      const db = database ? connector.connection.db(database) : connector.connection.db();
       const coll = db.collection(collection);
       const result = await coll.deleteOne(filterDoc);
 
