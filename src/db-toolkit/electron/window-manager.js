@@ -25,9 +25,6 @@ function createWindow() {
         }
       : undefined,
     trafficLightPosition: isMac ? { x: 10, y: 10 } : undefined,
-    roundedCorners: isWindows,
-    backgroundMaterial: isWindows ? "mica" : undefined,
-    autoHideMenuBar: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -39,11 +36,6 @@ function createWindow() {
   win.on("page-title-updated", (event) => {
     event.preventDefault();
   });
-
-  // Show menu bar on Windows even with frameless window
-  if (isWindows) {
-    win.setMenuBarVisibility(true);
-  }
 
   const isDev = !require("electron").app.isPackaged;
 
