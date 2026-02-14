@@ -23,10 +23,13 @@ class DataExplorer {
       const dbType = connection.db_type;
       let query;
       
+      // Use backticks for MySQL/MariaDB, double quotes for PostgreSQL/SQLite
+      const quoteChar = (dbType === 'mysql' || dbType === 'mariadb') ? '`' : '"';
+      
       if (dbType === 'sqlite') {
-        query = `SELECT * FROM "${tableName}"`;
+        query = `SELECT * FROM ${quoteChar}${tableName}${quoteChar}`;
       } else {
-        query = `SELECT * FROM "${schemaName}"."${tableName}"`;
+        query = `SELECT * FROM ${quoteChar}${schemaName}${quoteChar}.${quoteChar}${tableName}${quoteChar}`;
       }
 
       if (filters && Object.keys(filters).length > 0) {
@@ -87,10 +90,12 @@ class DataExplorer {
       const dbType = connection.db_type;
       let query;
       
+      const quoteChar = (dbType === 'mysql' || dbType === 'mariadb') ? '`' : '"';
+      
       if (dbType === 'sqlite') {
-        query = `SELECT COUNT(*) FROM "${tableName}"`;
+        query = `SELECT COUNT(*) FROM ${quoteChar}${tableName}${quoteChar}`;
       } else {
-        query = `SELECT COUNT(*) FROM "${schemaName}"."${tableName}"`;
+        query = `SELECT COUNT(*) FROM ${quoteChar}${schemaName}${quoteChar}.${quoteChar}${tableName}${quoteChar}`;
       }
       
       const result = await connector.executeQuery(query);
@@ -145,14 +150,15 @@ class DataExplorer {
 
     try {
       const dbType = connection.db_type;
-      const conditions = Object.entries(rowIdentifier).map(([k, v]) => `"${k}" = '${v}'`);
+      const quoteChar = (dbType === 'mysql' || dbType === 'mariadb') ? '`' : '"';
+      const conditions = Object.entries(rowIdentifier).map(([k, v]) => `${quoteChar}${k}${quoteChar} = '${v}'`);
       const whereClause = conditions.join(' AND ');
       
       let query;
       if (dbType === 'sqlite') {
-        query = `SELECT "${columnName}" FROM "${tableName}" WHERE ${whereClause} LIMIT 1`;
+        query = `SELECT ${quoteChar}${columnName}${quoteChar} FROM ${quoteChar}${tableName}${quoteChar} WHERE ${whereClause} LIMIT 1`;
       } else {
-        query = `SELECT "${columnName}" FROM "${schemaName}"."${tableName}" WHERE ${whereClause} LIMIT 1`;
+        query = `SELECT ${quoteChar}${columnName}${quoteChar} FROM ${quoteChar}${schemaName}${quoteChar}.${quoteChar}${tableName}${quoteChar} WHERE ${whereClause} LIMIT 1`;
       }
 
       const result = await connector.executeQuery(query);
