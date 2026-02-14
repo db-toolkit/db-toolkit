@@ -5,10 +5,10 @@ services:
     image: alpine/mariadb:latest
     container_name: db-toolkit-mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: testdb
-      MYSQL_USER: dbuser
-      MYSQL_PASSWORD: dbpass
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: testdb
+      MARIADB_USER: dbuser
+      MARIADB_PASSWORD: dbpass
     ports:
       - "3307:3306"
     volumes:
