@@ -121,6 +121,7 @@ class DataEditor {
       query = `INSERT INTO ${quoteChar}${table}${quoteChar} (${columns}) VALUES (${values})`;
     }
 
+    logger.info(`Insert query (${dbType}): ${query}`);
     const result = await connector.executeQuery(query);
 
     if (result.success) {
