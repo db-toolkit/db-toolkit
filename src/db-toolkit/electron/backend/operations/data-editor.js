@@ -23,7 +23,7 @@ class DataEditor {
       if (connection.db_type === 'mongodb') {
         result = await this.updateMongoDB(connector, table, primaryKey, changes);
       } else {
-        result = await this.updateSQL(connector, table, schemaName, primaryKey, changes);
+        result = await this.updateSQL(connector, table, schemaName, primaryKey, changes, connection.db_type);
       }
 
       await connector.disconnect();
@@ -47,7 +47,7 @@ class DataEditor {
       if (connection.db_type === 'mongodb') {
         result = await this.insertMongoDB(connector, table, data);
       } else {
-        result = await this.insertSQL(connector, table, schemaName, data);
+        result = await this.insertSQL(connector, table, schemaName, data, connection.db_type);
       }
 
       await connector.disconnect();
@@ -71,7 +71,7 @@ class DataEditor {
       if (connection.db_type === 'mongodb') {
         result = await this.deleteMongoDB(connector, table, primaryKey);
       } else {
-        result = await this.deleteSQL(connector, table, schemaName, primaryKey);
+        result = await this.deleteSQL(connector, table, schemaName, primaryKey, connection.db_type);
       }
 
       await connector.disconnect();
@@ -82,19 +82,21 @@ class DataEditor {
     }
   }
 
-  async updateSQL(connector, table, schema, primaryKey, changes) {
+  async updateSQL(connector, table, schema, primaryKey, changes, dbType) {
+    const quoteChar = (dbType === 'mysql' || dbType === 'mariadb') ? '`' : '"';
+    
     const setClause = Object.entries(changes)
-      .map(([col, val]) => `"${col}" = '${val}'`)
+      .map(([col, val]) => `${quoteChar}${col}${quoteChar} = '${val}'`)
       .join(', ');
     const whereClause = Object.entries(primaryKey)
-      .map(([col, val]) => `"${col}" = '${val}'`)
+      .map(([col, val]) => `${quoteChar}${col}${quoteChar} = '${val}'`)
       .join(' AND ');
 
     let query;
     if (schema && schema !== 'main' && schema !== 'public') {
-      query = `UPDATE ${schema}."${table}" SET ${setClause} WHERE ${whereClause}`;
+      query = `UPDATE ${quoteChar}${schema}${quoteChar}.${quoteChar}${table}${quoteChar} SET ${setClause} WHERE ${whereClause}`;
     } else {
-      query = `UPDATE "${table}" SET ${setClause} WHERE ${whereClause}`;
+      query = `UPDATE ${quoteChar}${table}${quoteChar} SET ${setClause} WHERE ${whereClause}`;
     }
 
     const result = await connector.executeQuery(query);
@@ -106,15 +108,17 @@ class DataEditor {
     }
   }
 
-  async insertSQL(connector, table, schema, data) {
-    const columns = Object.keys(data).map(col => `"${col}"`).join(', ');
+  async insertSQL(connector, table, schema, data, dbType) {
+    const quoteChar = (dbType === 'mysql' || dbType === 'mariadb') ? '`' : '"';
+    
+    const columns = Object.keys(data).map(col => `${quoteChar}${col}${quoteChar}`).join(', ');
     const values = Object.values(data).map(val => `'${val}'`).join(', ');
 
     let query;
     if (schema && schema !== 'main' && schema !== 'public') {
-      query = `INSERT INTO ${schema}."${table}" (${columns}) VALUES (${values})`;
+      query = `INSERT INTO ${quoteChar}${schema}${quoteChar}.${quoteChar}${table}${quoteChar} (${columns}) VALUES (${values})`;
     } else {
-      query = `INSERT INTO "${table}" (${columns}) VALUES (${values})`;
+      query = `INSERT INTO ${quoteChar}${table}${quoteChar} (${columns}) VALUES (${values})`;
     }
 
     const result = await connector.executeQuery(query);
@@ -126,16 +130,18 @@ class DataEditor {
     }
   }
 
-  async deleteSQL(connector, table, schema, primaryKey) {
+  async deleteSQL(connector, table, schema, primaryKey, dbType) {
+    const quoteChar = (dbType === 'mysql' || dbType === 'mariadb') ? '`' : '"';
+    
     const whereClause = Object.entries(primaryKey)
-      .map(([col, val]) => `"${col}" = '${val}'`)
+      .map(([col, val]) => `${quoteChar}${col}${quoteChar} = '${val}'`)
       .join(' AND ');
 
     let query;
     if (schema && schema !== 'main' && schema !== 'public') {
-      query = `DELETE FROM ${schema}."${table}" WHERE ${whereClause}`;
+      query = `DELETE FROM ${quoteChar}${schema}${quoteChar}.${quoteChar}${table}${quoteChar} WHERE ${whereClause}`;
     } else {
-      query = `DELETE FROM "${table}" WHERE ${whereClause}`;
+      query = `DELETE FROM ${quoteChar}${table}${quoteChar} WHERE ${whereClause}`;
     }
 
     const result = await connector.executeQuery(query);
