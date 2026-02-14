@@ -238,7 +238,7 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
               }
             },
             disabled: !onDeleteRow,
-            className: 'text-red-600 dark:text-red-400'
+            danger: true
           }
         ] : []}
       />
