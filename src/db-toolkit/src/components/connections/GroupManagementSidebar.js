@@ -1,38 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { X, Plus, Edit2, Trash2, Check, Users } from 'lucide-react';
 import { Button } from '../common/Button';
 import ConfirmDialog from '../common/ConfirmDialog';
 import { useConfirmDialog } from '../../hooks/common/useConfirmDialog';
+import { useGroups } from '../../hooks/groups/useGroups';
 
 export function GroupManagementSidebar({ isOpen, onClose }) {
-  const [groups, setGroups] = useState([]);
   const [newGroupName, setNewGroupName] = useState('');
   const [editingGroup, setEditingGroup] = useState(null);
   const [editName, setEditName] = useState('');
   const { dialog, showConfirm, closeDialog } = useConfirmDialog();
-
-  useEffect(() => {
-    if (isOpen) {
-      loadGroups();
-    }
-  }, [isOpen]);
-
-  const loadGroups = async () => {
-    try {
-      const result = await window.electron.ipcRenderer.invoke('groups:getAll');
-      setGroups(result);
-    } catch (error) {
-      console.error('Failed to load groups:', error);
-    }
-  };
+  const { groups, createGroup, updateGroup, deleteGroup } = useGroups();
 
   const handleAddGroup = async () => {
     if (!newGroupName.trim()) return;
     
     try {
-      await window.electron.ipcRenderer.invoke('groups:create', newGroupName.trim());
+      await createGroup(newGroupName.trim());
       setNewGroupName('');
-      await loadGroups();
     } catch (error) {
       console.error('Failed to create group:', error);
     }
@@ -47,10 +32,9 @@ export function GroupManagementSidebar({ isOpen, onClose }) {
     if (!editName.trim()) return;
     
     try {
-      await window.electron.ipcRenderer.invoke('groups:update', editingGroup, { name: editName.trim() });
+      await updateGroup(editingGroup, { name: editName.trim() });
       setEditingGroup(null);
       setEditName('');
-      await loadGroups();
     } catch (error) {
       console.error('Failed to update group:', error);
     }
@@ -65,8 +49,7 @@ export function GroupManagementSidebar({ isOpen, onClose }) {
     
     if (confirmed) {
       try {
-        await window.electron.ipcRenderer.invoke('groups:delete', group.id);
-        await loadGroups();
+        await deleteGroup(group.id);
       } catch (error) {
         console.error('Failed to delete group:', error);
       }

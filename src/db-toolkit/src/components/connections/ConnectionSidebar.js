@@ -1,7 +1,7 @@
 /**
  * Sidebar for creating/editing database connections
  */
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
@@ -10,22 +10,11 @@ import { useToast } from '../../contexts/ToastContext';
 import { useConnectionForm } from '../../hooks/connections/useConnectionForm';
 import { parseConnectionUrl } from '../../utils/connectionParser';
 import { ConnectionFormFields } from './ConnectionFormFields';
+import { useGroups } from '../../hooks/groups/useGroups';
 
 // Component to load groups from backend
 function GroupOptions() {
-  const [groups, setGroups] = useState([]);
-
-  useEffect(() => {
-    const loadGroups = async () => {
-      try {
-        const result = await window.electron.ipcRenderer.invoke('groups:getAll');
-        setGroups(result);
-      } catch (error) {
-        console.error('Failed to load groups:', error);
-      }
-    };
-    loadGroups();
-  }, []);
+  const { groups } = useGroups();
 
   return groups.map(group => (
     <option key={group.id} value={group.name}>

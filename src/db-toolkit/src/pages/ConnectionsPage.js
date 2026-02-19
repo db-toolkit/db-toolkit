@@ -16,11 +16,13 @@ import { GroupManagementSidebar } from '../components/connections/GroupManagemen
 import { GroupCard } from '../components/connections/GroupCard';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useConfirmDialog } from '../hooks/common/useConfirmDialog';
+import { useGroups } from '../hooks/groups/useGroups';
 
 function ConnectionsPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const { dialog, showConfirm, closeDialog } = useConfirmDialog();
+  const { groups } = useGroups();
   const [showSidebar, setShowSidebar] = useState(false);
   const [showGroupSidebar, setShowGroupSidebar] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -101,25 +103,13 @@ function ConnectionsPage() {
     );
   }, [connections, debouncedSearch]);
 
-  const [groupsWithCounts, setGroupsWithCounts] = useState([]);
-
-  // Load groups with connection counts
-  useEffect(() => {
-    const loadGroups = async () => {
-      try {
-        const result = await window.electron.ipcRenderer.invoke('groups:getAll');
-        const groupsWithCounts = result.map(group => ({
-          ...group,
-          connectionCount: connections.filter(conn => conn.group === group.name).length
-        })).filter(group => group.connectionCount > 0);
-        setGroupsWithCounts(groupsWithCounts);
-      } catch (error) {
-        console.error('Failed to load groups:', error);
-        setGroupsWithCounts([]);
-      }
-    };
-    loadGroups();
-  }, [connections]);
+  // Get groups with connection counts
+  const groupsWithCounts = useMemo(() => {
+    return groups.map(group => ({
+      ...group,
+      connectionCount: connections.filter(conn => conn.group === group.name).length
+    })).filter(group => group.connectionCount > 0);
+  }, [groups, connections]);
 
   const handleGroupDoubleClick = useCallback((groupName) => {
     navigate(`/connections/group/${encodeURIComponent(groupName)}`);
