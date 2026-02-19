@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Database, Search } from 'lucide-react';
+import { Plus, Database, Search, Users } from 'lucide-react';
 import { useDebounce } from '../utils/debounce';
 import { useConnections } from '../hooks';
 import { useSession } from '../hooks/system/useSession';
@@ -12,6 +12,7 @@ import { ErrorMessage } from '../components/common/ErrorMessage';
 import { ConnectionCard } from '../components/connections/ConnectionCard';
 import { ConnectionSidebar } from '../components/connections/ConnectionSidebar';
 import { AddConnectionButton } from '../components/connections/AddConnectionButton';
+import { GroupManagementSidebar } from '../components/connections/GroupManagementSidebar';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useConfirmDialog } from '../hooks/common/useConfirmDialog';
 
@@ -20,6 +21,7 @@ function ConnectionsPage() {
   const toast = useToast();
   const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const [showSidebar, setShowSidebar] = useState(false);
+  const [showGroupSidebar, setShowGroupSidebar] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [modalError, setModalError] = useState('');
   const [editingConnection, setEditingConnection] = useState(null);
@@ -114,19 +116,27 @@ function ConnectionsPage() {
         </div>
         
         {connections.length > 0 && (
-          <div className="mb-6">
-          <div className="relative max-w-md">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search connections..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
+          <div className="mb-6 flex gap-4 items-center">
+            <div className="relative max-w-md flex-1">
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search connections..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<Users size={16} />}
+              onClick={() => setShowGroupSidebar(true)}
+            >
+              Manage Groups
+            </Button>
           </div>
-        </div>
-      )}
+        )}
       
       {filteredConnections.length === 0 && searchQuery ? (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
@@ -181,6 +191,11 @@ function ConnectionsPage() {
       <AddConnectionButton 
         onClick={() => setShowSidebar(true)} 
         isVisible={!showSidebar}
+      />
+
+      <GroupManagementSidebar
+        isOpen={showGroupSidebar}
+        onClose={() => setShowGroupSidebar(false)}
       />
 
       <ConfirmDialog
