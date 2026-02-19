@@ -15,6 +15,7 @@ export function QueryTabBar({
   onCloseOtherTabs,
   onCloseAllTabs,
   toast,
+  showConfirm,
 }) {
   const [editingTabId, setEditingTabId] = useState(null);
   const [editingTabName, setEditingTabName] = useState("");
@@ -129,12 +130,14 @@ export function QueryTabBar({
                   label: "Close All Tabs",
                   icon: <X size={16} />,
                   danger: true,
-                  onClick: () => {
-                    if (
-                      window.confirm(
-                        "Close all tabs? Unsaved changes will be lost.",
-                      )
-                    ) {
+                  onClick: async () => {
+                    const confirmed = await showConfirm({
+                      title: 'Close All Tabs',
+                      message: 'Close all tabs? Unsaved changes will be lost.',
+                      confirmText: 'Close All',
+                      variant: 'warning'
+                    });
+                    if (confirmed) {
                       onCloseAllTabs();
                       toast.success("All tabs closed");
                     }

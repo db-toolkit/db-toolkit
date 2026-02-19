@@ -4,7 +4,7 @@ import { Button } from '../common/Button';
 import { useData } from '../../hooks';
 import { useToast } from '../../contexts/ToastContext';
 
-export function EditableTable({ connectionId, result, onRefresh, tableName = 'table_name', schemaName = 'public' }) {
+export function EditableTable({ connectionId, result, onRefresh, tableName = 'table_name', schemaName = 'public', showConfirm }) {
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState('');
   const { updateRow, deleteRow } = useData(connectionId);
@@ -39,7 +39,12 @@ export function EditableTable({ connectionId, result, onRefresh, tableName = 'ta
   };
 
   const handleDelete = async (rowIdx) => {
-    if (!window.confirm('Delete this row?')) return;
+    const confirmed = await showConfirm({
+      title: 'Delete Row',
+      message: 'Delete this row?',
+      confirmText: 'Delete'
+    });
+    if (!confirmed) return;
 
     const row = result.rows[rowIdx];
     const primaryKey = { [result.columns[0]]: row[0] };
