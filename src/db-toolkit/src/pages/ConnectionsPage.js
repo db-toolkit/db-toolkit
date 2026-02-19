@@ -101,13 +101,24 @@ function ConnectionsPage() {
     );
   }, [connections, debouncedSearch]);
 
-  // Get groups with connection counts
-  const groupsWithCounts = useMemo(() => {
-    const groups = JSON.parse(localStorage.getItem('connection-groups') || '[]');
-    return groups.map(group => ({
-      ...group,
-      connectionCount: connections.filter(conn => conn.group === group.name).length
-    })).filter(group => group.connectionCount > 0);
+  const [groupsWithCounts, setGroupsWithCounts] = useState([]);
+
+  // Load groups with connection counts
+  useEffect(() => {
+    const loadGroups = async () => {
+      try {
+        const result = await window.electron.ipcRenderer.invoke('groups:getAll');
+        const groupsWithCounts = result.map(group => ({
+          ...group,
+          connectionCount: connections.filter(conn => conn.group === group.name).length
+        })).filter(group => group.connectionCount > 0);
+        setGroupsWithCounts(groupsWithCounts);
+      } catch (error) {
+        console.error('Failed to load groups:', error);
+        setGroupsWithCounts([]);
+      }
+    };
+    loadGroups();
   }, [connections]);
 
   const handleGroupDoubleClick = useCallback((groupName) => {

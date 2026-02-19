@@ -13,27 +13,29 @@ export function GroupManagementSidebar({ isOpen, onClose }) {
 
   useEffect(() => {
     if (isOpen) {
-      // Load groups from localStorage
-      const savedGroups = JSON.parse(localStorage.getItem('connection-groups') || '[]');
-      setGroups(savedGroups);
+      loadGroups();
     }
   }, [isOpen]);
 
-  const saveGroups = (updatedGroups) => {
-    setGroups(updatedGroups);
-    localStorage.setItem('connection-groups', JSON.stringify(updatedGroups));
+  const loadGroups = async () => {
+    try {
+      const result = await window.electron.ipcRenderer.invoke('groups:getAll');
+      setGroups(result);
+    } catch (error) {
+      console.error('Failed to load groups:', error);
+    }
   };
 
-  const handleAddGroup = () => {
+  const handleAddGroup = async () => {
     if (!newGroupName.trim()) return;
     
-    const newGroup = {
-      id: Date.now().toString(),
-      name: newGroupName.trim()
-    };
-    
-    saveGroups([...groups, newGroup]);
-    setNewGroupName('');
+    try {
+      await window.electron.ipcRenderer.invoke('groups:create', newGroupName.trim());
+      setNewGroupName('');
+      await loadGroups();
+    } catch (error) {
+      console.error('Failed to create group:', error);
+    }
   };
 
   const handleEditGroup = (group) => {
@@ -41,18 +43,17 @@ export function GroupManagementSidebar({ isOpen, onClose }) {
     setEditName(group.name);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editName.trim()) return;
     
-    const updatedGroups = groups.map(group =>
-      group.id === editingGroup
-        ? { ...group, name: editName.trim() }
-        : group
-    );
-    
-    saveGroups(updatedGroups);
-    setEditingGroup(null);
-    setEditName('');
+    try {
+      await window.electron.ipcRenderer.invoke('groups:update', editingGroup, { name: editName.trim() });
+      setEditingGroup(null);
+      setEditName('');
+      await loadGroups();
+    } catch (error) {
+      console.error('Failed to update group:', error);
+    }
   };
 
   const handleDeleteGroup = async (group) => {
@@ -63,8 +64,12 @@ export function GroupManagementSidebar({ isOpen, onClose }) {
     });
     
     if (confirmed) {
-      const updatedGroups = groups.filter(g => g.id !== group.id);
-      saveGroups(updatedGroups);
+      try {
+        await window.electron.ipcRenderer.invoke('groups:delete', group.id);
+        await loadGroups();
+      } catch (error) {
+        console.error('Failed to delete group:', error);
+      }
     }
   };
 

@@ -1,7 +1,7 @@
 /**
  * Sidebar for creating/editing database connections
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
@@ -10,6 +10,29 @@ import { useToast } from '../../contexts/ToastContext';
 import { useConnectionForm } from '../../hooks/connections/useConnectionForm';
 import { parseConnectionUrl } from '../../utils/connectionParser';
 import { ConnectionFormFields } from './ConnectionFormFields';
+
+// Component to load groups from backend
+function GroupOptions() {
+  const [groups, setGroups] = useState([]);
+
+  useEffect(() => {
+    const loadGroups = async () => {
+      try {
+        const result = await window.electron.ipcRenderer.invoke('groups:getAll');
+        setGroups(result);
+      } catch (error) {
+        console.error('Failed to load groups:', error);
+      }
+    };
+    loadGroups();
+  }, []);
+
+  return groups.map(group => (
+    <option key={group.id} value={group.name}>
+      {group.name}
+    </option>
+  ));
+}
 
 export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
   const { settings } = useSettingsContext();
@@ -118,14 +141,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="">No Group</option>
-                    {(() => {
-                      const groups = JSON.parse(localStorage.getItem('connection-groups') || '[]');
-                      return groups.map(group => (
-                        <option key={group.id} value={group.name}>
-                          {group.name}
-                        </option>
-                      ));
-                    })()}
+                    <GroupOptions />
                   </select>
                 </div>
               </div>
