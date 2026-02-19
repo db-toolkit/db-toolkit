@@ -39,6 +39,12 @@ export function generateStaticParams() {
 export const dynamic = 'force-static';
 
 export default function BlogPost({ params }) {
+  // Add safety check for undefined slug
+  if (!params?.slug) {
+    console.error('Slug parameter is undefined:', params);
+    return <div>Error: Blog post not found</div>;
+  }
+  
   const post = getPostBySlug(params.slug);
   const allPosts = getAllPosts();
   const toc = generateTOC(post.content);
