@@ -8,10 +8,13 @@ import { useMigratorStream } from '../hooks/migrations/useMigratorStream';
 import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
 import MigrationFileBrowser from '../components/migrations/MigrationFileBrowser';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import { useConfirmDialog } from '../hooks/common/useConfirmDialog';
 
 function MigrationsPage() {
   const { connections } = useConnections();
   const toast = useToast();
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const [selectedProject, setSelectedProject] = useState(null);
   const [savedProjects, setSavedProjects] = useState([]);
   const [output, setOutput] = useState([]);
@@ -75,8 +78,13 @@ function MigrationsPage() {
     toast.success('Project saved');
   };
 
-  const handleDeleteProject = (projectToDelete) => {
-    if (window.confirm(`Delete project "${projectToDelete.name}"?`)) {
+  const handleDeleteProject = async (projectToDelete) => {
+    const confirmed = await showConfirm({
+      title: 'Delete Project',
+      message: `Delete project "${projectToDelete.name}"?`,
+      confirmText: 'Delete'
+    });
+    if (confirmed) {
       const updated = savedProjects.filter(p => p.path !== projectToDelete.path);
       setSavedProjects(updated);
       localStorage.setItem('migration-projects', JSON.stringify(updated));
@@ -356,6 +364,17 @@ function MigrationsPage() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        onClose={closeDialog}
+        onConfirm={dialog.onConfirm}
+        title={dialog.title}
+        message={dialog.message}
+        confirmText={dialog.confirmText}
+        cancelText={dialog.cancelText}
+        variant={dialog.variant}
+      />
     </div>
   );
 }
