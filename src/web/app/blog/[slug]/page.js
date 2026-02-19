@@ -36,6 +36,8 @@ export function generateStaticParams() {
   return getAllPostSlugs();
 }
 
+export const dynamic = 'force-static';
+
 export default function BlogPost({ params }) {
   const post = getPostBySlug(params.slug);
   const allPosts = getAllPosts();
