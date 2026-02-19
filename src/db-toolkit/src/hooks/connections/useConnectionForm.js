@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../../contexts/ToastContext';
 
-export function useConnectionForm(connection, isOpen, settings, onClose, onSave) {
+export function useConnectionForm(connection, isOpen, settings, onClose, onSave, showConfirm) {
   const toast = useToast();
   const [testing, setTesting] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -118,9 +118,15 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave)
     onClose();
   }, [connection, formData, onSave, onClose]);
 
-  const handleClose = useCallback(() => {
+  const handleClose = useCallback(async () => {
     if (hasChanges) {
-      if (window.confirm('You have unsaved changes. Discard them?')) {
+      const confirmed = await showConfirm({
+        title: 'Unsaved Changes',
+        message: 'You have unsaved changes. Discard them?',
+        confirmText: 'Discard',
+        variant: 'warning'
+      });
+      if (confirmed) {
         if (!connection) {
           localStorage.removeItem('connection-draft');
         }
@@ -130,7 +136,7 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave)
     } else {
       onClose();
     }
-  }, [hasChanges, connection, onClose]);
+  }, [hasChanges, connection, onClose, showConfirm]);
 
   return {
     formData,

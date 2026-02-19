@@ -3,7 +3,7 @@ import { queryAPI } from '../../services/api';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { useRequestDeduplication } from '../system/usePerformance';
 
-export function useQuery(connectionId) {
+export function useQuery(connectionId, showConfirm) {
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,9 +31,12 @@ export function useQuery(connectionId) {
       
       // Check if confirmation is required
       if (response.data.requiresConfirmation) {
-        const confirmed = window.confirm(
-          `⚠️ ${response.data.error}\n\nThis operation cannot be undone. Do you want to proceed?`
-        );
+        const confirmed = await showConfirm({
+          title: 'Dangerous Operation',
+          message: `⚠️ ${response.data.error}\n\nThis operation cannot be undone. Do you want to proceed?`,
+          confirmText: 'Proceed',
+          variant: 'warning'
+        });
         
         if (confirmed) {
           // Re-execute with skipValidation=true
