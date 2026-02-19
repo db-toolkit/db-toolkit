@@ -7,9 +7,14 @@ export function GroupCard({ group, connectionCount, onDoubleClick }) {
       onDoubleClick={() => onDoubleClick(group.name)}
     >
       <div className="flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
-            <Users className="w-6 h-6 text-white" />
+        <div className="flex items-start gap-3">
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-xs text-green-600 dark:text-green-400 font-medium">
+              Double-click
+            </span>
           </div>
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
@@ -20,12 +25,6 @@ export function GroupCard({ group, connectionCount, onDoubleClick }) {
             </p>
           </div>
         </div>
-      </div>
-      
-      <div className="flex justify-end">
-        <span className="text-xs text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-full">
-          Double-click to open
-        </span>
       </div>
     </div>
   );

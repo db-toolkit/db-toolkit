@@ -132,7 +132,7 @@ function ConnectionGroupPage() {
         {/* Search Bar */}
         {connections.filter(conn => conn.group === decodedGroupName).length > 0 && (
           <div className="mb-6">
-            <div className="relative max-w-md">
+            <div className="relative">
               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
