@@ -101,11 +101,34 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
               <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
                 Basic Information
               </h3>
-              <Input
-                label="Connection Name"
-                value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-              />
+              <div className="space-y-4">
+                <Input
+                  label="Connection Name"
+                  value={formData.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
+                />
+                
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Group (Optional)
+                  </label>
+                  <select
+                    value={formData.group || ''}
+                    onChange={(e) => handleChange('group', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="">No Group</option>
+                    {(() => {
+                      const groups = JSON.parse(localStorage.getItem('connection-groups') || '[]');
+                      return groups.map(group => (
+                        <option key={group.id} value={group.name}>
+                          {group.name}
+                        </option>
+                      ));
+                    })()}
+                  </select>
+                </div>
+              </div>
             </div>
 
                 {/* Database Type */}

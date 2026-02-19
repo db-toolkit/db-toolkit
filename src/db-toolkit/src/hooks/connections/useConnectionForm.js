@@ -15,6 +15,7 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave,
     password: '',
     ssl_enabled: false,
     ssl_mode: 'require',
+    group: '',
   });
 
   useEffect(() => {
