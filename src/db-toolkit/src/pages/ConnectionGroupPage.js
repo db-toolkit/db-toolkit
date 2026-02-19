@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, Plus } from 'lucide-react';
+import { ArrowLeft, Users, Plus, Search } from 'lucide-react';
+import { useDebounce } from '../utils/debounce';
 import { useConnections } from '../hooks';
 import { useToast } from '../contexts/ToastContext';
 import { Button } from '../components/common/Button';
@@ -19,14 +20,27 @@ function ConnectionGroupPage() {
   const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const [showSidebar, setShowSidebar] = useState(false);
   const [editingConnection, setEditingConnection] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const { connections, loading, error, connectedIds, createConnection, updateConnection, deleteConnection, connectToDatabase } = useConnections();
 
   const decodedGroupName = decodeURIComponent(groupName);
 
   // Filter connections for this group
   const groupConnections = useMemo(() => {
-    return connections.filter(conn => conn.group === decodedGroupName);
-  }, [connections, decodedGroupName]);
+    const searchLower = debouncedSearch.toLowerCase();
+    const filtered = connections.filter(conn => conn.group === decodedGroupName);
+    
+    if (!searchQuery.trim()) {
+      return filtered;
+    }
+    
+    return filtered.filter(conn => 
+      conn.name.toLowerCase().includes(searchLower) ||
+      conn.db_type.toLowerCase().includes(searchLower) ||
+      (conn.host && conn.host.toLowerCase().includes(searchLower))
+    );
+  }, [connections, decodedGroupName, debouncedSearch, searchQuery]);
 
   const handleConnect = useCallback(async (id) => {
     try {
@@ -109,11 +123,27 @@ function ConnectionGroupPage() {
                 {decodedGroupName}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {groupConnections.length} connection{groupConnections.length !== 1 ? 's' : ''}
+                {connections.filter(conn => conn.group === decodedGroupName).length} connection{connections.filter(conn => conn.group === decodedGroupName).length !== 1 ? 's' : ''}
               </p>
             </div>
           </div>
         </div>
+
+        {/* Search Bar */}
+        {connections.filter(conn => conn.group === decodedGroupName).length > 0 && (
+          <div className="mb-6">
+            <div className="relative max-w-md">
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search connections..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+          </div>
+        )}
 
         {groupConnections.length === 0 ? (
           <EmptyState

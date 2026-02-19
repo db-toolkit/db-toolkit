@@ -96,12 +96,19 @@ function ConnectionsPage() {
   // Memoize filtered connections to avoid re-filtering on every render
   const filteredConnections = useMemo(() => {
     const searchLower = debouncedSearch.toLowerCase();
-    return connections.filter(conn => 
+    let connectionsToFilter = connections;
+    
+    // If searching, include all connections; otherwise exclude grouped ones
+    if (!searchQuery.trim()) {
+      connectionsToFilter = connections.filter(conn => !conn.group);
+    }
+    
+    return connectionsToFilter.filter(conn => 
       conn.name.toLowerCase().includes(searchLower) ||
       conn.db_type.toLowerCase().includes(searchLower) ||
       (conn.host && conn.host.toLowerCase().includes(searchLower))
     );
-  }, [connections, debouncedSearch]);
+  }, [connections, debouncedSearch, searchQuery]);
 
   // Get groups with connection counts
   const groupsWithCounts = useMemo(() => {
@@ -148,7 +155,7 @@ function ConnectionsPage() {
               icon={<Users size={16} />}
               onClick={() => setShowGroupSidebar(true)}
             >
-              Manage Groups
+              Groups
             </Button>
           </div>
         )}
