@@ -155,7 +155,7 @@ function ConnectionsPage() {
               icon={<Users size={16} />}
               onClick={() => setShowGroupSidebar(true)}
             >
-              Groups
+              Manage Groups
             </Button>
           </div>
         )}
@@ -194,10 +194,14 @@ function ConnectionsPage() {
             </Button>
           }
         />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredConnections.map((conn) => (
-            <ConnectionCard
+      ) : filteredConnections.length > 0 ? (
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Connections
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredConnections.map((conn) => (
+              <ConnectionCard
               key={conn.id}
               connection={conn}
               onConnect={handleConnect}
@@ -206,8 +210,9 @@ function ConnectionsPage() {
               isActive={connectedIds.has(conn.id)}
             />
           ))}
+          </div>
         </div>
-      )}
+      ) : null}
 
       <ConnectionSidebar
         isOpen={showSidebar}
