@@ -5,6 +5,7 @@ export const docsConfig = {
       items: [
         { title: 'Introduction', slug: 'getting-started' },
         { title: 'Connections', slug: 'connections' },
+        { title: 'Connection Groups', slug: 'groups' },
       ],
     },
     {
