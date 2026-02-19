@@ -12,6 +12,7 @@ Beta release of DB Toolkit - a modern, cross-platform database management applic
 ### Features
 - **Multi-Database Support** - PostgreSQL, MySQL, MariaDB, SQLite, MongoDB
 - **Connection Management** - Save, test, and manage multiple database connections
+- **Connection Groups** - You can now organize your database connections into custom groups for better management and navigation
 - **Schema Explorer** - Visual tree browser for databases, schemas, tables, and columns with ER diagram visualization
 - **Query Editor** - Monaco-based editor with syntax highlighting, auto-complete, and formatting
 - **Visual Query Builder** - Build SQL queries visually without writing code
