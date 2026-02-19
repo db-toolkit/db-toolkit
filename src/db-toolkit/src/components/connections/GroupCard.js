@@ -20,7 +20,7 @@ export function GroupCard({ group, connectionCount, onDoubleClick }) {
         </div>
       </div>
       
-      <div className="flex justify-center pb-2">
+      <div className="flex justify-center pb-1">
         <span className="text-xs text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-full">
           Double-click to open
         </span>
