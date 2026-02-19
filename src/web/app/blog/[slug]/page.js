@@ -33,7 +33,9 @@ const components = {
 };
 
 export function generateStaticParams() {
-  return getAllPostSlugs();
+  const slugs = getAllPostSlugs();
+  console.log('Generated static params:', slugs);
+  return slugs;
 }
 
 export const dynamic = 'force-static';
