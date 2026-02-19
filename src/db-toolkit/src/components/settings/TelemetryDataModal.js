@@ -5,10 +5,13 @@
 import { useState, useEffect } from "react";
 import { X, Loader2, Trash2, Database, Clock, Layout, Activity } from "lucide-react";
 import { Button } from "../common/Button";
+import ConfirmDialog from '../common/ConfirmDialog';
+import { useConfirmDialog } from '../../hooks/common/useConfirmDialog';
 
 export function TelemetryDataModal({ isOpen, onClose, getTelemetryReport, clearTelemetryData }) {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
 
   useEffect(() => {
     if (isOpen) {
@@ -26,9 +29,11 @@ export function TelemetryDataModal({ isOpen, onClose, getTelemetryReport, clearT
   };
 
   const handleClear = async () => {
-    const confirmed = window.confirm(
-      'This will delete all collected telemetry data. This action cannot be undone. Are you sure?'
-    );
+    const confirmed = await showConfirm({
+      title: 'Clear Telemetry Data',
+      message: 'This will delete all collected telemetry data. This action cannot be undone. Are you sure?',
+      confirmText: 'Delete All'
+    });
     if (confirmed) {
       await clearTelemetryData();
       setReport(null);
@@ -113,6 +118,17 @@ export function TelemetryDataModal({ isOpen, onClose, getTelemetryReport, clearT
             Close
           </Button>
         </div>
+
+        <ConfirmDialog
+          isOpen={dialog.isOpen}
+          onClose={closeDialog}
+          onConfirm={dialog.onConfirm}
+          title={dialog.title}
+          message={dialog.message}
+          confirmText={dialog.confirmText}
+          cancelText={dialog.cancelText}
+          variant={dialog.variant}
+        />
       </div>
     </div>
   );

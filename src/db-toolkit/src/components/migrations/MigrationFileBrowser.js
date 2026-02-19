@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { FileText, Eye, Edit, Trash2, Edit3, FolderOpen } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useToast } from '../../contexts/ToastContext';
+import ConfirmDialog from '../common/ConfirmDialog';
+import { useConfirmDialog } from '../../hooks/common/useConfirmDialog';
 
 function MigrationFileBrowser({ projectPath, onRefresh }) {
   const [files, setFiles] = useState([]);
@@ -14,6 +16,7 @@ function MigrationFileBrowser({ projectPath, onRefresh }) {
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [newFileName, setNewFileName] = useState('');
   const toast = useToast();
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
 
   useEffect(() => {
     if (projectPath) {
@@ -51,7 +54,12 @@ function MigrationFileBrowser({ projectPath, onRefresh }) {
   };
 
   const handleDelete = async (file) => {
-    if (!window.confirm(`Delete ${file.name}?`)) return;
+    const confirmed = await showConfirm({
+      title: 'Delete File',
+      message: `Delete ${file.name}?`,
+      confirmText: 'Delete'
+    });
+    if (!confirmed) return;
 
     try {
       await window.electron.ipcRenderer.invoke('delete-file', file.path);
@@ -214,6 +222,17 @@ function MigrationFileBrowser({ projectPath, onRefresh }) {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        onClose={closeDialog}
+        onConfirm={dialog.onConfirm}
+        title={dialog.title}
+        message={dialog.message}
+        confirmText={dialog.confirmText}
+        cancelText={dialog.cancelText}
+        variant={dialog.variant}
+      />
     </div>
   );
 }

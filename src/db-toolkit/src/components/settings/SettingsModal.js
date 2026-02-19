@@ -8,6 +8,8 @@ import { useToast } from '../../contexts/ToastContext';
 import { Button } from '../common/Button';
 import { AppearanceSettings } from './AppearanceSettings';
 import { QuerySettings } from './QuerySettings';
+import ConfirmDialog from '../common/ConfirmDialog';
+import { useConfirmDialog } from '../../hooks/common/useConfirmDialog';
 import { EditorSettings } from './EditorSettings';
 import { ConnectionSettings } from './ConnectionSettings';
 import { WorkspaceSettings } from './WorkspaceSettings';
@@ -26,6 +28,7 @@ export function SettingsModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('appearance');
   const { settings, updateSettings, resetSettings } = useSettings();
   const toast = useToast();
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const [localSettings, setLocalSettings] = useState(null);
 
   if (!isOpen) return null;
@@ -49,7 +52,12 @@ export function SettingsModal({ isOpen, onClose }) {
   };
 
   const handleReset = async () => {
-    if (window.confirm('Reset all settings to defaults?')) {
+    const confirmed = await showConfirm({
+      title: 'Reset Settings',
+      message: 'Reset all settings to defaults?',
+      confirmText: 'Reset'
+    });
+    if (confirmed) {
       try {
         const defaults = await resetSettings();
         setLocalSettings(defaults);
@@ -123,6 +131,17 @@ export function SettingsModal({ isOpen, onClose }) {
             Save Changes
           </Button>
         </div>
+
+        <ConfirmDialog
+          isOpen={dialog.isOpen}
+          onClose={closeDialog}
+          onConfirm={dialog.onConfirm}
+          title={dialog.title}
+          message={dialog.message}
+          confirmText={dialog.confirmText}
+          cancelText={dialog.cancelText}
+          variant={dialog.variant}
+        />
       </div>
     </div>
   );
