@@ -9,7 +9,7 @@ import { useConnectionStore } from '../../stores/connectionStore';
 import { dropTable } from '../../utils/dropTable';
 import api from '../../services/api';
 
-export function useDataExplorer() {
+export function useDataExplorer(showConfirm) {
   const { connections, connectToDatabase } = useConnections();
   const toast = useToast();
   const connectionId = useConnectionStore((state) => state.activeConnections.dataExplorer);
@@ -276,8 +276,8 @@ export function useDataExplorer() {
         setData([]);
         setColumns([]);
       }
-    }, toast);
-  }, [connectionId, selectedTable, toast]);
+    }, toast, showConfirm);
+  }, [connectionId, selectedTable, toast, showConfirm]);
 
   return {
     connections,

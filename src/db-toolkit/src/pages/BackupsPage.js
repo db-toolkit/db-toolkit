@@ -14,10 +14,13 @@ import { ScheduleModal } from '../components/backup/ScheduleModal';
 import { ScheduleCard } from '../components/backup/ScheduleCard';
 import { ScheduleBackupsModal } from '../components/backup/ScheduleBackupsModal';
 import { useBackupWebSocket } from '../websockets/useBackupWebSocket';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import { useConfirmDialog } from '../hooks/common/useConfirmDialog';
 import api from '../services/api';
 
 function BackupsPage() {
   const toast = useToast();
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const [showModal, setShowModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showScheduleBackupsModal, setShowScheduleBackupsModal] = useState(false);
@@ -104,7 +107,12 @@ function BackupsPage() {
   };
 
   const handleDeleteSchedule = async (scheduleId) => {
-    if (!window.confirm('Delete this schedule?')) return;
+    const confirmed = await showConfirm({
+      title: 'Delete Schedule',
+      message: 'Delete this schedule?',
+      confirmText: 'Delete'
+    });
+    if (!confirmed) return;
     
     try {
       await api.invoke('backup:schedule:delete', scheduleId);
@@ -148,7 +156,13 @@ function BackupsPage() {
   };
 
   const handleRestore = async (backupId) => {
-    if (!window.confirm('Restore this backup? This will overwrite existing data.')) return;
+    const confirmed = await showConfirm({
+      title: 'Restore Backup',
+      message: 'Restore this backup? This will overwrite existing data.',
+      confirmText: 'Restore',
+      variant: 'warning'
+    });
+    if (!confirmed) return;
     
     try {
       await restoreBackup(backupId);
@@ -168,7 +182,12 @@ function BackupsPage() {
   };
 
   const handleDelete = async (backupId) => {
-    if (!window.confirm('Delete this backup? This cannot be undone.')) return;
+    const confirmed = await showConfirm({
+      title: 'Delete Backup',
+      message: 'Delete this backup? This cannot be undone.',
+      confirmText: 'Delete'
+    });
+    if (!confirmed) return;
     
     try {
       await deleteBackup(backupId);
@@ -326,6 +345,17 @@ function BackupsPage() {
         onDownload={handleDownload}
         onDelete={handleDelete}
         onShowInFolder={handleShowInFolder}
+      />
+
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        onClose={closeDialog}
+        onConfirm={dialog.onConfirm}
+        title={dialog.title}
+        message={dialog.message}
+        confirmText={dialog.confirmText}
+        cancelText={dialog.cancelText}
+        variant={dialog.variant}
       />
     </div>
   );

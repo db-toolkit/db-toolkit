@@ -14,10 +14,12 @@ async function getDbType(connectionId) {
     }
 }
 
-export async function dropTable(tableName, connectionId, onSuccess, toast) {
-    const confirmed = window.confirm(
-        `Are you sure you want to drop table "${tableName}"?\n\nThis action cannot be undone.`
-    );
+export async function dropTable(tableName, connectionId, onSuccess, toast, showConfirm) {
+    const confirmed = await showConfirm({
+        title: 'Drop Table',
+        message: `Are you sure you want to drop table "${tableName}"?\n\nThis action cannot be undone.`,
+        confirmText: 'Drop Table'
+    });
 
     if (!confirmed) return;
 
@@ -49,12 +51,14 @@ export async function dropTable(tableName, connectionId, onSuccess, toast) {
             const dbType = await getDbType(connectionId);
             
             if (dbType === 'sqlite') {
-                const forceDelete = window.confirm(
-                    `Cannot drop table "${tableName}" because it has foreign key constraints.\n\n` +
-                    `Do you want to FORCE delete (temporarily disables foreign key checks)?\n\n` +
-                    `WARNING: This may leave orphaned data in dependent tables.\n\n` +
-                    `Click OK to force delete, or Cancel to abort.`
-                );
+                const forceDelete = await showConfirm({
+                    title: 'Foreign Key Constraint',
+                    message: `Cannot drop table "${tableName}" because it has foreign key constraints.\n\n` +
+                        `Do you want to FORCE delete (temporarily disables foreign key checks)?\n\n` +
+                        `WARNING: This may leave orphaned data in dependent tables.`,
+                    confirmText: 'Force Delete',
+                    variant: 'warning'
+                });
 
                 if (forceDelete) {
                     try {
@@ -106,11 +110,13 @@ export async function dropTable(tableName, connectionId, onSuccess, toast) {
                     }
                 }
             } else {
-                const cascade = window.confirm(
-                    `Cannot drop table "${tableName}" because it has foreign key constraints.\n\n` +
-                    `Do you want to CASCADE delete (this will also drop dependent objects)?\n\n` +
-                    `Click OK to CASCADE delete, or Cancel to abort.`
-                );
+                const cascade = await showConfirm({
+                    title: 'Foreign Key Constraint',
+                    message: `Cannot drop table "${tableName}" because it has foreign key constraints.\n\n` +
+                        `Do you want to CASCADE delete (this will also drop dependent objects)?`,
+                    confirmText: 'CASCADE Delete',
+                    variant: 'warning'
+                });
 
                 if (cascade) {
                     try {

@@ -11,10 +11,13 @@ import { DataExplorerSidebar } from '../components/data-explorer/DataExplorerSid
 import { DataExplorerContent } from '../components/data-explorer/DataExplorerContent';
 import { DataExplorerModals } from '../components/data-explorer/DataExplorerModals';
 import { useDataExplorer } from '../hooks/data-explorer/useDataExplorer';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import { useConfirmDialog } from '../hooks/common/useConfirmDialog';
 
 function DataExplorerPage() {
   const navigate = useNavigate();
   const [showAddRowModal, setShowAddRowModal] = useState(false);
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const {
     connections,
     connectionId,
@@ -54,7 +57,7 @@ function DataExplorerPage() {
     handlePrevPage,
     handleRefresh,
     handleDropTable,
-  } = useDataExplorer();
+  } = useDataExplorer(showConfirm);
 
   const totalPages = useMemo(() => Math.ceil(totalCount / pageSize), [totalCount, pageSize]);
 
@@ -149,6 +152,17 @@ function DataExplorerPage() {
         onCloseCellModal={() => setCellModal({ isOpen: false, data: null, column: null })}
         onCloseAddRowModal={() => setShowAddRowModal(false)}
         onAddRow={handleAddRow}
+      />
+
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        onClose={closeDialog}
+        onConfirm={dialog.onConfirm}
+        title={dialog.title}
+        message={dialog.message}
+        confirmText={dialog.confirmText}
+        cancelText={dialog.cancelText}
+        variant={dialog.variant}
       />
     </div>
   );

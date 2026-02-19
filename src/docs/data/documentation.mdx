@@ -453,7 +453,6 @@ Each workspace maintains its own:
 **When Workspaces Disabled:**
 - Titlebar shows "DB Toolkit" instead of tabs
 - Single connection mode (no workspace isolation)
-- Requires app restart to apply setting change
 
 ### Query Editor Usage
 
@@ -511,7 +510,7 @@ Export query results to CSV files with custom formatting.
 
 ### Connection Management
 
-Manage database connections with support for PostgreSQL, MySQL, MongoDB, and SQLite.
+Manage database connections with support for PostgreSQL, MySQL, MariaDB, MongoDB, and SQLite.
 
 **Create Connection:**
 1. Click "New Connection" button
@@ -533,6 +532,7 @@ sqlite:///path/to/database.db
 **Supported Protocols:**
 - `postgresql+asyncpg://` - PostgreSQL with asyncpg
 - `mysql+aiomysql://` - MySQL with aiomysql
+- `mariadb+aiomysql://` - MariaDB with aiomysql
 - `mongodb+srv://` - MongoDB Atlas
 
 **Features:**
@@ -1088,6 +1088,10 @@ pg_restore --list backup.dump
 
 # Test backup integrity (MySQL)
 mysqlcheck backup.sql
+
+# Test backup integrity (MariaDB)
+mysqlcheck backup.sql
+
 ```
 
 **Best Practices:**

@@ -13,6 +13,8 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useWorkspaceIPC } from "../../hooks/workspace/useWorkspaceIPC";
 import { useTelemetry } from "../../hooks/system/useTelemetry";
+import ConfirmDialog from '../common/ConfirmDialog';
+import { useConfirmDialog } from '../../hooks/common/useConfirmDialog';
 
 const WorkspaceContext = createContext(null);
 
@@ -26,6 +28,7 @@ export function WorkspaceProvider({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { trackFeature } = useTelemetry();
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const ipc = useWorkspaceIPC();
 
   // Load settings in background (non-blocking)
@@ -104,7 +107,12 @@ export function WorkspaceProvider({ children }) {
             return null;
           }
 
-          const confirmed = window.confirm(message);
+          const confirmed = await showConfirm({
+            title: 'Workspace Limit Reached',
+            message,
+            confirmText: 'Create Anyway',
+            variant: 'warning'
+          });
           if (!confirmed) return null;
         }
 
@@ -137,9 +145,12 @@ export function WorkspaceProvider({ children }) {
 
         // Check for unsaved changes
         if (workspace?.hasUnsavedChanges) {
-          const confirmed = window.confirm(
-            "This workspace has unsaved changes. Are you sure you want to close it?",
-          );
+          const confirmed = await showConfirm({
+            title: 'Unsaved Changes',
+            message: 'This workspace has unsaved changes. Are you sure you want to close it?',
+            confirmText: 'Close Anyway',
+            variant: 'warning'
+          });
           if (!confirmed) return false;
         }
 
@@ -181,9 +192,12 @@ export function WorkspaceProvider({ children }) {
         );
 
         if (workspacesWithUnsavedChanges.length > 0) {
-          const confirmed = window.confirm(
-            `${workspacesWithUnsavedChanges.length} workspace(s) have unsaved changes. Are you sure you want to close them?`,
-          );
+          const confirmed = await showConfirm({
+            title: 'Unsaved Changes',
+            message: `${workspacesWithUnsavedChanges.length} workspace(s) have unsaved changes. Are you sure you want to close them?`,
+            confirmText: 'Close All',
+            variant: 'warning'
+          });
           if (!confirmed) return false;
         }
 
@@ -380,6 +394,16 @@ export function WorkspaceProvider({ children }) {
   return (
     <WorkspaceContext.Provider value={value}>
       {children}
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        onClose={closeDialog}
+        onConfirm={dialog.onConfirm}
+        title={dialog.title}
+        message={dialog.message}
+        confirmText={dialog.confirmText}
+        cancelText={dialog.cancelText}
+        variant={dialog.variant}
+      />
     </WorkspaceContext.Provider>
   );
 }

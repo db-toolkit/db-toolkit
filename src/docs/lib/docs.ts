@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
 
-const dataDir = path.join(process.cwd(), 'data');
+const dataDir = path.join(process.cwd(), "data");
 
 export interface DocPost {
   slug: string;
@@ -15,11 +15,11 @@ export interface DocPost {
 
 function readDocFile(slug: string) {
   const fullPath = path.join(dataDir, `${slug}.mdx`);
-  return fs.readFileSync(fullPath, 'utf8');
+  return fs.readFileSync(fullPath, "utf8");
 }
 
 function calculateReadingTime(text: string): string {
-  const wordsPerMinute = 200;
+  const wordsPerMinute = 100;
   const words = text.trim().split(/\s+/).length;
   const minutes = Math.ceil(words / wordsPerMinute);
   return `${minutes} min read`;
@@ -29,9 +29,9 @@ export function getAllDocs(): DocPost[] {
   if (!fs.existsSync(dataDir)) return [];
   return fs
     .readdirSync(dataDir)
-    .filter((file) => file.endsWith('.mdx'))
+    .filter((file) => file.endsWith(".mdx"))
     .map((file) => {
-      const slug = file.replace(/\.mdx$/, '');
+      const slug = file.replace(/\.mdx$/, "");
       const raw = readDocFile(slug);
       const { data, content } = matter(raw);
       return {

@@ -15,6 +15,8 @@ import { SchemaAiPanel } from '../components/schema/SchemaAiPanel';
 import { ERDiagram } from '../components/schema/ERDiagram';
 import { ReactFlowProvider } from 'reactflow';
 import { dropTable } from '../utils/dropTable';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import { useConfirmDialog } from '../hooks/common/useConfirmDialog';
 
 function SchemaPage() {
   const { connectionId } = useParams();
@@ -22,6 +24,7 @@ function SchemaPage() {
   const { schema, loading, error, fetchSchemaTree, refreshSchema } = useSchema(connectionId);
   const { analyzeSchema, loading: aiLoading } = useSchemaAI(connectionId);
   const toast = useToast();
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const [selectedTable, setSelectedTable] = useState(null);
   const [showImport, setShowImport] = useState(false);
   const [showAiPanel, setShowAiPanel] = useState(false);
@@ -55,8 +58,8 @@ function SchemaPage() {
       if (selectedTable?.schema === schemaName && selectedTable?.table === tableName) {
         setSelectedTable(null);
       }
-    }, toast);
-  }, [connectionId, refreshSchema, selectedTable, toast]);
+    }, toast, showConfirm);
+  }, [connectionId, refreshSchema, selectedTable, toast, showConfirm]);
 
   const handleAnalyzeSchema = useCallback(async (forceRefresh = false) => {
     if (!schema?.schemas || Object.keys(schema.schemas).length === 0) {
@@ -225,6 +228,17 @@ function SchemaPage() {
           />
         </ReactFlowProvider>
       )}
+
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        onClose={closeDialog}
+        onConfirm={dialog.onConfirm}
+        title={dialog.title}
+        message={dialog.message}
+        confirmText={dialog.confirmText}
+        cancelText={dialog.cancelText}
+        variant={dialog.variant}
+      />
     </div>
   );
 }

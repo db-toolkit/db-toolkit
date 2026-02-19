@@ -12,10 +12,13 @@ import { ErrorMessage } from '../components/common/ErrorMessage';
 import { ConnectionCard } from '../components/connections/ConnectionCard';
 import { ConnectionSidebar } from '../components/connections/ConnectionSidebar';
 import { AddConnectionButton } from '../components/connections/AddConnectionButton';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import { useConfirmDialog } from '../hooks/common/useConfirmDialog';
 
 function ConnectionsPage() {
   const navigate = useNavigate();
   const toast = useToast();
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const [showSidebar, setShowSidebar] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [modalError, setModalError] = useState('');
@@ -43,7 +46,12 @@ function ConnectionsPage() {
   }, [connectToDatabase, toast, navigate]);
 
   const handleDelete = useCallback(async (id) => {
-    if (window.confirm('Delete this connection?')) {
+    const confirmed = await showConfirm({
+      title: 'Delete Connection',
+      message: 'Delete this connection?',
+      confirmText: 'Delete'
+    });
+    if (confirmed) {
       try {
         await deleteConnection(id);
         toast.success('Connection deleted');
@@ -51,7 +59,7 @@ function ConnectionsPage() {
         toast.error('Delete failed');
       }
     }
-  }, [deleteConnection, toast]);
+  }, [deleteConnection, toast, showConfirm]);
 
   const handleSave = useCallback(async (data) => {
     try {
@@ -173,6 +181,17 @@ function ConnectionsPage() {
       <AddConnectionButton 
         onClick={() => setShowSidebar(true)} 
         isVisible={!showSidebar}
+      />
+
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        onClose={closeDialog}
+        onConfirm={dialog.onConfirm}
+        title={dialog.title}
+        message={dialog.message}
+        confirmText={dialog.confirmText}
+        cancelText={dialog.cancelText}
+        variant={dialog.variant}
       />
     </>
   );

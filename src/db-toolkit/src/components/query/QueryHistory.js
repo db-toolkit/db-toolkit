@@ -3,17 +3,25 @@ import { Clock, Trash2 } from 'lucide-react';
 import { useQuery } from '../../hooks';
 import { Button } from '../common/Button';
 import { queryAPI } from '../../services/api';
+import ConfirmDialog from '../common/ConfirmDialog';
+import { useConfirmDialog } from '../../hooks/common/useConfirmDialog';
 
 export function QueryHistory({ connectionId, onSelectQuery }) {
   const { history, fetchHistory, clearHistory } = useQuery(connectionId);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
 
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
 
   const handleClear = async () => {
-    if (window.confirm('Clear all query history?')) {
+    const confirmed = await showConfirm({
+      title: 'Clear History',
+      message: 'Clear all query history?',
+      confirmText: 'Clear All'
+    });
+    if (confirmed) {
       await clearHistory();
     }
   };
@@ -76,6 +84,17 @@ export function QueryHistory({ connectionId, onSelectQuery }) {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        onClose={closeDialog}
+        onConfirm={dialog.onConfirm}
+        title={dialog.title}
+        message={dialog.message}
+        confirmText={dialog.confirmText}
+        cancelText={dialog.cancelText}
+        variant={dialog.variant}
+      />
     </div>
   );
 }

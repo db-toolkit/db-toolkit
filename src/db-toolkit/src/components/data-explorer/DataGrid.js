@@ -5,6 +5,8 @@ import { useState, useMemo, useCallback } from 'react';
 import { ChevronUp, ChevronDown, Eye, Check, X, Copy, Filter, FilterX, Trash2 } from 'lucide-react';
 import { ContextMenu, useContextMenu } from '../common/ContextMenu';
 import { useToast } from '../../contexts/ToastContext';
+import ConfirmDialog from '../common/ConfirmDialog';
+import { useConfirmDialog } from '../../hooks/common/useConfirmDialog';
 
 export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellClick, onCellUpdate, onFilterByValue, onDeleteRow }) {
   const [editingCell, setEditingCell] = useState(null);
@@ -13,6 +15,7 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
   const cellContextMenu = useContextMenu();
   const headerContextMenu = useContextMenu();
   const toast = useToast();
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
 
   const copyToClipboard = useCallback(async (text) => {
     try {
@@ -232,8 +235,13 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
           {
             label: 'Delete Row',
             icon: <Trash2 size={16} />,
-            onClick: () => {
-              if (window.confirm('Are you sure you want to delete this row?')) {
+            onClick: async () => {
+              const confirmed = await showConfirm({
+                title: 'Delete Row',
+                message: 'Are you sure you want to delete this row?',
+                confirmText: 'Delete'
+              });
+              if (confirmed) {
                 onDeleteRow?.(cellContextMenu.data.row);
               }
             },
@@ -273,6 +281,17 @@ export function DataGrid({ data, columns, onSort, sortColumn, sortOrder, onCellC
             }
           }
         ] : []}
+      />
+      
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        onClose={closeDialog}
+        onConfirm={dialog.onConfirm}
+        title={dialog.title}
+        message={dialog.message}
+        confirmText={dialog.confirmText}
+        cancelText={dialog.cancelText}
+        variant={dialog.variant}
       />
     </div>
   );
