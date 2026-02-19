@@ -34,6 +34,7 @@ function registerConnectionHandlers() {
           password: request.password,
           ssl_enabled: request.ssl_enabled,
           ssl_mode: request.ssl_mode,
+          group: request.group,
         },
       );
     } catch (error) {
@@ -60,6 +61,7 @@ function registerConnectionHandlers() {
         password: request.password,
         ssl_enabled: request.ssl_enabled,
         ssl_mode: request.ssl_mode,
+        group: request.group,
       });
     } catch (error) {
       logger.error("Failed to update connection:", error);
