@@ -13,6 +13,7 @@ import { ConnectionCard } from '../components/connections/ConnectionCard';
 import { ConnectionSidebar } from '../components/connections/ConnectionSidebar';
 import { AddConnectionButton } from '../components/connections/AddConnectionButton';
 import { GroupManagementSidebar } from '../components/connections/GroupManagementSidebar';
+import { GroupCard } from '../components/connections/GroupCard';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useConfirmDialog } from '../hooks/common/useConfirmDialog';
 
@@ -100,6 +101,19 @@ function ConnectionsPage() {
     );
   }, [connections, debouncedSearch]);
 
+  // Get groups with connection counts
+  const groupsWithCounts = useMemo(() => {
+    const groups = JSON.parse(localStorage.getItem('connection-groups') || '[]');
+    return groups.map(group => ({
+      ...group,
+      connectionCount: connections.filter(conn => conn.group === group.name).length
+    })).filter(group => group.connectionCount > 0);
+  }, [connections]);
+
+  const handleGroupDoubleClick = useCallback((groupName) => {
+    navigate(`/connections/group/${encodeURIComponent(groupName)}`);
+  }, [navigate]);
+
   if (loading) return <LoadingState fullScreen message="Loading connections..." />;
   
   if (error) return (
@@ -135,6 +149,25 @@ function ConnectionsPage() {
             >
               Manage Groups
             </Button>
+          </div>
+        )}
+
+        {/* Group Cards */}
+        {groupsWithCounts.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Connection Groups
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {groupsWithCounts.map((group) => (
+                <GroupCard
+                  key={group.id}
+                  group={group}
+                  connectionCount={group.connectionCount}
+                  onDoubleClick={handleGroupDoubleClick}
+                />
+              ))}
+            </div>
           </div>
         )}
       
