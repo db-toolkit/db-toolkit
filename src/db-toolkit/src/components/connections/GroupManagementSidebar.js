@@ -86,7 +86,7 @@ export function GroupManagementSidebar({ isOpen, onClose }) {
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 p-1 rounded-lg transition-colors"
             >
               <X size={20} />
             </button>
