@@ -138,7 +138,7 @@ function ConnectionGroupPage() {
               <ConnectionCard
                 key={conn.id}
                 connection={conn}
-                isConnected={connectedIds.includes(conn.id)}
+                isConnected={connectedIds?.includes?.(conn.id) || false}
                 onConnect={() => handleConnect(conn.id)}
                 onEdit={() => handleEdit(conn)}
                 onDelete={() => handleDelete(conn.id)}
