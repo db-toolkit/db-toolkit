@@ -7,7 +7,7 @@ import { LongRunningQueries } from './LongRunningQueries';
 import { BlockedQueries } from './BlockedQueries';
 import { SlowQueryLog } from './SlowQueryLog';
 
-export function AnalyticsQueriesTab({ analytics, slowQueries, killQuery, handleViewPlan }) {
+export function AnalyticsQueriesTab({ analytics, slowQueries, killQuery }) {
   return (
     <div className="space-y-6">
       <QueryPerformance
@@ -17,7 +17,6 @@ export function AnalyticsQueriesTab({ analytics, slowQueries, killQuery, handleV
       <CurrentQueries
         queries={analytics.current_queries}
         onKill={killQuery}
-        onViewPlan={handleViewPlan}
       />
       <LongRunningQueries
         queries={analytics.long_running_queries}

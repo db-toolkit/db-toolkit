@@ -6,14 +6,13 @@ import { CurrentQueries } from './CurrentQueries';
 import { LongRunningQueries } from './LongRunningQueries';
 import { BlockedQueries } from './BlockedQueries';
 
-export function AnalyticsConnectionsTab({ analytics, poolStats, killQuery, handleViewPlan }) {
+export function AnalyticsConnectionsTab({ analytics, poolStats, killQuery }) {
   return (
     <div className="space-y-6">
       {poolStats && <ConnectionPoolStats stats={poolStats} />}
       <CurrentQueries
         queries={analytics.current_queries}
         onKill={killQuery}
-        onViewPlan={handleViewPlan}
       />
       <LongRunningQueries
         queries={analytics.long_running_queries}

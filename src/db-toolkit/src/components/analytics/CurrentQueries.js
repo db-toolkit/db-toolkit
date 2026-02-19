@@ -1,10 +1,10 @@
 /**
  * Current queries table
  */
-import { XCircle, Eye } from 'lucide-react';
+import { XCircle } from 'lucide-react';
 import { Button } from '../common/Button';
 
-export function CurrentQueries({ queries, onKill, onViewPlan }) {
+export function CurrentQueries({ queries, onKill }) {
   if (!queries || queries.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
@@ -48,24 +48,14 @@ export function CurrentQueries({ queries, onKill, onViewPlan }) {
                   {query.query}
                 </td>
                 <td className="px-4 py-2">
-                  <div className="flex gap-2">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      icon={<Eye size={14} />}
-                      onClick={() => onViewPlan(query.query)}
-                    >
-                      Plan
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      icon={<XCircle size={14} />}
-                      onClick={() => onKill(query.pid)}
-                    >
-                      Kill
-                    </Button>
-                  </div>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    icon={<XCircle size={14} />}
+                    onClick={() => onKill(query.pid)}
+                  >
+                    Kill
+                  </Button>
                 </td>
               </tr>
             ))}

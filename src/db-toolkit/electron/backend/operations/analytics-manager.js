@@ -137,11 +137,11 @@ class AnalyticsManager {
 
     try {
       if (dbType === 'postgresql') {
-        await this.connection.query(`SELECT pg_terminate_backend(${pid})`);
-      } else if (dbType === 'mysql') {
-        await this.connection.query(`KILL ${pid}`);
+        await this.connection.connection.query(`SELECT pg_terminate_backend(${pid})`);
+      } else if (dbType === 'mysql' || dbType === 'mariadb') {
+        await this.connection.connection.query(`KILL ${pid}`);
       } else if (dbType === 'mongodb') {
-        await this.connection.db.admin().command({ killOp: 1, op: pid });
+        await this.connection.connection.db().admin().command({ killOp: 1, op: pid });
       } else {
         return { success: false, error: 'Unsupported database type' };
       }
