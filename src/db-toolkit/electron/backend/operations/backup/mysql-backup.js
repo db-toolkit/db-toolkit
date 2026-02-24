@@ -31,6 +31,14 @@ async function backupMySQLDump(backup, config, tables) {
   
   if (config.password) cmd += ` -p${config.password}`;
   
+  // Add SSL options if enabled
+  if (config.ssl_enabled || config.ssl_mode) {
+    cmd += ' --ssl-mode=REQUIRED';
+    if (config.ssl_mode === 'verify-ca' || config.ssl_mode === 'verify-full') {
+      cmd += ' --ssl-mode=VERIFY_CA';
+    }
+  }
+  
   if (backup.backup_type === 'schema_only') {
     cmd += ' --no-data';
   } else if (backup.backup_type === 'data_only') {
@@ -53,13 +61,22 @@ async function backupMySQLNative(backup, config, tables) {
   const { backupNotifier } = require('../../ws/backup-notifier');
   const outputFile = backup.file_path.replace('.gz', '');
   
-  const connection = await mysql.createConnection({
+  const connectionConfig = {
     host: config.host,
     port: config.port || 3306,
     user: config.username,
     password: config.password,
     database: config.database
-  });
+  };
+
+  // Add SSL configuration if enabled
+  if (config.ssl_enabled || config.ssl_mode) {
+    connectionConfig.ssl = {
+      rejectUnauthorized: config.ssl_mode === 'verify-full' || config.ssl_mode === 'verify-ca',
+    };
+  }
+  
+  const connection = await mysql.createConnection(connectionConfig);
   
   try {
     let content = `-- MySQL Backup\n-- Database: ${config.database}\n\n`;

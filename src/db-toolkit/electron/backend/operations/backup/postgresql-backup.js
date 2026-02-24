@@ -27,7 +27,15 @@ async function backupPostgreSQL(backup, config, tables) {
 
 async function backupPostgreSQLPgDump(backup, config, tables) {
   const outputFile = backup.file_path.replace('.gz', '');
-  let cmd = `PGPASSWORD="${config.password}" pg_dump -h ${config.host} -p ${config.port || 5432} -U ${config.username} -d ${config.database} -F p -f ${outputFile}`;
+  
+  // Build SSL environment variables
+  let sslEnv = '';
+  if (config.ssl_enabled || config.ssl_mode) {
+    const sslMode = config.ssl_mode || 'require';
+    sslEnv = `PGSSLMODE=${sslMode} `;
+  }
+  
+  let cmd = `${sslEnv}PGPASSWORD="${config.password}" pg_dump -h ${config.host} -p ${config.port || 5432} -U ${config.username} -d ${config.database} -F p -f ${outputFile}`;
   
   if (backup.backup_type === 'schema_only') {
     cmd += ' --schema-only';
@@ -45,13 +53,22 @@ async function backupPostgreSQLNative(backup, config, tables) {
   const { backupNotifier } = require('../../ws/backup-notifier');
   const outputFile = backup.file_path.replace('.gz', '');
   
-  const client = new Client({
+  const clientConfig = {
     host: config.host,
     port: config.port || 5432,
     user: config.username,
     password: config.password,
     database: config.database
-  });
+  };
+
+  // Add SSL configuration if enabled
+  if (config.ssl_enabled || config.ssl_mode) {
+    clientConfig.ssl = {
+      rejectUnauthorized: config.ssl_mode === 'verify-full' || config.ssl_mode === 'verify-ca',
+    };
+  }
+  
+  const client = new Client(clientConfig);
   
   await client.connect();
   

@@ -78,6 +78,7 @@ function BackupsPage() {
   const handleCreate = async (data) => {
     try {
       await createBackup(data);
+      await fetchBackups(true); // Refresh immediately to show new backup
       toast.success('Backup created successfully');
       setShowModal(false);
     } catch (err) {
