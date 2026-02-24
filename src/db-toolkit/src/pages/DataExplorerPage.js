@@ -5,7 +5,7 @@ import { useMemo, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { DataExplorerNoConnections as DataExplorerEmpty } from '../components/data-explorer/DataExplorerEmpty';
-import { ConnectionSelector } from '../components/data-explorer/ConnectionSelector';
+import { ConnectionSelector } from '../components/connections/ConnectionSelector';
 import { DataExplorerHeader } from '../components/data-explorer/DataExplorerHeader';
 import { DataExplorerSidebar } from '../components/data-explorer/DataExplorerSidebar';
 import { DataExplorerContent } from '../components/data-explorer/DataExplorerContent';

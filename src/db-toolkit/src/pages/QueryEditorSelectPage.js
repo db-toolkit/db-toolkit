@@ -4,7 +4,7 @@ import { connectionsAPI } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { LoadingState } from '../components/common/LoadingState';
 import { EmptyState } from '../components/common/EmptyState';
-import { ConnectionSelector } from '../components/data-explorer/ConnectionSelector';
+import { ConnectionSelector } from '../components/connections/ConnectionSelector';
 
 function QueryEditorSelectPage() {
   const navigate = useNavigate();

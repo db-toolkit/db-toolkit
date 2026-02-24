@@ -8,7 +8,7 @@ import { useConnections, useAnalytics } from "../hooks";
 import { useAnalyticsData } from "../hooks/analytics/useAnalyticsData";
 import { useToast } from "../contexts/ToastContext";
 import { useConnectionStore } from "../stores/connectionStore";
-import { ConnectionSelector } from "../components/data-explorer/ConnectionSelector";
+import { ConnectionSelector } from "../components/connections/ConnectionSelector";
 import { Button } from "../components/common/Button";
 
 import { AnalyticsStats } from "../components/analytics/AnalyticsStats";

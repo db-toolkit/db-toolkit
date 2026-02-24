@@ -32,7 +32,7 @@ export const ConnectionSelector = memo(function ConnectionSelector({
           onChange={setSearchQuery}
           onClear={clearSearch}
           placeholder="Search connections..."
-          className="mb-6 max-w-md"
+          className="mb-6"
         />
       )}
 
