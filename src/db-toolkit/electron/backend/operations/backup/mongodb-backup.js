@@ -34,6 +34,14 @@ async function backupMongoDBDump(backup, config, tables) {
   if (config.username) cmd += ` --username ${config.username}`;
   if (config.password) cmd += ` --password ${config.password}`;
   
+  // Add SSL/TLS options if enabled
+  if (config.ssl_enabled || config.ssl_mode) {
+    cmd += ' --ssl';
+    if (config.ssl_mode === 'verify-ca' || config.ssl_mode === 'verify-full') {
+      cmd += ' --sslAllowInvalidCertificates=false';
+    }
+  }
+  
   if (backup.backup_type === 'tables' && tables) {
     for (const table of tables) {
       cmd += ` --collection ${table}`;
@@ -53,8 +61,17 @@ async function backupMongoDBNative(backup, config, tables) {
   const { backupNotifier } = require('../../ws/backup-notifier');
   const outputFile = backup.file_path.replace('.gz', '').replace('.sql', '.json');
   
-  const uri = `mongodb://${config.username}:${config.password}@${config.host}:${config.port || 27017}`;
-  const client = new MongoClient(uri);
+  let uri = `mongodb://${config.username}:${config.password}@${config.host}:${config.port || 27017}`;
+  
+  const clientOptions = {};
+  
+  // Add SSL/TLS options if enabled
+  if (config.ssl_enabled || config.ssl_mode) {
+    clientOptions.tls = true;
+    clientOptions.tlsAllowInvalidCertificates = !(config.ssl_mode === 'verify-ca' || config.ssl_mode === 'verify-full');
+  }
+  
+  const client = new MongoClient(uri, clientOptions);
   
   await client.connect();
   
