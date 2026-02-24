@@ -59,7 +59,7 @@ export function BackupCard({ backup, onRestore, onDownload, onDelete }) {
         </div>
       )}
 
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2">
         <Button
           variant="success"
           size="sm"
