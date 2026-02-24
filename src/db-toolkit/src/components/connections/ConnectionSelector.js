@@ -7,7 +7,7 @@ import { Database, Search, Filter } from 'lucide-react';
 import { Button } from '../common/Button';
 import { SearchBar } from '../common/SearchBar';
 import { useSearch } from '../../hooks/common/useSearch';
-import { useGroups } from '../../hooks/connections/useGroups';
+import { useGroups } from '../../hooks/groups/useGroups';
 
 export const ConnectionSelector = memo(function ConnectionSelector({ 
   connections, 
