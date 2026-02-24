@@ -2,7 +2,7 @@
  * Table selector component
  */
 import { useState } from 'react';
-import { Database, Table, Search } from 'lucide-react';
+import { Database, Table, Search, X } from 'lucide-react';
 import { useDebounce } from '../../utils/debounce';
 import { ContextMenu, useContextMenu } from '../common/ContextMenu';
 import { getTableContextMenuItems } from '../../utils/contextMenuActions';
@@ -29,6 +29,11 @@ export function TableSelector({ schema, selectedTable, onSelectTable, onRefreshT
     );
   };
 
+  const hasResults = Object.entries(schema.schemas).some(([schemaName, schemaData]) => {
+    const tables = schemaData.tables ? Object.keys(schemaData.tables) : [];
+    return filterTables(tables).length > 0;
+  });
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-3 border-b border-gray-200 dark:border-gray-700">
@@ -39,47 +44,61 @@ export function TableSelector({ schema, selectedTable, onSelectTable, onRefreshT
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search tables..."
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="w-full pl-9 pr-9 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
       </div>
       <div className="overflow-y-auto flex-1">
-        {Object.entries(schema.schemas).map(([schemaName, schemaData]) => {
-          const tables = schemaData.tables ? Object.keys(schemaData.tables) : [];
-          const filteredTables = filterTables(tables);
-          
-          if (filteredTables.length === 0) return null;
-          
-          return (
-            <div key={schemaName} className="mb-4">
-              <div className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                <Database size={16} />
-                {schemaName}
+        {!hasResults && debouncedSearch ? (
+          <div className="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">
+            No tables found matching "{debouncedSearch}"
+          </div>
+        ) : (
+          Object.entries(schema.schemas).map(([schemaName, schemaData]) => {
+            const tables = schemaData.tables ? Object.keys(schemaData.tables) : [];
+            const filteredTables = filterTables(tables);
+            
+            if (filteredTables.length === 0) return null;
+            
+            return (
+              <div key={schemaName} className="mb-4">
+                <div className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <Database size={16} />
+                  {schemaName}
+                </div>
+                {filteredTables.map((tableName) => {
+                  const tableData = schemaData.tables?.[tableName];
+                  return (
+                    <button
+                      key={tableName}
+                      onClick={() => onSelectTable(schemaName, tableName)}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        contextMenu.open(e, { schemaName, tableName, tableData });
+                      }}
+                      className={`w-full flex items-center gap-2 px-6 py-2 text-sm transition ${
+                        selectedTable?.schema === schemaName && selectedTable?.table === tableName
+                          ? 'bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`}
+                    >
+                      <Table size={14} />
+                      {tableName}
+                    </button>
+                  );
+                })}
               </div>
-              {filteredTables.map((tableName) => {
-                const tableData = schemaData.tables?.[tableName];
-                return (
-                  <button
-                    key={tableName}
-                    onClick={() => onSelectTable(schemaName, tableName)}
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      contextMenu.open(e, { schemaName, tableName, tableData });
-                    }}
-                    className={`w-full flex items-center gap-2 px-6 py-2 text-sm transition ${
-                      selectedTable?.schema === schemaName && selectedTable?.table === tableName
-                        ? 'bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    <Table size={14} />
-                    {tableName}
-                  </button>
-                );
-              })}
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
       
       <ContextMenu

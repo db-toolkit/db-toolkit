@@ -59,7 +59,7 @@ export function BackupCard({ backup, onRestore, onDownload, onDelete }) {
         </div>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <Button
           variant="success"
           size="sm"
@@ -82,10 +82,8 @@ export function BackupCard({ backup, onRestore, onDownload, onDelete }) {
           variant="danger"
           size="sm"
           onClick={() => onDelete(backup.id)}
-          className="!px-2"
-        >
-          <Trash2 size={16} />
-        </Button>
+          icon={<Trash2 size={16} />}
+        />
       </div>
     </div>
   );
