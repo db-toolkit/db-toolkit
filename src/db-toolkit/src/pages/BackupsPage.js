@@ -39,9 +39,20 @@ function BackupsPage() {
   }, [backups]);
 
   const handleBackupUpdate = useCallback((data) => {
-    setLocalBackups(prev => prev.map(b => 
-      b.id === data.backup_id ? { ...b, status: data.status, progress: data.progress } : b
-    ));
+    setLocalBackups(prev => prev.map(b => {
+      if (b.id === data.backup_id) {
+        const updated = { ...b, status: data.status };
+        // Only update progress if still in progress
+        if (data.status === 'in_progress' && data.progress !== undefined) {
+          updated.progress = data.progress;
+        } else if (data.status === 'completed' || data.status === 'failed') {
+          // Remove progress when completed or failed
+          delete updated.progress;
+        }
+        return updated;
+      }
+      return b;
+    }));
     if (data.status === 'completed' || data.status === 'failed') {
       fetchBackups(true);
     }
