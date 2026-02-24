@@ -59,7 +59,7 @@ class BackupManager {
       
       if (dbType === 'postgresql') {
         await backupPostgreSQL(backup, config, tables);
-      } else if (dbType === 'mysql') {
+      } else if (dbType === 'mysql' || dbType === 'mariadb') {
         await backupMySQL(backup, config, tables);
       } else if (dbType === 'sqlite') {
         await backupSQLite(backup, config);
@@ -136,7 +136,7 @@ class BackupManager {
       const dbType = targetConfig.type || targetConfig.db_type;
       if (dbType === 'postgresql') {
         await restorePostgreSQL(filePath, targetConfig);
-      } else if (dbType === 'mysql') {
+      } else if (dbType === 'mysql' || dbType === 'mariadb') {
         await restoreMySQL(filePath, targetConfig);
       } else if (dbType === 'sqlite') {
         await restoreSQLite(filePath, targetConfig);
