@@ -88,8 +88,11 @@ function BackupsPage() {
 
   const handleCreate = async (data) => {
     try {
-      await createBackup(data);
-      await fetchBackups(true); // Refresh immediately to show new backup
+      const newBackup = await createBackup(data);
+      // Immediately add the new backup to local state
+      if (newBackup) {
+        setLocalBackups(prev => [newBackup, ...prev]);
+      }
       toast.success('Backup created successfully');
       setShowModal(false);
     } catch (err) {
