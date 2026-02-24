@@ -12,6 +12,7 @@ const DEFAULT_SETTINGS = {
   default_query_limit: 1000,
   default_query_timeout: 30,
   auto_format_on_paste: false,
+  prevent_duplicate_history: false,
   query_history_retention_days: 30,
   editor_tab_size: 2,
   editor_word_wrap: true,

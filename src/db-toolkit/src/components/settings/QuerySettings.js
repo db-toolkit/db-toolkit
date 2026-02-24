@@ -37,6 +37,19 @@ export function QuerySettings({ settings, onChange }) {
         </label>
       </div>
 
+      <div className="flex items-center gap-3">
+        <input
+          type="checkbox"
+          id="prevent-duplicate-history"
+          checked={settings.prevent_duplicate_history}
+          onChange={(e) => onChange('prevent_duplicate_history', e.target.checked)}
+          className="w-4 h-4 text-green-600 rounded"
+        />
+        <label htmlFor="prevent-duplicate-history" className="text-sm text-gray-700 dark:text-gray-300">
+          Prevent duplicate queries in history
+        </label>
+      </div>
+
       <Input
         label="Query History Retention (days)"
         type="number"

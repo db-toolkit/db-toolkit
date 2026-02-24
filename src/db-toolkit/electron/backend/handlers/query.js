@@ -6,6 +6,7 @@ const { ipcMain } = require('electron');
 const { connectionStorage } = require('../utils/connection-storage');
 const { queryExecutor } = require('../operations/query-executor');
 const { queryHistory } = require('../operations/query-history');
+const { settingsStorage } = require('../utils/settings-storage');
 const { logger } = require('../utils/logger.js');
 
 function registerQueryHandlers() {
@@ -36,13 +37,15 @@ function registerQueryHandlers() {
 
       // Save to history only if not requiring confirmation
       if (!result.requiresConfirmation) {
+        const settings = await settingsStorage.getSettings();
         await queryHistory.addQuery(
           connectionId,
           request.query,
           result.success,
           result.execution_time,
           result.total_rows,
-          result.error
+          result.error,
+          settings.prevent_duplicate_history
         );
       }
 

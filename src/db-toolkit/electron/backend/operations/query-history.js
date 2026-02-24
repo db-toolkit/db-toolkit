@@ -19,11 +19,21 @@ class QueryHistory {
     await fs.mkdir(dir, { recursive: true });
   }
 
-  async addQuery(connectionId, query, success, executionTime, rowCount = 0, error = null) {
+  async addQuery(connectionId, query, success, executionTime, rowCount = 0, error = null, preventDuplicates = false) {
     const history = await this.loadHistory();
 
     if (!history[connectionId]) {
       history[connectionId] = [];
+    }
+
+    // Check for duplicates if enabled
+    if (preventDuplicates) {
+      const isDuplicate = history[connectionId].some(entry => 
+        entry.query.trim() === query.trim()
+      );
+      if (isDuplicate) {
+        return; // Skip adding duplicate
+      }
     }
 
     const entry = {
