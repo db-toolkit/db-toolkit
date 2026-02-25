@@ -25,7 +25,22 @@ export function AddRowModal({ isOpen, onClose, columns, onSave, tableName }) {
     setSaving(true);
     
     try {
-      await onSave(formData);
+      // Process form data - add current timestamp for empty timestamp fields with NOT NULL
+      const processedData = { ...formData };
+      
+      columns.forEach(column => {
+        const isTimestamp = column.data_type?.toLowerCase().includes('timestamp') || 
+                           column.data_type?.toLowerCase().includes('datetime');
+        const isNotNull = column.is_nullable === 'NO' || column.is_nullable === false;
+        const isEmpty = !processedData[column.column_name];
+        
+        if (isTimestamp && isNotNull && isEmpty) {
+          // Set current timestamp in ISO format
+          processedData[column.column_name] = new Date().toISOString();
+        }
+      });
+      
+      await onSave(processedData);
       toast.success('Row added successfully');
       setFormData({});
       onClose();
@@ -79,7 +94,9 @@ export function AddRowModal({ isOpen, onClose, columns, onSave, tableName }) {
                     </span>
                     {isTimestamp && (
                       <span className="text-xs text-blue-500 dark:text-blue-400 ml-2">
-                        Leave empty for current time
+                        {column.is_nullable === 'NO' || column.is_nullable === false 
+                          ? 'Leave empty for current time' 
+                          : 'Optional - leave empty for NULL'}
                       </span>
                     )}
                   </label>

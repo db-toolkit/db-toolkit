@@ -1,14 +1,26 @@
 const { autoUpdater } = require('electron-updater');
-const { dialog } = require('electron');
-const log = require('electron-log');
+const { dialog, app } = require('electron');
+const { logger } = require('./backend/utils/logger');
+const util = require('util');
+
+function formatLogArgs(args) {
+  return util.format.apply(null, args);
+}
+
+const updaterLogger = {
+  info: (...args) => logger.info(formatLogArgs(args)),
+  warn: (...args) => logger.warn(formatLogArgs(args)),
+  error: (...args) => logger.error(formatLogArgs(args)),
+  debug: (...args) => logger.info(formatLogArgs(args)),
+};
 
 // Configure logging
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
+autoUpdater.logger = updaterLogger;
 
 // Disable auto-download - we'll control when to download
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
+autoUpdater.forceDevUpdateConfig = !app.isPackaged;
 
 let mainWindow = null;
 
@@ -24,11 +36,11 @@ function notifyRenderer(channel, data) {
 
 // Event handlers
 autoUpdater.on('checking-for-update', () => {
-  log.info('Checking for updates...');
+  updaterLogger.info('Checking for updates...');
 });
 
 autoUpdater.on('update-available', (info) => {
-  log.info('Update available:', info.version);
+  updaterLogger.info('Update available:', info.version);
   notifyRenderer('update:available', {
     version: info.version,
     releaseNotes: info.releaseNotes,
@@ -37,16 +49,16 @@ autoUpdater.on('update-available', (info) => {
 });
 
 autoUpdater.on('update-not-available', (info) => {
-  log.info('Update not available');
+  updaterLogger.info('Update not available');
 });
 
 autoUpdater.on('error', (err) => {
-  log.error('Update error:', err);
+  updaterLogger.error('Update error:', err);
   notifyRenderer('update:error', { message: err.message });
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
-  log.info(`Download progress: ${progressObj.percent}%`);
+  updaterLogger.info(`Download progress: ${progressObj.percent}%`);
   notifyRenderer('update:download-progress', {
     percent: progressObj.percent,
     transferred: progressObj.transferred,
@@ -55,7 +67,7 @@ autoUpdater.on('download-progress', (progressObj) => {
 });
 
 autoUpdater.on('update-downloaded', (info) => {
-  log.info('Update downloaded');
+  updaterLogger.info('Update downloaded');
   notifyRenderer('update:downloaded', {
     version: info.version,
   });
@@ -80,7 +92,7 @@ async function checkForUpdatesAuto() {
   try {
     await autoUpdater.checkForUpdates();
   } catch (error) {
-    log.error('Auto update check failed:', error);
+    updaterLogger.error('Auto update check failed:', error);
   }
 }
 
@@ -114,12 +126,27 @@ async function checkForUpdatesManual() {
       await autoUpdater.downloadUpdate();
     }
   } catch (error) {
-    log.error('Manual update check failed:', error);
+    updaterLogger.error('Manual update check failed:', error);
+    const detailParts = [
+      `Error: ${error?.message || 'Unknown error'}`,
+    ];
+    if (error?.statusCode) {
+      detailParts.push(`Status: ${error.statusCode}`);
+    }
+    if (error?.code) {
+      detailParts.push(`Code: ${error.code}`);
+    }
+    if (error?.path) {
+      detailParts.push(`Path: ${error.path}`);
+    }
+    if (error?.url) {
+      detailParts.push(`URL: ${error.url}`);
+    }
     dialog.showMessageBox({
       type: 'error',
       title: 'Update Check Failed',
       message: 'Unable to check for updates',
-      detail: 'Please check your internet connection and try again.',
+      detail: detailParts.join('\n'),
       buttons: ['OK'],
     });
   }
