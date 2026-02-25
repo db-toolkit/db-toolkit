@@ -122,7 +122,6 @@ function AppContent() {
       }
     };
   }, [toast]);
-  }, [toast]);
 
   return (
     <WorkspaceProvider>
