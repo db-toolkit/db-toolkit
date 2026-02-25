@@ -75,25 +75,20 @@ jobs:
       - name: Build for macOS
         if: matrix.os == 'macos-latest'
         working-directory: src/db-toolkit
-        run: npm run package:mac
+        run: npx electron-builder --mac --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Build for Windows
         if: matrix.os == 'windows-latest'
         working-directory: src/db-toolkit
-        run: npm run package:win
+        run: npx electron-builder --win --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Build for Linux
         if: matrix.os == 'ubuntu-latest'
         working-directory: src/db-toolkit
-        run: npm run package:linux
-      
-      - name: Upload Release Assets
-        if: always()
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            src/db-toolkit/release/*.dmg
-            src/db-toolkit/release/*.exe
-            src/db-toolkit/release/*.msi
-            src/db-toolkit/release/*.AppImage
-            src/db-toolkit/release/*.deb
+        run: npx electron-builder --linux --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
