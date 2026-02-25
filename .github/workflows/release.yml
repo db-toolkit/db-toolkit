@@ -10,7 +10,24 @@ permissions:
   contents: write
 
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+
   build-and-upload:
+    needs: create-release
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -53,20 +70,28 @@ jobs:
       - name: Build for macOS
         if: matrix.os == 'macos-latest'
         working-directory: src/db-toolkit
-        run: npx electron-builder --mac --publish always
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run package:mac
       
       - name: Build for Windows
         if: matrix.os == 'windows-latest'
         working-directory: src/db-toolkit
-        run: npx electron-builder --win --publish always
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run package:win
       
       - name: Build for Linux
         if: matrix.os == 'ubuntu-latest'
         working-directory: src/db-toolkit
-        run: npx electron-builder --linux --publish always
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run package:linux
+
+      - name: Upload Release Assets
+        if: always()
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            src/db-toolkit/release/*.dmg
+            src/db-toolkit/release/*.exe
+            src/db-toolkit/release/*.msi
+            src/db-toolkit/release/*.AppImage
+            src/db-toolkit/release/*.deb
+            src/db-toolkit/release/*.zip
+            src/db-toolkit/release/*.blockmap
+            src/db-toolkit/release/latest*.yml

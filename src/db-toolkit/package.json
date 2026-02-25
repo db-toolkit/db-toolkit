@@ -83,8 +83,7 @@
     "publish": {
       "provider": "github",
       "owner": "db-toolkit",
-      "repo": "db-toolkit",
-      "releaseType": "release"
+      "repo": "db-toolkit"
     },
     "files": [
       "dist/**/*",
