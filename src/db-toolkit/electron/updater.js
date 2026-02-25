@@ -10,9 +10,6 @@ autoUpdater.logger.transports.file.level = 'info';
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
 
-// Force dev update config for testing
-autoUpdater.forceDevUpdateConfig = true;
-
 let mainWindow = null;
 
 function setMainWindow(window) {
