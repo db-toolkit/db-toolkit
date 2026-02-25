@@ -29,6 +29,7 @@
     "better-sqlite3": "^12.5.0",
     "dagre": "^0.8.5",
     "dotenv": "^16.0.0",
+    "electron-updater": "^6.8.3",
     "html-to-image": "^1.11.13",
     "lucide-react": "^0.554.0",
     "monaco-editor": "^0.55.1",
@@ -78,6 +79,11 @@
   "build": {
     "appId": "com.dbtoolkit.app",
     "productName": "DB Toolkit",
+    "publish": {
+      "provider": "github",
+      "owner": "db-toolkit",
+      "repo": "db-toolkit"
+    },
     "files": [
       "dist/**/*",
       "electron/**/*",

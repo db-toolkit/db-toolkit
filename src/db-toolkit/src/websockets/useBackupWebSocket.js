@@ -30,7 +30,11 @@ export function useBackupWebSocket(onUpdate) {
     window.electron.ipcRenderer.on('backup:update', handleBackupUpdate);
 
     return () => {
-      window.electron.ipcRenderer.removeAllListeners('backup:update');
+      if (window.electron.ipcRenderer.removeListener) {
+        window.electron.ipcRenderer.removeListener('backup:update', handleBackupUpdate);
+      } else {
+        window.electron.ipcRenderer.removeAllListeners('backup:update');
+      }
     };
   }, [onUpdate, addNotification]);
 }

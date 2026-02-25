@@ -1,5 +1,5 @@
 const { Menu, dialog, shell } = require('electron');
-const { checkForUpdates } = require('./updater');
+const { checkForUpdatesManual } = require('./updater');
 
 let currentTheme = 'light';
 let recentConnections = [];
@@ -24,7 +24,7 @@ function createMenu(mainWindow, isDev = false) {
         },
         {
           label: 'Check for Updates...',
-          click: checkForUpdates
+          click: checkForUpdatesManual
         },
         { type: 'separator' },
         { role: 'services' },
@@ -220,7 +220,7 @@ function createMenu(mainWindow, isDev = false) {
         { type: 'separator' },
         {
           label: 'Check for Updates',
-          click: checkForUpdates
+          click: checkForUpdatesManual
         }
       ]
     }

@@ -95,19 +95,33 @@ function AppContent() {
 
   useEffect(() => {
     const handleUpdateAvailable = (event, data) => {
-      if (!data?.latestVersion) return;
-      toast.info(`Update available: ${data.latestVersion}. Check Help → Check for Updates.`);
+      if (!data?.version) return;
+      toast.info(`Update available: ${data.version}. Check Help → Check for Updates.`);
+    };
+
+    const handleUpdateDownloaded = (event, data) => {
+      if (!data?.version) return;
+      toast.success(`Update ${data.version} downloaded and ready to install!`);
+    };
+
+    const handleUpdateError = (event, data) => {
+      toast.error('Update check failed. Please try again later.');
     };
 
     if (window.electron?.ipcRenderer?.on) {
       window.electron.ipcRenderer.on('update:available', handleUpdateAvailable);
+      window.electron.ipcRenderer.on('update:downloaded', handleUpdateDownloaded);
+      window.electron.ipcRenderer.on('update:error', handleUpdateError);
     }
 
     return () => {
       if (window.electron?.ipcRenderer?.removeAllListeners) {
         window.electron.ipcRenderer.removeAllListeners('update:available');
+        window.electron.ipcRenderer.removeAllListeners('update:downloaded');
+        window.electron.ipcRenderer.removeAllListeners('update:error');
       }
     };
+  }, [toast]);
   }, [toast]);
 
   return (

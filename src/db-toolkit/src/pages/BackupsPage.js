@@ -39,8 +39,10 @@ function BackupsPage() {
   }, [backups]);
 
   const handleBackupUpdate = useCallback((data) => {
+    let found = false;
     setLocalBackups(prev => prev.map(b => {
       if (b.id === data.backup_id) {
+        found = true;
         const updated = { ...b, status: data.status };
         // Only update progress if still in progress
         if (data.status === 'in_progress' && data.progress !== undefined) {
@@ -53,6 +55,10 @@ function BackupsPage() {
       }
       return b;
     }));
+    if (!found) {
+      fetchBackups(true);
+      return;
+    }
     if (data.status === 'completed' || data.status === 'failed') {
       fetchBackups(true);
     }

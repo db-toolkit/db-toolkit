@@ -2,7 +2,7 @@ const { app, BrowserWindow } = require('electron');
 const { createWindow } = require('./window-manager');
 const { registerAdditionalHandlers } = require('./ipc-handlers');
 const { restoreSession, saveSession, cleanupSession } = require('./session-lifecycle');
-const { checkForUpdates } = require('./updater');
+const { setMainWindow, checkForUpdatesAuto } = require('./updater');
 
 function registerIpcHandlers() {
   // Register all backend IPC handlers
@@ -19,6 +19,7 @@ app.whenReady().then(async () => {
   const { startBackgroundTasks } = require('./backend/operations/tasks');
   
   const mainWindow = createWindow();
+  setMainWindow(mainWindow);
   createMenu(mainWindow, !app.isPackaged);
   
   // Defer background tasks to not compete with window rendering
@@ -29,7 +30,7 @@ app.whenReady().then(async () => {
   // Auto-check for updates shortly after app launch (packaged only)
   if (app.isPackaged) {
     setTimeout(() => {
-      checkForUpdates({ silent: true, notifyWindow: mainWindow });
+      checkForUpdatesAuto();
     }, 6000);
   }
   
