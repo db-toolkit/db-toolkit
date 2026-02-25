@@ -20,7 +20,6 @@ const DEFAULT_SETTINGS = {
   editor_snippets_enabled: true,
   default_db_type: 'postgresql',
   connection_timeout: 10,
-  auto_reconnect: true,
   workspaces: {
     enabled: true,
     maxWorkspaces: 10

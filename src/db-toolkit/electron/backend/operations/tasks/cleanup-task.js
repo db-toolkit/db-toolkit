@@ -5,7 +5,7 @@
 const { scheduler } = require('./scheduler');
 const { cleanupOldHistory } = require('../query-history');
 const { cleanupExpired } = require('../../utils/cache');
-const { getSettings } = require('../../utils/settings-storage');
+const { settingsStorage } = require('../../utils/settings-storage');
 const { logger } = require('../../utils/logger.js');
 
 async function cleanupOldHistoryTask() {
@@ -18,7 +18,7 @@ async function cleanupOldHistoryTask() {
       const interval = scheduler.getAdaptiveInterval('history_cleanup', baseInterval, 1.5);
       await new Promise(resolve => setTimeout(resolve, interval));
       
-      const settings = await getSettings();
+      const settings = await settingsStorage.getSettings();
       const retentionDays = settings.query_history_retention_days || 30;
       
       const removedHistory = cleanupOldHistory(retentionDays);
