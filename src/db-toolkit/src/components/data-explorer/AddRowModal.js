@@ -61,6 +61,9 @@ export function AddRowModal({ isOpen, onClose, columns, onSave, tableName }) {
             {columns.map((column) => {
               const isTimestamp = column.data_type?.toLowerCase().includes('timestamp') || 
                                  column.data_type?.toLowerCase().includes('datetime');
+              const isBoolean = column.data_type?.toLowerCase().includes('bool') ||
+                               column.data_type?.toLowerCase() === 'bit' ||
+                               column.data_type?.toLowerCase() === 'tinyint(1)';
               const isAutoIncrement = column.column_name?.toLowerCase() === 'id' || 
                                      column.extra?.toLowerCase().includes('auto_increment');
               
@@ -80,13 +83,25 @@ export function AddRowModal({ isOpen, onClose, columns, onSave, tableName }) {
                       </span>
                     )}
                   </label>
-                  <input
-                    type={isTimestamp ? "datetime-local" : "text"}
-                    value={formData[column.column_name] || ''}
-                    onChange={(e) => handleChange(column.column_name, e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder={isTimestamp ? 'YYYY-MM-DD HH:MM:SS or leave empty' : `Enter ${column.column_name}`}
-                  />
+                  {isBoolean ? (
+                    <select
+                      value={formData[column.column_name] || ''}
+                      onChange={(e) => handleChange(column.column_name, e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                      <option value="">Select value</option>
+                      <option value="true">true</option>
+                      <option value="false">false</option>
+                    </select>
+                  ) : (
+                    <input
+                      type={isTimestamp ? "datetime-local" : "text"}
+                      value={formData[column.column_name] || ''}
+                      onChange={(e) => handleChange(column.column_name, e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder={isTimestamp ? 'YYYY-MM-DD HH:MM:SS or leave empty' : `Enter ${column.column_name}`}
+                    />
+                  )}
                 </div>
               );
             })}

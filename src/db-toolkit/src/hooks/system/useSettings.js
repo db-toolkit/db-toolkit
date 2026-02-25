@@ -21,10 +21,9 @@ export function useSettings() {
       // Provide default settings if API fails
       const defaultSettings = {
         theme: 'system',
-        query_limit: 1000,
-        query_timeout: 30,
+        default_query_limit: 1000,
+        default_query_timeout: 30,
         editor_font_size: 14,
-        editor_theme: 'vs-dark',
         default_db_type: 'postgresql'
       };
       setSettings(defaultSettings);
