@@ -5,31 +5,12 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
-  release:
-    types: [created]
 
 permissions:
   contents: write
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    
-    steps:
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-
   build-and-upload:
-    needs: create-release
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -56,10 +37,7 @@ jobs:
       - name: Create .env file
         working-directory: src/db-toolkit
         run: |
-          echo "RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}" > .env
-          echo "FROM_EMAIL=${{ secrets.FROM_EMAIL }}" >> .env
-          echo "ISSUE_EMAIL=${{ secrets.ISSUE_EMAIL }}" >> .env
-          echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> .env
+          echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" > .env
           echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> .env
       
       - name: Install dependencies
