@@ -161,7 +161,14 @@ function MigrationsPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Database Migrations</h1>
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Database Migrations</h1>
+            <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">
+              🚧 Currently being refactored to use dbmate for framework-agnostic migrations
+            </p>
+          </div>
+        </div>
         
         <div className="flex flex-wrap items-center gap-3">
           <select
