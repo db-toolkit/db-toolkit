@@ -12,6 +12,8 @@ permissions:
 jobs:
   create-release:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
 
@@ -29,6 +31,8 @@ jobs:
   build-and-upload:
     needs: create-release
     timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
