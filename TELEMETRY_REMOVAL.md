@@ -72,9 +72,8 @@
 - [ ] Remove telemetry indexes
 
 ## Documentation
-- [ ] Update README.md - remove telemetry mentions
 - [ ] Update privacy policy (if exists)
-- [ ] Update settings documentation
+- [ ] Update settings documentation (if telemetry is mentioned)
 
 ## Testing After Removal
 - [ ] App starts without errors
