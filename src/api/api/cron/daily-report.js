@@ -1,6 +1,5 @@
 import { Resend } from 'resend';
 import { getDownloadStats } from '../../utils/download-db.js';
-import { getTelemetryStats } from '../../utils/telemetry-db.js';
 import { generateStatsEmailHTML } from '../../utils/email-template.js';
 import { EMAIL_CONFIG } from '../../utils/constants.js';
 
@@ -10,10 +9,9 @@ export default async function handler(req, res) {
   try {
     // Fetch stats from database
     const downloadStats = await getDownloadStats();
-    const telemetryStats = await getTelemetryStats();
 
     // Generate HTML email
-    const html = generateStatsEmailHTML(downloadStats.data, telemetryStats.data);
+    const html = generateStatsEmailHTML(downloadStats.data);
 
     // Send email
     await resend.emails.send({

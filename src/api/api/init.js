@@ -1,5 +1,4 @@
 import { initDownloadsTable } from '../utils/download-db.js';
-import { initTelemetryTable } from '../utils/telemetry-db.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,21 +10,19 @@ export default async function handler(req, res) {
 
   try {
     const downloadsResult = await initDownloadsTable();
-    const telemetryResult = await initTelemetryTable();
 
-    if (downloadsResult.success && telemetryResult.success) {
+    if (downloadsResult.success) {
       return res.status(200).json({ 
         success: true,
         message: 'Database initialized successfully',
-        tables: ['downloads', 'telemetry_events']
+        tables: ['downloads']
       });
     } else {
       return res.status(500).json({ 
         success: false,
-        error: 'Failed to initialize some tables',
+        error: 'Failed to initialize tables',
         details: {
-          downloads: downloadsResult,
-          telemetry: telemetryResult
+          downloads: downloadsResult
         }
       });
     }

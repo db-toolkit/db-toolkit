@@ -1,6 +1,5 @@
-export function generateStatsEmailHTML(downloadStats, telemetryStats) {
+export function generateStatsEmailHTML(downloadStats) {
   const { total: totalDownloads, byPlatform } = downloadStats;
-  const { totalEvents, eventsByType, topFeatures, databaseTypes } = telemetryStats;
 
   return `
 <!DOCTYPE html>
@@ -171,46 +170,6 @@ export function generateStatsEmailHTML(downloadStats, telemetryStats) {
         <div class="stat-label">Total</div>
         <div class="stat-value">${totalDownloads.toLocaleString()}</div>
       </div>
-    </div>
-
-    <h2><span class="section-icon">📈</span> Telemetry Overview<span class="badge">${totalEvents.toLocaleString()}</span></h2>
-    <div class="stat-grid">
-      <div class="stat-card">
-        <div class="stat-label">Feature Usage</div>
-        <div class="stat-value">${(eventsByType.feature_usage || 0).toLocaleString()}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Database Usage</div>
-        <div class="stat-value">${(eventsByType.database_usage || 0).toLocaleString()}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Workspace Usage</div>
-        <div class="stat-value">${(eventsByType.workspace_usage || 0).toLocaleString()}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Events</div>
-        <div class="stat-value">${totalEvents.toLocaleString()}</div>
-      </div>
-    </div>
-
-    <h2><span class="section-icon">🔥</span> Top Features</h2>
-    <div>
-      ${topFeatures.map((item, index) => `
-        <div class="list-item">
-          <span class="list-label">${index + 1}. ${item.feature.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
-          <span class="list-value">${item.count.toLocaleString()}</span>
-        </div>
-      `).join('')}
-    </div>
-
-    <h2><span class="section-icon">💾</span> Database Types</h2>
-    <div>
-      ${Object.entries(databaseTypes).map(([type, count]) => `
-        <div class="list-item">
-          <span class="list-label">${type.toUpperCase()}</span>
-          <span class="list-value">${count.toLocaleString()}</span>
-        </div>
-      `).join('')}
     </div>
 
     <div class="footer">

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { connectionsAPI } from "../../services/api";
 import { useNotifications } from "../../contexts/NotificationContext";
-import { useTelemetry } from "../system/useTelemetry";
 
 export function useConnections() {
   const [connections, setConnections] = useState([]);
@@ -9,7 +8,6 @@ export function useConnections() {
   const [error, setError] = useState(null);
   const [connectedIds, setConnectedIds] = useState(new Set());
   const { addNotification } = useNotifications();
-  const { trackDatabase } = useTelemetry();
 
   const fetchConnections = useCallback(async () => {
     setLoading(true);
@@ -78,12 +76,6 @@ export function useConnections() {
           setConnectedIds((prev) => new Set(prev).add(id));
           // Store connection timestamp
           localStorage.setItem(`connection_time_${id}`, Date.now().toString());
-
-          // Track database connection
-          const conn = connections.find((c) => c.id === id);
-          if (conn?.db_type) {
-            trackDatabase(conn.db_type, 'connect');
-          }
 
           // Update recent connections in menu
           if (window.electron?.updateRecentConnections) {

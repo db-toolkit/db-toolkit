@@ -17,7 +17,6 @@ const { registerIssuesHandlers } = require('./issues');
 const { registerAIHandlers } = require('./ai');
 const { registerMigratorHandlers } = require('./migrator');
 const { registerWorkspaceHandlers } = require('./workspace');
-const { registerTelemetryHandlers } = require('./telemetry');
 const { registerGroupHandlers } = require('./groups');
 const { logger } = require('../utils/logger.js');
 
@@ -37,7 +36,6 @@ function registerAllHandlers() {
   registerAIHandlers();
   registerMigratorHandlers();
   registerWorkspaceHandlers();
-  registerTelemetryHandlers();
   registerGroupHandlers();
   logger.info('All IPC handlers registered');
 }

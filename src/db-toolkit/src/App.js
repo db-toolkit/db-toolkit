@@ -2,7 +2,6 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { HashRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useWorkspaceShortcuts } from './hooks/workspace/useWorkspaceShortcuts';
 import { useBackupWebSocket } from './websockets/useBackupWebSocket';
-import { useTelemetry } from './hooks/system/useTelemetry';
 import { useToast } from './contexts/ToastContext';
 import Layout from './components/common/Layout';
 import SplashScreen from './components/common/SplashScreen';
@@ -35,7 +34,6 @@ function WorkspaceWrapper() {
 function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { trackFeature } = useTelemetry();
   const toast = useToast();
   const [showOnboarding, setShowOnboarding] = useState(false);
   
@@ -53,33 +51,6 @@ function AppContent() {
     setShowOnboarding(false);
     navigate('/connections', { replace: true });
   };
-
-  // Track feature/page usage
-  useEffect(() => {
-    const routeToFeature = {
-      '/': 'dashboard',
-      '/connections': 'connections',
-      '/query-editor': 'query_editor_select',
-      '/data-explorer': 'data_explorer',
-      '/migrations': 'migrations',
-      '/backups': 'backups',
-      '/analytics': 'analytics',
-      '/docs': 'documentation'
-    };
-
-    const path = location.pathname;
-    let feature = routeToFeature[path];
-    
-    // Handle dynamic routes
-    if (!feature) {
-      if (path.startsWith('/query/')) feature = 'query_editor';
-      else if (path.startsWith('/schema/')) feature = 'schema_explorer';
-    }
-
-    if (feature) {
-      trackFeature(feature, 'view');
-    }
-  }, [location.pathname, trackFeature]);
 
   useEffect(() => {
     const sessionState = JSON.parse(localStorage.getItem('session-state') || '{}');

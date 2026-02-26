@@ -2,7 +2,7 @@
  * Settings modal with tabbed interface
  */
 import { useState } from 'react';
-import { X, RotateCcw, Palette, Code, Settings as SettingsIcon, Database, Layout, BarChart3 } from 'lucide-react';
+import { X, RotateCcw, Palette, Code, Settings as SettingsIcon, Database, Layout } from 'lucide-react';
 import { useSettings } from '../../hooks/system/useSettings';
 import { useToast } from '../../contexts/ToastContext';
 import { Button } from '../common/Button';
@@ -13,15 +13,13 @@ import { useConfirmDialog } from '../../hooks/common/useConfirmDialog';
 import { EditorSettings } from './EditorSettings';
 import { ConnectionSettings } from './ConnectionSettings';
 import { WorkspaceSettings } from './WorkspaceSettings';
-import { TelemetrySettings } from './TelemetrySettings';
 
 const tabs = [
   { id: 'appearance', label: 'Appearance', icon: Palette },
   { id: 'query', label: 'Query', icon: Code },
   { id: 'editor', label: 'Editor', icon: SettingsIcon },
   { id: 'connection', label: 'Connection', icon: Database },
-  { id: 'workspace', label: 'Workspace', icon: Layout },
-  { id: 'telemetry', label: 'Telemetry', icon: BarChart3 }
+  { id: 'workspace', label: 'Workspace', icon: Layout }
 ];
 
 export function SettingsModal({ isOpen, onClose }) {
@@ -116,9 +114,6 @@ export function SettingsModal({ isOpen, onClose }) {
           )}
           {activeTab === 'workspace' && (
             <WorkspaceSettings settings={localSettings} onChange={handleChange} />
-          )}
-          {activeTab === 'telemetry' && (
-            <TelemetrySettings settings={localSettings} onChange={handleChange} />
           )}
         </div>
 

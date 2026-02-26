@@ -12,7 +12,6 @@ import {
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useWorkspaceIPC } from "../../hooks/workspace/useWorkspaceIPC";
-import { useTelemetry } from "../../hooks/system/useTelemetry";
 import ConfirmDialog from '../common/ConfirmDialog';
 import { useConfirmDialog } from '../../hooks/common/useConfirmDialog';
 
@@ -27,7 +26,6 @@ export function WorkspaceProvider({ children }) {
   const defaultWorkspaceCreatedRef = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { trackFeature } = useTelemetry();
   const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const ipc = useWorkspaceIPC();
 
@@ -125,7 +123,6 @@ export function WorkspaceProvider({ children }) {
         if (result.success) {
           setWorkspaces((prev) => [...prev, result.workspace]);
           setActiveWorkspaceId(result.workspace.id);
-          trackFeature('workspace', 'create', { count: workspaces.length + 1 });
           return result.workspace;
         }
 
@@ -171,7 +168,6 @@ export function WorkspaceProvider({ children }) {
 
         if (result.success) {
           setWorkspaces((prev) => prev.filter((w) => w.id !== workspaceId));
-          trackFeature('workspace', 'close', { count: workspaces.length - 1 });
         }
 
         return result.success;

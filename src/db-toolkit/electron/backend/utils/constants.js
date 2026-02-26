@@ -4,7 +4,6 @@
 
 // API endpoints
 const API_ENDPOINTS = {
-  TELEMETRY_UPLOAD: 'https://db-toolkit-api.vercel.app/api/telemetry/upload',
   DOWNLOAD_TRACK: 'https://db-toolkit-api.vercel.app/api/downloads/track',
 };
 
