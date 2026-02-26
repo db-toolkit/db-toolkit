@@ -21,6 +21,12 @@ autoUpdater.logger = updaterLogger;
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
 autoUpdater.forceDevUpdateConfig = !app.isPackaged;
+autoUpdater.allowDowngrade = false;
+
+// Ensure beta builds can discover newer beta/pre-release tags on GitHub.
+const currentVersion = app.getVersion();
+const isPrereleaseBuild = currentVersion.includes('-');
+autoUpdater.allowPrerelease = isPrereleaseBuild;
 
 let mainWindow = null;
 
@@ -90,6 +96,9 @@ autoUpdater.on('update-downloaded', (info) => {
 // Check for updates silently (on startup)
 async function checkForUpdatesAuto() {
   try {
+    updaterLogger.info(
+      `Auto update check (version=${currentVersion}, prerelease_build=${isPrereleaseBuild}, allowPrerelease=${autoUpdater.allowPrerelease})`,
+    );
     await autoUpdater.checkForUpdates();
   } catch (error) {
     updaterLogger.error('Auto update check failed:', error);
@@ -99,6 +108,9 @@ async function checkForUpdatesAuto() {
 // Check for updates manually (from menu)
 async function checkForUpdatesManual() {
   try {
+    updaterLogger.info(
+      `Manual update check (version=${currentVersion}, prerelease_build=${isPrereleaseBuild}, allowPrerelease=${autoUpdater.allowPrerelease})`,
+    );
     const result = await autoUpdater.checkForUpdates();
     
     if (!result || !result.updateInfo) {
