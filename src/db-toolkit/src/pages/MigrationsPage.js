@@ -164,9 +164,11 @@ function MigrationsPage() {
         <div className="flex items-start justify-between mb-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Database Migrations</h1>
-            <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">
-              🚧 Currently being refactored to use dbmate for framework-agnostic migrations
-            </p>
+            <div className="mt-2 inline-block px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-700 rounded-lg">
+              <p className="text-sm text-blue-800 dark:text-blue-300 font-medium">
+                🚧 Currently being refactored to use dbmate for framework-agnostic migrations
+              </p>
+            </div>
           </div>
         </div>
         
@@ -178,7 +180,7 @@ function MigrationsPage() {
               setSelectedProject(proj || null);
             }}
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            disabled={isRunning}
+            disabled={true}
           >
             <option value="">Select project...</option>
             {savedProjects.map((proj, idx) => (
@@ -186,7 +188,7 @@ function MigrationsPage() {
             ))}
           </select>
 
-          <Button size="sm" onClick={() => setShowProjectModal(true)} disabled={isRunning}>
+          <Button size="sm" onClick={() => setShowProjectModal(true)} disabled={true}>
             <Plus size={16} className="mr-1" /> New Project
           </Button>
 
@@ -195,7 +197,7 @@ function MigrationsPage() {
               size="sm" 
               variant="secondary" 
               onClick={() => handleDeleteProject(selectedProject)}
-              disabled={isRunning}
+              disabled={true}
             >
               <Trash2 size={16} className="mr-1" /> Delete
             </Button>
@@ -212,19 +214,19 @@ function MigrationsPage() {
 
       <div className="flex items-center justify-between px-6 py-3 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
-        <Button size="sm" onClick={handleInit} disabled={isRunning || !selectedProject}>
+        <Button size="sm" onClick={handleInit} disabled={true}>
           <FileText size={14} className="mr-1" /> Init
         </Button>
-        <Button size="sm" onClick={() => setShowCreateModal(true)} disabled={isRunning || !selectedProject}>
+        <Button size="sm" onClick={() => setShowCreateModal(true)} disabled={true}>
           <Plus size={14} className="mr-1" /> Create
         </Button>
-        <Button size="sm" onClick={handleApply} disabled={isRunning || !selectedProject}>
+        <Button size="sm" onClick={handleApply} disabled={true}>
           <Play size={14} className="mr-1" /> Apply
         </Button>
-        <Button size="sm" variant="secondary" onClick={handleRollback} disabled={isRunning || !selectedProject}>
+        <Button size="sm" variant="secondary" onClick={handleRollback} disabled={true}>
           <RotateCcw size={14} className="mr-1" /> Rollback
         </Button>
-        <Button size="sm" variant="secondary" onClick={handleHistory} disabled={isRunning || !selectedProject}>
+        <Button size="sm" variant="secondary" onClick={handleHistory} disabled={true}>
           <History size={14} className="mr-1" /> History
         </Button>
         </div>
@@ -232,7 +234,7 @@ function MigrationsPage() {
           size="sm" 
           variant="secondary" 
           onClick={() => setOutput([])} 
-          disabled={output.length === 0}
+          disabled={true}
           title="Clear output"
         >
           <X size={14} className="mr-1" /> Clear
