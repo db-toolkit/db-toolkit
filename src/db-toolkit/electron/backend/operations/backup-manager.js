@@ -100,7 +100,7 @@ class BackupManager {
       if (backup.schedule_id) {
         const { backupScheduler } = require('./backup/backup-scheduler');
         try {
-          const backupStorage = require('../storage/backup-storage');
+          const backupStorage = require('../utils/backup-storage');
           const schedule = await backupStorage.getSchedule(backup.schedule_id);
           if (schedule) {
             await backupScheduler.applyRetentionPolicy(schedule);
