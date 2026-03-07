@@ -30,7 +30,7 @@ async function backupPostgreSQLPgDump(backup, config, tables) {
   
   // Build SSL environment variables
   let sslEnv = '';
-  if (config.ssl_enabled || config.ssl_mode) {
+  if (config.ssl_enabled === true && config.ssl_mode !== 'disable') {
     const sslMode = config.ssl_mode || 'require';
     sslEnv = `PGSSLMODE=${sslMode} `;
   }
@@ -62,7 +62,7 @@ async function backupPostgreSQLNative(backup, config, tables) {
   };
 
   // Add SSL configuration if enabled
-  if (config.ssl_enabled || config.ssl_mode) {
+  if (config.ssl_enabled === true && config.ssl_mode !== 'disable') {
     clientConfig.ssl = {
       rejectUnauthorized: config.ssl_mode === 'verify-full' || config.ssl_mode === 'verify-ca',
     };

@@ -35,7 +35,7 @@ async function backupMongoDBDump(backup, config, tables) {
   if (config.password) cmd += ` --password ${config.password}`;
   
   // Add SSL/TLS options if enabled
-  if (config.ssl_enabled || config.ssl_mode) {
+  if (config.ssl_enabled === true && config.ssl_mode !== 'disable') {
     cmd += ' --ssl';
     if (config.ssl_mode === 'verify-ca' || config.ssl_mode === 'verify-full') {
       cmd += ' --sslAllowInvalidCertificates=false';
@@ -66,7 +66,7 @@ async function backupMongoDBNative(backup, config, tables) {
   const clientOptions = {};
   
   // Add SSL/TLS options if enabled
-  if (config.ssl_enabled || config.ssl_mode) {
+  if (config.ssl_enabled === true && config.ssl_mode !== 'disable') {
     clientOptions.tls = true;
     clientOptions.tlsAllowInvalidCertificates = !(config.ssl_mode === 'verify-ca' || config.ssl_mode === 'verify-full');
   }

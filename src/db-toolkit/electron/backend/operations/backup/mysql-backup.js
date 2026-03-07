@@ -32,7 +32,7 @@ async function backupMySQLDump(backup, config, tables) {
   if (config.password) cmd += ` -p${config.password}`;
   
   // Add SSL options if enabled
-  if (config.ssl_enabled || config.ssl_mode) {
+  if (config.ssl_enabled === true && config.ssl_mode !== 'disable') {
     cmd += ' --ssl-mode=REQUIRED';
     if (config.ssl_mode === 'verify-ca' || config.ssl_mode === 'verify-full') {
       cmd += ' --ssl-mode=VERIFY_CA';
@@ -70,7 +70,7 @@ async function backupMySQLNative(backup, config, tables) {
   };
 
   // Add SSL configuration if enabled
-  if (config.ssl_enabled || config.ssl_mode) {
+  if (config.ssl_enabled === true && config.ssl_mode !== 'disable') {
     connectionConfig.ssl = {
       rejectUnauthorized: config.ssl_mode === 'verify-full' || config.ssl_mode === 'verify-ca',
     };
