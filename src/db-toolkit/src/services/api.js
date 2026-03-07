@@ -179,9 +179,10 @@ export const dataAPI = {
 };
 
 export const csvAPI = {
-  export: (data) => ipc.invoke("export:csv", data),
-  validate: (data) => ipc.invoke("import:validateCSV", data),
-  import: (data) => ipc.invoke("import:csv", data),
+  export: (connectionId, data) => ipc.invoke("export:csv", connectionId, data),
+  validate: (csvContent, columnMapping, options = {}) =>
+    ipc.invoke("import:validateCSV", csvContent, columnMapping, options),
+  import: (connectionId, data) => ipc.invoke("import:csv", connectionId, data),
 };
 
 export const sessionAPI = {

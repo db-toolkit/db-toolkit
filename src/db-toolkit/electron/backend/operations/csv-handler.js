@@ -76,9 +76,11 @@ class CSVHandler {
     return JSON.stringify(jsonData, null, 2);
   }
 
-  static validateCSVData(csvContent, columnMapping) {
+  static validateCSVData(csvContent, columnMapping = null, options = {}) {
     const errors = [];
     const rows = [];
+    const delimiter = options.delimiter || ',';
+    const hasHeaders = options.hasHeaders !== false;
 
     try {
       const lines = csvContent.trim().split('\n');
@@ -87,13 +89,24 @@ class CSVHandler {
         return { rows, errors };
       }
 
-      const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+      if (!hasHeaders) {
+        errors.push('CSV without headers is not supported yet');
+        return { rows, errors };
+      }
+
+      const headers = lines[0].split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''));
+      const effectiveMapping = columnMapping && Object.keys(columnMapping).length > 0
+        ? columnMapping
+        : headers.reduce((acc, h) => {
+            acc[h] = h;
+            return acc;
+          }, {});
 
       for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+        const values = lines[i].split(delimiter).map(v => v.trim().replace(/^"|"$/g, ''));
         const mappedRow = {};
 
-        for (const [csvCol, dbCol] of Object.entries(columnMapping)) {
+        for (const [csvCol, dbCol] of Object.entries(effectiveMapping)) {
           const colIdx = headers.indexOf(csvCol);
           if (colIdx === -1) {
             errors.push(`Row ${i + 1}: Missing column '${csvCol}'`);

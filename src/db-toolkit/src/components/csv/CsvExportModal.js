@@ -26,7 +26,7 @@ export function CsvExportModal({ isOpen, onClose, connectionId, query, result })
 
     setLoading(true);
     try {
-      const response = await csvAPI.export({
+      const response = await csvAPI.export(connectionId, {
         connection_id: connectionId,
         query,
         table: '',
@@ -34,7 +34,8 @@ export function CsvExportModal({ isOpen, onClose, connectionId, query, result })
         include_headers: includeHeaders,
       });
 
-      const blob = new Blob([response.data.csv_content], { type: 'text/csv' });
+      const result = response?.data || response;
+      const blob = new Blob([result.csv_content], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -42,7 +43,7 @@ export function CsvExportModal({ isOpen, onClose, connectionId, query, result })
       a.click();
       window.URL.revokeObjectURL(url);
 
-      toast.success(`Exported ${response.data.row_count} rows`);
+      toast.success(`Exported ${result.row_count} rows`);
       onClose();
     } catch (error) {
       const errorMsg = error.response?.data?.detail || 'Export failed';

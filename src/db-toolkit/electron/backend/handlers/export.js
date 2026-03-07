@@ -101,9 +101,9 @@ function registerExportHandlers() {
   });
 
   // Validate CSV
-  ipcMain.handle('import:validateCSV', async (event, csvContent, columnMapping) => {
+  ipcMain.handle('import:validateCSV', async (event, csvContent, columnMapping, options = {}) => {
     try {
-      const { rows, errors } = CSVHandler.validateCSVData(csvContent, columnMapping);
+      const { rows, errors } = CSVHandler.validateCSVData(csvContent, columnMapping, options);
       return {
         valid: errors.length === 0,
         row_count: rows.length,
@@ -123,9 +123,18 @@ function registerExportHandlers() {
         throw new Error('Connection not found');
       }
 
+      const tableName = request.table || request.table_name;
+      if (!tableName) {
+        throw new Error('Table name is required for CSV import');
+      }
+
       const { rows, errors } = CSVHandler.validateCSVData(
         request.csv_content,
-        request.column_mapping
+        request.column_mapping,
+        {
+          delimiter: request.delimiter || ',',
+          hasHeaders: request.has_headers !== false,
+        }
       );
 
       if (errors.length > 0) {
@@ -140,7 +149,7 @@ function registerExportHandlers() {
 
       const result = await CSVHandler.importFromCSV(
         connector,
-        request.table,
+        tableName,
         rows,
         request.schema_name,
         request.batch_size || 100
