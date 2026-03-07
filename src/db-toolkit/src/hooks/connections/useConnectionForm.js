@@ -31,6 +31,7 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave,
           password: connection.password || '',
           ssl_enabled: connection.ssl_enabled || false,
           ssl_mode: connection.ssl_mode || 'require',
+          group: connection.group || '',
         });
         setHasChanges(false);
       } else {
@@ -80,6 +81,7 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave,
       password: '',
       ssl_enabled: false,
       ssl_mode: 'require',
+      group: '',
     });
     setHasChanges(false);
   }, [settings]);
