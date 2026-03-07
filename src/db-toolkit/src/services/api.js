@@ -271,7 +271,7 @@ const api = {
     if (url.includes("/data/cell")) {
       const connectionId = url.split("/")[2];
       const result = await ipc.invoke("dataExplorer:cell", connectionId, data);
-      return { data: { success: true, data: result.data } };
+      return { data: result?.data || result };
     }
     throw new Error(`Unsupported API call: ${url}`);
   },

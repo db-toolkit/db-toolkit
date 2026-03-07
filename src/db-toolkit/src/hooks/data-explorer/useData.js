@@ -13,11 +13,11 @@ export function useData(connectionId) {
     try {
       const response = await dataAPI.updateRow(connectionId, {
         table,
-        schema,
+        schema_name: schema,
         primary_key: primaryKey,
         changes,
       });
-      return response.data;
+      return response?.data || response;
     } catch (err) {
       setError(err.message);
       throw err;
@@ -34,10 +34,10 @@ export function useData(connectionId) {
     try {
       const response = await dataAPI.insertRow(connectionId, {
         table,
-        schema,
+        schema_name: schema,
         data,
       });
-      return response.data;
+      return response?.data || response;
     } catch (err) {
       setError(err.message);
       throw err;
@@ -54,10 +54,10 @@ export function useData(connectionId) {
     try {
       const response = await dataAPI.deleteRow(connectionId, {
         table,
-        schema,
+        schema_name: schema,
         primary_key: primaryKey,
       });
-      return response.data;
+      return response?.data || response;
     } catch (err) {
       setError(err.message);
       throw err;
