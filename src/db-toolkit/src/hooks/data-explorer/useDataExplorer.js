@@ -5,15 +5,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { useConnections, useSchema } from '../index';
 import { useData } from './useData';
 import { useToast } from '../../contexts/ToastContext';
-import { useConnectionStore } from '../../stores/connectionStore';
+import { useWorkspace } from '../../components/workspace/WorkspaceProvider';
 import { dropTable } from '../../utils/dropTable';
 import api from '../../services/api';
 
 export function useDataExplorer(showConfirm) {
   const { connections, connectToDatabase } = useConnections();
   const toast = useToast();
-  const connectionId = useConnectionStore((state) => state.activeConnections.dataExplorer);
-  const setConnection = useConnectionStore((state) => state.setConnection);
+  const { getWorkspaceState, setWorkspaceState } = useWorkspace();
+  const connectionId = getWorkspaceState("dataExplorerConnectionId");
   const [connecting, setConnecting] = useState(null);
   const { schema, loading: schemaLoading, error: schemaError, fetchSchemaTree } = useSchema(connectionId);
   const { insertRow, deleteRow } = useData(connectionId);
@@ -31,12 +31,12 @@ export function useDataExplorer(showConfirm) {
 
   // Wrapper to set data explorer connection
   const setConnectionId = useCallback((id) => {
-    setConnection('dataExplorer', id);
+    setWorkspaceState("dataExplorerConnectionId", id);
     setSelectedTable(null);
     setData([]);
     setColumns([]);
     setPage(0);
-  }, [setConnection]);
+  }, [setWorkspaceState]);
   const [showFilters, setShowFilters] = useState(false);
   const [cellModal, setCellModal] = useState({ isOpen: false, data: null, column: null });
 
@@ -46,14 +46,14 @@ export function useDataExplorer(showConfirm) {
     setConnecting(id);
     try {
       await connectToDatabase(id, true);
-      setConnection('dataExplorer', id);
+      setWorkspaceState("dataExplorerConnectionId", id);
       toast.success('Connected successfully');
     } catch (err) {
       toast.error(err.message || 'Failed to connect');
     } finally {
       setConnecting(null);
     }
-  }, [connectToDatabase, setConnection, toast]);
+  }, [connectToDatabase, setWorkspaceState, toast]);
 
   useEffect(() => {
     if (connectionId) {

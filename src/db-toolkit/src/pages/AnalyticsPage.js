@@ -7,7 +7,7 @@ import { Database, Download } from "lucide-react";
 import { useConnections, useAnalytics } from "../hooks";
 import { useAnalyticsData } from "../hooks/analytics/useAnalyticsData";
 import { useToast } from "../contexts/ToastContext";
-import { useConnectionStore } from "../stores/connectionStore";
+import { useWorkspace } from "../components/workspace/WorkspaceProvider";
 import { ConnectionSelector } from "../components/connections/ConnectionSelector";
 import { Button } from "../components/common/Button";
 
@@ -35,8 +35,9 @@ function AnalyticsPage() {
   const navigate = useNavigate();
   const toast = useToast();
   
-  const connectionId = useConnectionStore((state) => state.activeConnections.analytics);
-  const setConnection = useConnectionStore((state) => state.setConnection);
+  const { getWorkspaceState, setWorkspaceState } = useWorkspace();
+  const connectionId = getWorkspaceState("analyticsConnectionId");
+  const setConnectionId = (id) => setWorkspaceState("analyticsConnectionId", id);
 
   const { connections, connectToDatabase } = useConnections();
   const [connecting, setConnecting] = useState(false);
@@ -48,7 +49,7 @@ function AnalyticsPage() {
     setConnecting(true);
     try {
       await connectToDatabase(connId);
-      setConnection('analytics', connId);
+      setConnectionId(connId);
     } catch (err) {
       toast.error(`Failed to connect: ${err.message}`);
     } finally {
