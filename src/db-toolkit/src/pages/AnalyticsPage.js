@@ -35,9 +35,14 @@ function AnalyticsPage() {
   const navigate = useNavigate();
   const toast = useToast();
   
-  const { getWorkspaceState, setWorkspaceState } = useWorkspace();
+  const { getWorkspaceState, setWorkspaceState, updateWorkspaceState, activeWorkspaceId } = useWorkspace();
   const connectionId = getWorkspaceState("analyticsConnectionId");
-  const setConnectionId = (id) => setWorkspaceState("analyticsConnectionId", id);
+  const setConnectionId = (id) => {
+    setWorkspaceState("analyticsConnectionId", id);
+    if (activeWorkspaceId) {
+      updateWorkspaceState(activeWorkspaceId, { analyticsConnectionId: id });
+    }
+  };
 
   const { connections, connectToDatabase } = useConnections();
   const [connecting, setConnecting] = useState(false);

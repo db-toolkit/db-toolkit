@@ -12,7 +12,7 @@ import api from '../../services/api';
 export function useDataExplorer(showConfirm) {
   const { connections, connectToDatabase } = useConnections();
   const toast = useToast();
-  const { getWorkspaceState, setWorkspaceState } = useWorkspace();
+  const { getWorkspaceState, setWorkspaceState, updateWorkspaceState, activeWorkspaceId } = useWorkspace();
   const connectionId = getWorkspaceState("dataExplorerConnectionId");
   const [connecting, setConnecting] = useState(null);
   const { schema, loading: schemaLoading, error: schemaError, fetchSchemaTree } = useSchema(connectionId);
@@ -32,11 +32,14 @@ export function useDataExplorer(showConfirm) {
   // Wrapper to set data explorer connection
   const setConnectionId = useCallback((id) => {
     setWorkspaceState("dataExplorerConnectionId", id);
+    if (activeWorkspaceId) {
+      updateWorkspaceState(activeWorkspaceId, { dataExplorerConnectionId: id });
+    }
     setSelectedTable(null);
     setData([]);
     setColumns([]);
     setPage(0);
-  }, [setWorkspaceState]);
+  }, [activeWorkspaceId, setWorkspaceState, updateWorkspaceState]);
   const [showFilters, setShowFilters] = useState(false);
   const [cellModal, setCellModal] = useState({ isOpen: false, data: null, column: null });
 
@@ -47,13 +50,16 @@ export function useDataExplorer(showConfirm) {
     try {
       await connectToDatabase(id, true);
       setWorkspaceState("dataExplorerConnectionId", id);
+      if (activeWorkspaceId) {
+        updateWorkspaceState(activeWorkspaceId, { dataExplorerConnectionId: id });
+      }
       toast.success('Connected successfully');
     } catch (err) {
       toast.error(err.message || 'Failed to connect');
     } finally {
       setConnecting(null);
     }
-  }, [connectToDatabase, setWorkspaceState, toast]);
+  }, [activeWorkspaceId, connectToDatabase, setWorkspaceState, updateWorkspaceState, toast]);
 
   useEffect(() => {
     if (connectionId) {
