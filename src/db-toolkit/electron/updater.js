@@ -43,10 +43,14 @@ function notifyRenderer(channel, data) {
 // Event handlers
 autoUpdater.on('checking-for-update', () => {
   updaterLogger.info('Checking for updates...');
+  console.log('[Updater] Checking for updates...');
+  console.log('[Updater] Current version:', currentVersion);
 });
 
 autoUpdater.on('update-available', (info) => {
   updaterLogger.info('Update available:', info.version);
+  console.log('[Updater] Update available:', info.version);
+  console.log('[Updater] Current version:', currentVersion);
   notifyRenderer('update:available', {
     version: info.version,
     releaseNotes: info.releaseNotes,
@@ -56,6 +60,9 @@ autoUpdater.on('update-available', (info) => {
 
 autoUpdater.on('update-not-available', (info) => {
   updaterLogger.info('Update not available');
+  console.log('[Updater] No update available - already on latest version');
+  console.log('[Updater] Current version:', currentVersion);
+  console.log('[Updater] Latest version:', info.version);
 });
 
 autoUpdater.on('error', (err) => {
@@ -96,11 +103,16 @@ autoUpdater.on('update-downloaded', (info) => {
 // Check for updates silently (on startup)
 async function checkForUpdatesAuto() {
   try {
+    console.log('[Updater] Starting auto update check...');
+    console.log('[Updater] Current version:', currentVersion);
+    console.log('[Updater] Is prerelease build:', isPrereleaseBuild);
+    console.log('[Updater] Allow prerelease:', autoUpdater.allowPrerelease);
     updaterLogger.info(
       `Auto update check (version=${currentVersion}, prerelease_build=${isPrereleaseBuild}, allowPrerelease=${autoUpdater.allowPrerelease})`,
     );
     await autoUpdater.checkForUpdates();
   } catch (error) {
+    console.error('[Updater] Auto update check failed:', error);
     updaterLogger.error('Auto update check failed:', error);
   }
 }
@@ -108,12 +120,17 @@ async function checkForUpdatesAuto() {
 // Check for updates manually (from menu)
 async function checkForUpdatesManual() {
   try {
+    console.log('[Updater] Starting manual update check...');
+    console.log('[Updater] Current version:', currentVersion);
+    console.log('[Updater] Is prerelease build:', isPrereleaseBuild);
+    console.log('[Updater] Allow prerelease:', autoUpdater.allowPrerelease);
     updaterLogger.info(
       `Manual update check (version=${currentVersion}, prerelease_build=${isPrereleaseBuild}, allowPrerelease=${autoUpdater.allowPrerelease})`,
     );
     const result = await autoUpdater.checkForUpdates();
     
     if (!result || !result.updateInfo) {
+      console.log('[Updater] No update info returned');
       dialog.showMessageBox({
         type: 'info',
         title: 'No Updates',
