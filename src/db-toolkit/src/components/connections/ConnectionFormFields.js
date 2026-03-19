@@ -97,9 +97,6 @@ export const ConnectionFormFields = memo(({ formData, handleChange, showPassword
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                 Username
-                <span className="text-xs font-normal text-gray-500 dark:text-gray-400 ml-2">
-                  (Leave empty if no authentication)
-                </span>
               </label>
               <input
                 type="text"
