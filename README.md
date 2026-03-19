@@ -27,6 +27,50 @@ Free, open-source and modern cross-platform database management application with
 **Backend:** Node.js, Electron IPC, SQLite3, PostgreSQL, MySQL, MongoDB drivers  
 **Frontend:** Electron, React 18, Tailwind CSS, Monaco Editor, Framer Motion, Vite
 
+## Running Locally
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 22+
+- [Bun](https://bun.sh/) (package manager)
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/db-toolkit/db-toolkit.git
+cd db-toolkit/src/db-toolkit
+
+# Install dependencies
+bun install
+
+# Start the app in development mode
+bun run electron-dev
+```
+
+### Building
+
+```bash
+# Build for macOS
+bun run package:mac
+
+# Build for Windows
+bun run package:win
+
+# Build for Linux
+bun run package:linux
+```
+
+### Environment Variables
+
+Create a `.env` file in `src/db-toolkit/`:
+
+```env
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_API_TOKEN=your_api_token
+```
+
+> AI Query Assistant features require Cloudflare AI credentials. The app works without them.
 
 ## License
 
