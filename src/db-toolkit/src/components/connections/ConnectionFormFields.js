@@ -3,8 +3,16 @@ import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useToast } from '../../contexts/ToastContext';
 
-export const ConnectionFormFields = memo(({ formData, handleChange, showPassword, setShowPassword }) => {
+export const ConnectionFormFields = memo(({ formData, handleChange, showPassword, setShowPassword, noAuth, setNoAuth }) => {
   const toast = useToast();
+
+  const handleNoAuthChange = (checked) => {
+    setNoAuth(checked);
+    if (checked) {
+      handleChange('username', '');
+      handleChange('password', '');
+    }
+  };
 
   return (
     <>
@@ -82,7 +90,21 @@ export const ConnectionFormFields = memo(({ formData, handleChange, showPassword
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <>
+            <div className="mb-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={noAuth}
+                  onChange={(e) => handleNoAuthChange(e.target.checked)}
+                  className="w-4 h-4 text-green-600 rounded"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  No authentication required
+                </span>
+              </label>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                 Database
@@ -103,10 +125,12 @@ export const ConnectionFormFields = memo(({ formData, handleChange, showPassword
                 value={formData.username}
                 onChange={(e) => handleChange('username', e.target.value)}
                 placeholder="Optional"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                disabled={noAuth}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
           </div>
+          </>
         )}
 
         {formData.db_type !== 'sqlite' && (
@@ -123,7 +147,8 @@ export const ConnectionFormFields = memo(({ formData, handleChange, showPassword
                 value={formData.password}
                 onChange={(e) => handleChange('password', e.target.value)}
                 placeholder="Optional"
-                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                disabled={noAuth}
+                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 type="button"

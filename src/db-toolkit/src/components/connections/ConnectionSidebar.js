@@ -29,6 +29,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
   const [useUrl, setUseUrl] = useState(false);
   const [databaseUrl, setDatabaseUrl] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [noAuth, setNoAuth] = useState(false);
   
   const {
     formData,
@@ -199,6 +200,8 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
                     handleChange={handleChange}
                     showPassword={showPassword}
                     setShowPassword={setShowPassword}
+                    noAuth={noAuth}
+                    setNoAuth={setNoAuth}
                   />
                 )}
           </form>
