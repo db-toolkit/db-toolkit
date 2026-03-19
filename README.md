@@ -27,6 +27,24 @@ Free, open-source and modern cross-platform database management application with
 **Backend:** Node.js, Electron IPC, SQLite3, PostgreSQL, MySQL, MongoDB drivers  
 **Frontend:** Electron, React 18, Tailwind CSS, Monaco Editor, Framer Motion, Vite
 
+## Download
+
+Get the latest version from the [releases page](https://github.com/db-toolkit/db-toolkit/releases/latest):
+
+| Platform | Download |
+|----------|----------|
+| macOS (Intel & Apple Silicon) | [DB-Toolkit-mac.dmg](https://github.com/db-toolkit/db-toolkit/releases/latest) |
+| Windows | [DB-Toolkit-win.exe](https://github.com/db-toolkit/db-toolkit/releases/latest) |
+| Linux (AppImage) | [DB-Toolkit-linux.AppImage](https://github.com/db-toolkit/db-toolkit/releases/latest) |
+| Linux (Debian/Ubuntu) | [DB-Toolkit-linux.deb](https://github.com/db-toolkit/db-toolkit/releases/latest) |
+
+> **Linux users:** You may need to install `fuse2` and make the AppImage executable before running:
+> ```bash
+> sudo apt install libfuse2  # Ubuntu/Debian
+> sudo pacman -S fuse2       # Arch
+> chmod +x DB-Toolkit-linux.AppImage && ./DB-Toolkit-linux.AppImage
+> ```
+
 ## Running Locally
 
 ### Prerequisites
