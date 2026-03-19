@@ -52,8 +52,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: src/db-toolkit/package-lock.json
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
       
       - name: Create .env file
         working-directory: src/db-toolkit
@@ -63,10 +66,7 @@ jobs:
       
       - name: Install dependencies
         working-directory: src/db-toolkit
-        run: |
-          npm config set fetch-retry-mintimeout 20000
-          npm config set fetch-retry-maxtimeout 120000
-          npm ci --prefer-offline --no-audit
+        run: bun install --frozen-lockfile
         env:
           ELECTRON_MIRROR: https://npmmirror.com/mirrors/electron/
           ELECTRON_CUSTOM_DIR: '{{ version }}'
@@ -74,17 +74,17 @@ jobs:
       - name: Build for macOS
         if: matrix.os == 'macos-latest'
         working-directory: src/db-toolkit
-        run: npm run package:mac
+        run: bun run package:mac
       
       - name: Build for Windows
         if: matrix.os == 'windows-latest'
         working-directory: src/db-toolkit
-        run: npm run package:win
+        run: bun run package:win
       
       - name: Build for Linux
         if: matrix.os == 'ubuntu-latest'
         working-directory: src/db-toolkit
-        run: npm run package:linux
+        run: bun run package:linux
 
       - name: Upload Release Assets
         if: always()
