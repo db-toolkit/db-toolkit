@@ -9,9 +9,39 @@ description: Get started with DB Toolkit - Installation and first steps
 
 Download the latest version for your platform:
 
-- **macOS** - Download .dmg
-- **Windows** - Download .exe  
-- **Linux** - Download .AppImage
+- **macOS** - Download .dmg, open and drag to Applications
+- **Windows** - Download .exe and run the installer
+- **Linux** - Download .AppImage (see steps below)
+
+### Linux Installation
+
+AppImage requires FUSE to run. Follow these steps:
+
+**Ubuntu/Debian:**
+```bash
+sudo apt install libfuse2
+chmod +x DB-Toolkit-linux.AppImage
+./DB-Toolkit-linux.AppImage
+```
+
+**Arch Linux:**
+```bash
+sudo pacman -S fuse2
+chmod +x DB-Toolkit-linux.AppImage
+./DB-Toolkit-linux.AppImage
+```
+
+**Fedora:**
+```bash
+sudo dnf install fuse
+chmod +x DB-Toolkit-linux.AppImage
+./DB-Toolkit-linux.AppImage
+```
+
+Alternatively, download the `.deb` package for Debian/Ubuntu:
+```bash
+sudo dpkg -i DB-Toolkit-linux.deb
+```
 
 ### System Requirements
 
