@@ -9,7 +9,13 @@ const { logger } = require('../utils/logger');
 class MongoDBConnector extends BaseConnector {
   async connect(config) {
     try {
-      let uri = `mongodb://${config.username}:${config.password}@${config.host}:${config.port || 27017}`;
+      // Build URI with optional authentication
+      let uri;
+      if (config.username && config.password) {
+        uri = `mongodb://${config.username}:${config.password}@${config.host}:${config.port || 27017}`;
+      } else {
+        uri = `mongodb://${config.host}:${config.port || 27017}`;
+      }
       
       if (config.ssl_enabled) {
         uri += '?tls=true';
