@@ -141,6 +141,19 @@ async function checkForUpdatesManual() {
       return;
     }
 
+    // Check if the latest version is actually newer
+    if (result.updateInfo.version === currentVersion) {
+      console.log('[Updater] Already on latest version');
+      dialog.showMessageBox({
+        type: 'info',
+        title: 'No Updates',
+        message: 'You\'re up to date!',
+        detail: `You are running the latest version (${currentVersion}).`,
+        buttons: ['OK'],
+      });
+      return;
+    }
+
     // If update available, ask to download
     const response = await dialog.showMessageBox({
       type: 'info',
