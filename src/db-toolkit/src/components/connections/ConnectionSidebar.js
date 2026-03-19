@@ -11,6 +11,8 @@ import { useConnectionForm } from '../../hooks/connections/useConnectionForm';
 import { parseConnectionUrl } from '../../utils/connectionParser';
 import { ConnectionFormFields } from './ConnectionFormFields';
 import { useGroups } from '../../hooks/groups/useGroups';
+import ConfirmDialog from '../common/ConfirmDialog';
+import { useConfirmDialog } from '../../hooks/common/useConfirmDialog';
 
 // Component to load groups from backend
 function GroupOptions() {
@@ -26,6 +28,7 @@ function GroupOptions() {
 export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
   const { settings } = useSettingsContext();
   const toast = useToast();
+  const { dialog, showConfirm, closeDialog } = useConfirmDialog();
   const [useUrl, setUseUrl] = useState(false);
   const [databaseUrl, setDatabaseUrl] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +44,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
     handleTest,
     handleSubmit,
     handleClose,
-  } = useConnectionForm(connection, isOpen, settings, onClose, onSave);
+  } = useConnectionForm(connection, isOpen, settings, onClose, onSave, showConfirm);
 
   const handleUrlParse = useCallback((url) => {
     try {
@@ -235,6 +238,15 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
           </div>
         </div>
       </div>
+      <ConfirmDialog
+        isOpen={dialog.isOpen}
+        title={dialog.title}
+        message={dialog.message}
+        confirmText={dialog.confirmText}
+        variant={dialog.variant}
+        onConfirm={dialog.onConfirm}
+        onCancel={closeDialog}
+      />
     </>
   );
 }
