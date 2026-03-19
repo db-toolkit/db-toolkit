@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Database } from 'lucide-react';
 import { connectionsAPI } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { LoadingState } from '../components/common/LoadingState';
