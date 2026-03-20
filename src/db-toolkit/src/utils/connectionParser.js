@@ -18,18 +18,26 @@ export function parseConnectionUrl(url) {
     };
   }
 
-  const urlObj = new URL(url);
+  // Normalize URL - handle protocols with + that URL parser doesn't support
+  // and ensure empty credentials don't cause parse errors
+  const normalizedUrl = url
+    .replace('postgresql+asyncpg://', 'postgresql://')
+    .replace('postgres+asyncpg://', 'postgresql://')
+    .replace('mysql+aiomysql://', 'mysql://')
+    .replace('mongodb+srv://', 'mongodbsrv://')
+    .replace('postgres://', 'postgresql://');
+
+  let urlObj;
+  try {
+    urlObj = new URL(normalizedUrl);
+  } catch {
+    throw new Error('Invalid database URL format');
+  }
+
   let protocol = urlObj.protocol.replace(':', '');
+  if (protocol === 'mongodbsrv') protocol = 'mongodb';
   
-  // Handle async protocols
-  const asyncProtocols = {
-    'postgresql+asyncpg': 'postgresql',
-    'postgres+asyncpg': 'postgresql',
-    'mysql+aiomysql': 'mysql',
-    'mongodb+srv': 'mongodb',
-  };
-  
-  let dbType = asyncProtocols[protocol] || protocol;
+  let dbType = protocol;
   if (dbType === 'postgres') dbType = 'postgresql';
   
   // Validate supported database type
