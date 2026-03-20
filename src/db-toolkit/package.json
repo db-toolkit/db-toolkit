@@ -19,8 +19,7 @@
     "package": "bun run build && electron-builder",
     "package:mac": "bun run build && electron-builder --mac",
     "package:win": "bun run build && electron-builder --win",
-    "package:linux": "bun run build && electron-builder --linux",
-    "test": "bun run src/tests/connectionParser.test.js"
+    "package:linux": "bun run build && electron-builder --linux"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
