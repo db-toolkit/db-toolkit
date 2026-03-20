@@ -5,7 +5,7 @@ export function parseConnectionUrl(url) {
 
   // Handle SQLite special case
   if (url.startsWith('sqlite:///')) {
-    const filePath = url.replace('sqlite:///', '');
+    const filePath = '/' + url.replace('sqlite:///', '');
     return {
       db_type: 'sqlite',
       database: filePath,
