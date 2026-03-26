@@ -255,7 +255,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection, default
         confirmText={dialog.confirmText}
         variant={dialog.variant}
         onConfirm={dialog.onConfirm}
-        onCancel={closeDialog}
+        onClose={closeDialog}
       />
     </>
   );
