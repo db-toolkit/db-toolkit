@@ -1,7 +1,7 @@
 /**
  * Sidebar for creating/editing database connections
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
@@ -45,6 +45,13 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection, default
     handleSubmit,
     handleClose,
   } = useConnectionForm(connection, isOpen, settings, onClose, onSave, showConfirm, defaultGroup);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => { if (e.key === 'Escape') handleClose(); };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, handleClose]);
 
   const handleUrlParse = useCallback((url) => {
     try {
