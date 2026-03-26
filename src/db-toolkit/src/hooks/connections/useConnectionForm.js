@@ -38,7 +38,8 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave,
         const draft = localStorage.getItem('connection-draft');
         if (draft) {
           try {
-            setFormData(JSON.parse(draft));
+            const parsed = JSON.parse(draft);
+            setFormData({ ...parsed, group: defaultGroup || parsed.group || '' });
             setHasChanges(true);
           } catch {
             resetForm();
@@ -48,7 +49,7 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave,
         }
       }
     }
-  }, [connection, isOpen, settings]);
+  }, [connection, isOpen, settings, defaultGroup]);
 
   useEffect(() => {
     if (!isOpen || connection || hasChanges) return;

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, Plus, Search, X } from 'lucide-react';
+import { ArrowLeft, Users, Search, X } from 'lucide-react';
 import { useDebounce } from '../utils/debounce';
 import { useConnections } from '../hooks';
 import { useToast } from '../contexts/ToastContext';
@@ -10,6 +10,7 @@ import { EmptyState } from '../components/common/EmptyState';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 import { ConnectionCard } from '../components/connections/ConnectionCard';
 import { ConnectionSidebar } from '../components/connections/ConnectionSidebar';
+import { AddConnectionButton } from '../components/connections/AddConnectionButton';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useConfirmDialog } from '../hooks/common/useConfirmDialog';
 
@@ -127,14 +128,6 @@ function ConnectionGroupPage() {
               </p>
             </div>
           </div>
-          <Button
-            size="sm"
-            icon={<Plus size={16} />}
-            onClick={() => { setEditingConnection(null); setShowSidebar(true); }}
-            className="ml-auto"
-          >
-            Add Connection
-          </Button>
         </div>
 
         {/* Search Bar */}
@@ -193,6 +186,11 @@ function ConnectionGroupPage() {
           </div>
         )}
       </div>
+
+      <AddConnectionButton
+        onClick={() => { setEditingConnection(null); setShowSidebar(true); }}
+        isVisible={!showSidebar}
+      />
 
       <ConnectionSidebar
         isOpen={showSidebar}
