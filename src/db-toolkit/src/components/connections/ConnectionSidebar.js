@@ -164,7 +164,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
                 </div>
 
                 {/* Connection URL Toggle */}
-                {!connection && formData.db_type !== 'sqlite' && (
+                {formData.db_type !== 'sqlite' && (
                   <div className="mb-6">
                     <button
                       type="button"
