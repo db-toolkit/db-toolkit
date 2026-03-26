@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, Search, X } from 'lucide-react';
+import { ArrowLeft, Users, Plus, Search, X } from 'lucide-react';
 import { useDebounce } from '../utils/debounce';
 import { useConnections } from '../hooks';
 import { useToast } from '../contexts/ToastContext';
