@@ -35,6 +35,11 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave,
         });
         setHasChanges(false);
       } else {
+        // If defaultGroup is set, skip draft and use resetForm to get the correct group
+        if (defaultGroup) {
+          resetForm();
+          return;
+        }
         const draft = localStorage.getItem('connection-draft');
         if (draft) {
           try {
