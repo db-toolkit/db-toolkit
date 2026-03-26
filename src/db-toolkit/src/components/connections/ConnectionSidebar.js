@@ -46,6 +46,13 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
     handleClose,
   } = useConnectionForm(connection, isOpen, settings, onClose, onSave, showConfirm);
 
+  const buildConnectionUrl = useCallback((data) => {
+    if (!data.host || !data.database) return '';
+    const { db_type, host, port, database, username, password } = data;
+    const auth = username && password ? `${username}:${password}@` : username ? `${username}@` : '';
+    return `${db_type}://${auth}${host}:${port}/${database}`;
+  }, []);
+
   const handleUrlParse = useCallback((url) => {
     try {
       const parsed = parseConnectionUrl(url);
@@ -168,7 +175,10 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
                   <div className="mb-6">
                     <button
                       type="button"
-                      onClick={() => setUseUrl(!useUrl)}
+                      onClick={() => {
+                        if (!useUrl) setDatabaseUrl(buildConnectionUrl(formData));
+                        setUseUrl(!useUrl);
+                      }}
                       className="text-sm text-green-600 dark:text-green-400 hover:underline"
                     >
                       {useUrl ? 'Use form fields' : 'Use connection URL instead'}
