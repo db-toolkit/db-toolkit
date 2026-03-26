@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../../contexts/ToastContext';
 
-export function useConnectionForm(connection, isOpen, settings, onClose, onSave, showConfirm) {
+export function useConnectionForm(connection, isOpen, settings, onClose, onSave, showConfirm, defaultGroup) {
   const toast = useToast();
   const [testing, setTesting] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -81,10 +81,10 @@ export function useConnectionForm(connection, isOpen, settings, onClose, onSave,
       password: '',
       ssl_enabled: false,
       ssl_mode: 'require',
-      group: '',
+      group: defaultGroup || '',
     });
     setHasChanges(false);
-  }, [settings]);
+  }, [settings, defaultGroup]);
 
   const handleChange = useCallback((field, value) => {
     setFormData(prev => {

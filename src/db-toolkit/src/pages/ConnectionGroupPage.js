@@ -127,6 +127,14 @@ function ConnectionGroupPage() {
               </p>
             </div>
           </div>
+          <Button
+            size="sm"
+            icon={<Plus size={16} />}
+            onClick={() => { setEditingConnection(null); setShowSidebar(true); }}
+            className="ml-auto"
+          >
+            Add Connection
+          </Button>
         </div>
 
         {/* Search Bar */}
@@ -191,6 +199,7 @@ function ConnectionGroupPage() {
         onClose={handleCloseSidebar}
         onSave={handleSave}
         connection={editingConnection}
+        defaultGroup={editingConnection ? undefined : decodedGroupName}
       />
 
       <ConfirmDialog

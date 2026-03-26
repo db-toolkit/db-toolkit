@@ -25,7 +25,7 @@ function GroupOptions() {
   ));
 }
 
-export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
+export function ConnectionSidebar({ isOpen, onClose, onSave, connection, defaultGroup }) {
   const { settings } = useSettingsContext();
   const toast = useToast();
   const { dialog, showConfirm, closeDialog } = useConfirmDialog();
@@ -44,7 +44,7 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
     handleTest,
     handleSubmit,
     handleClose,
-  } = useConnectionForm(connection, isOpen, settings, onClose, onSave, showConfirm);
+  } = useConnectionForm(connection, isOpen, settings, onClose, onSave, showConfirm, defaultGroup);
 
   const handleUrlParse = useCallback((url) => {
     try {
