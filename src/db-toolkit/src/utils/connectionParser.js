@@ -1,3 +1,10 @@
+export function buildConnectionUrl(data) {
+  if (!data.host || !data.database) return '';
+  const { db_type, host, port, database, username, password } = data;
+  const auth = username && password ? `${username}:${password}@` : username ? `${username}@` : '';
+  return `${db_type}://${auth}${host}:${port}/${database}`;
+}
+
 export function parseConnectionUrl(url) {
   if (!url.trim()) {
     throw new Error('Database URL is required');

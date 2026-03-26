@@ -8,7 +8,7 @@ import { Button } from '../common/Button';
 import { useSettingsContext } from '../../contexts/SettingsContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useConnectionForm } from '../../hooks/connections/useConnectionForm';
-import { parseConnectionUrl } from '../../utils/connectionParser';
+import { parseConnectionUrl, buildConnectionUrl } from '../../utils/connectionParser';
 import { ConnectionFormFields } from './ConnectionFormFields';
 import { useGroups } from '../../hooks/groups/useGroups';
 import ConfirmDialog from '../common/ConfirmDialog';
@@ -45,13 +45,6 @@ export function ConnectionSidebar({ isOpen, onClose, onSave, connection }) {
     handleSubmit,
     handleClose,
   } = useConnectionForm(connection, isOpen, settings, onClose, onSave, showConfirm);
-
-  const buildConnectionUrl = useCallback((data) => {
-    if (!data.host || !data.database) return '';
-    const { db_type, host, port, database, username, password } = data;
-    const auth = username && password ? `${username}:${password}@` : username ? `${username}@` : '';
-    return `${db_type}://${auth}${host}:${port}/${database}`;
-  }, []);
 
   const handleUrlParse = useCallback((url) => {
     try {
